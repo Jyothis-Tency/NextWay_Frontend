@@ -107,13 +107,16 @@ export function JobPostsList() {
                   <TableHead className="text-white">Salary Range</TableHead>
                   <TableHead className="text-white">Status</TableHead>
                   <TableHead className="text-white">Posted Date</TableHead>
+                  <TableHead className="text-white">Edit</TableHead>
+                  <TableHead className="text-white">
+                    View Applications
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => (
                   <TableRow
                     key={job._id}
-                    onClick={() => handleJobClick(job._id)}
                     className="cursor-pointer hover:bg-gray-700 transition-colors"
                   >
                     <TableCell className="font-medium">{job.title}</TableCell>
@@ -130,6 +133,28 @@ export function JobPostsList() {
                     </TableCell>
                     <TableCell>
                       {new Date(job.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() =>
+                          navigate(`../job-post-details/${job._id}`)
+                        }
+                        className="bg-yellow-500 hover:bg-yellow-600"
+                      >
+                        Edit Job
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() =>
+                          navigate(`../job-applications-by-post/${job._id}`, {
+                            state: { jobTitle: job.title },
+                          })
+                        }
+                        className="bg-blue-500 hover:bg-blue-600"
+                      >
+                        View Applications
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

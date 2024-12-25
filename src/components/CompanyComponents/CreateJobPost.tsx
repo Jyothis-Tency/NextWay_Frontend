@@ -292,6 +292,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
+                        className="bg-blue-500 hover:bg-blue-600"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -333,6 +334,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
+                        className="bg-blue-500 hover:bg-blue-600"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -374,6 +376,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
+                        className="bg-blue-500 hover:bg-blue-600"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -418,6 +421,7 @@ export function CreateJobPost() {
             <div className="flex justify-end space-x-4">
               <Button
                 type="button"
+                className="bg-red-500 hover:bg-red-600"
                 variant="outline"
                 onClick={() => navigate("/company-profile")}
               >

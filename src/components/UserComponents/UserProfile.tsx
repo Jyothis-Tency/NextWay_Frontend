@@ -383,12 +383,12 @@ const JobUserProfile: React.FC = () => {
           </Card>
         </section>
         <section className="flex justify-center space-x-4">
-          <Button
+          {/* <Button
             className="bg-red-600 hover:bg-red-700 text-white"
             disabled={!user.resume}
           >
             {user.resume ? "Download Resume" : "No Resume Available"}
-          </Button>
+          </Button> */}
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleEditProfile}

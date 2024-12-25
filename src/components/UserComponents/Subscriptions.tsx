@@ -88,9 +88,6 @@ const Subscriptions: React.FC = () => {
 
         setHistory(historyResponse.data.history || []);
       } catch (err) {
-        setErrorHistory(
-          "Failed to load subscription history. Please try again later."
-        );
         console.error("Error fetching subscription history:", err);
       } finally {
         setLoadingHistory(false);
@@ -104,9 +101,6 @@ const Subscriptions: React.FC = () => {
         );
         setCurrentSubscription(currentResponse.data.current || null);
       } catch (err) {
-        setErrorCurrent(
-          "Failed to load current subscription. Please try again later."
-        );
         console.error("Error fetching current subscription:", err);
       } finally {
         setLoadingCurrent(false);
@@ -158,6 +152,13 @@ const Subscriptions: React.FC = () => {
             console.log(
               "response.razorpay_signature",
               response.razorpay_signature
+            );
+            console.log(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature,
+              userId,
+              planId
             );
 
             const verifyResponse = await axiosUser.post(
@@ -290,7 +291,7 @@ const Subscriptions: React.FC = () => {
           <Card className="bg-gray-800 text-white mb-12">
             <CardContent className="p-6">
               <p className="text-center text-gray-400">
-                Currently you are not subscribed to any plan.
+                You are not currently subscribed.
               </p>
             </CardContent>
           </Card>
@@ -424,7 +425,7 @@ const Subscriptions: React.FC = () => {
           <Card className="bg-gray-800 text-white">
             <CardContent className="p-6">
               <p className="text-center text-gray-400">
-                You have no subscription history.
+                No subscription history.
               </p>
             </CardContent>
           </Card>

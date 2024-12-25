@@ -118,6 +118,12 @@ const Header: React.FC = () => {
                   Profile
                 </a>
                 <a
+                  href="/user/my-jobs"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                >
+                  My Applications
+                </a>
+                <a
                   href="/user/subscriptions"
                   className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
                 >

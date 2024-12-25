@@ -141,6 +141,8 @@ interface JobApplicationData {
   location: string;
   coverLetter: string;
   resume: File;
+  companyName: string;
+  jobTitle: string;
 }
 
 export const submitJobApplication = async (

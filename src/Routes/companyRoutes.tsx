@@ -14,6 +14,8 @@ import CreateJobPostPage from "@/Pages/CompanyPages/CreateJobPostPage";
 import JobPostDetailsPage from "@/Pages/CompanyPages/JobPostDetailsPage";
 import CompanyProtector from "@/Utils/companyProtector";
 import JobApplicationsListPage from "@/Pages/CompanyPages/JobApplicationsListPage";
+import JobApplicationByPostsPage from "@/Pages/CompanyPages/JobApplicationByPostsPage";
+import JobApplicationDetailedPage from "@/Pages/CompanyPages/JobApplicationDetailedPage";
 
 const CompanyRoutes = () => {
   return (
@@ -77,6 +79,22 @@ const CompanyRoutes = () => {
           element={
             <CompanyProtector>
               <JobApplicationsListPage />
+            </CompanyProtector>
+          }
+        />
+        <Route
+          path="job-applications-by-post/:jobId"
+          element={
+            <CompanyProtector>
+              <JobApplicationByPostsPage />
+            </CompanyProtector>
+          }
+        />
+        <Route
+          path="job-application-detailed/:applicationId"
+          element={
+            <CompanyProtector>
+              <JobApplicationDetailedPage />
             </CompanyProtector>
           }
         />

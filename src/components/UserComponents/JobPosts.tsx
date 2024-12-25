@@ -165,6 +165,8 @@ export default function JobPosts() {
           job_id: selectedJob._id,
           company_id: selectedJob.company_id,
           user_id: userInfo.user_id,
+          companyName: selectedJob.company.companyName,
+          jobTitle: selectedJob.title,
           ...applicationData,
           resume: applicationData.resume,
         });
@@ -204,7 +206,7 @@ export default function JobPosts() {
                 />
               </div>
               <Button
-                className="bg-red-600 hover:bg-red-700 text-white shadow-[0_0_10px_rgba(255,0,0,0.3)]"
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_10px_rgba(0,0,255,0.3)]"
                 onClick={handleSearch}
               >
                 <Search className="w-5 h-5 mr-2" />
@@ -231,19 +233,19 @@ export default function JobPosts() {
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-4 rounded-lg transition-colors ${
                           selectedJob?._id === job._id
-                            ? "bg-red-600 text-white"
+                            ? "bg-blue-500 text-white"
                             : "bg-gray-800 hover:bg-gray-700"
                         }`}
                       >
                         <h3 className="font-semibold">{job.title}</h3>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-black-400">
                           {job.company.companyName}
                         </p>
-                        <p className="text-sm text-gray-400">{job.location}</p>
+                        <p className="text-sm text-black-400">{job.location}</p>
                       </button>
                       {job._id !==
                         filteredJobs[filteredJobs.length - 1]._id && (
-                        <Separator className="my-2 bg-gray-700" />
+                        <Separator className="my-2 bg-gray-400" />
                       )}
                     </div>
                   ))
@@ -289,14 +291,15 @@ export default function JobPosts() {
                           className="bg-gray-700 text-white"
                         >
                           <DollarSign className="mr-1 h-3 w-3" />
-                          {selectedJob.salary}
+                          {selectedJob.salaryRange.min} -{" "}
+                          {selectedJob.salaryRange.max}
                         </Badge>
                         <Badge
                           variant="secondary"
                           className="bg-gray-700 text-white"
                         >
                           <Clock className="mr-1 h-3 w-3" />
-                          {selectedJob.type}
+                          {selectedJob.employmentType}
                         </Badge>
                         <Badge
                           variant="secondary"
@@ -341,7 +344,7 @@ export default function JobPosts() {
                       <div className="flex gap-4">
                         {userInfo && (
                           <Button
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                             onClick={handleApply}
                           >
                             Apply
@@ -463,7 +466,7 @@ export default function JobPosts() {
           <DialogFooter>
             <Button
               onClick={handleNext}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Next
             </Button>
@@ -520,7 +523,7 @@ export default function JobPosts() {
             </Button>
             <Button
               onClick={handleConfirmApply}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Confirm Apply
             </Button>

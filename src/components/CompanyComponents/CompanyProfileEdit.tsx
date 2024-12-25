@@ -93,7 +93,9 @@ const CompanyProfileEdit = () => {
       try {
         setLoading(true);
         const response = await axiosCompany.get(`get-company/${company_id}`);
-        const companyData = response.data.companyData;
+        console.log(response.data);
+        
+        const companyData = response.data.companyProfile;
         formik.setValues({
           ...initialValues,
           ...companyData,
@@ -393,6 +395,7 @@ const CompanyProfileEdit = () => {
 
         <div className="flex justify-end space-x-4">
           <Button
+            className="bg-red-500 hover:bg-yellow-600"
             type="button"
             variant="outline"
             onClick={() => navigate("../profile")}

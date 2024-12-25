@@ -183,9 +183,9 @@ export const Header: React.FC = () => {
               Recruiter
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("../profile")}>
+            {/* <DropdownMenuItem onClick={() => navigate("../profile")}>
               Profile
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
