@@ -1,8 +1,8 @@
-import { axiosSeeker } from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
 
 export const fetchJobs = async () => {
   try {
-    const response = await axiosSeeker.get(`/getAllJobPosts`);
+    const response = await axiosUser.get(`/getAllJobPosts`);
     console.log(`response- ${response}`);
 
     const { jobPosts, companies } = response.data;
@@ -35,7 +35,7 @@ export const fetchJobs = async () => {
 
 export const resentOtp = async (email:string|null) => {
   try {
-    const response = await axiosSeeker.post(`/resent-otp`,{email});
+    const response = await axiosUser.post(`/resent-otp`,{email});
     console.log(`response- ${response}`);
     if (response?.data.success) {
       return {
@@ -54,7 +54,7 @@ export const resentOtp = async (email:string|null) => {
 
 export const fetchJobById = async (jobId: string) => {
   try {
-    const response = await axiosSeeker.get(`/getAllJobPosts`);
+    const response = await axiosUser.get(`/getAllJobPosts`);
     console.log(`fetchJobById response- ${response}`);
 
     const { jobPosts, companies } = response.data;
@@ -96,30 +96,30 @@ export const fetchJobById = async (jobId: string) => {
   }
 };
 
-export const updateSeekerProfile = async (seeker_id: any, seekerData: any) => {
+export const updateUserProfile = async (user_id: any, userData: any) => {
   try {
-    const response = await axiosSeeker.put(
-      `/edit-seeker/${seeker_id}`,
-      seekerData
+    const response = await axiosUser.put(
+      `/edit-user/${user_id}`,
+      userData
     );
 
     // Log the response data directly
     console.log("Response data:", response);
 
-    // Extract updated seeker profile data from the response
-    const updatedSeeker = response.data;
+    // Extract updated user profile data from the response
+    const updatedUser = response.data;
 
-    // Log the updated seeker information
-    console.log("Updated Seeker:", updatedSeeker);
+    // Log the updated user information
+    console.log("Updated User:", updatedUser);
 
     return {
       success: true,
       message: "Profile updated successfully!",
-      data: updatedSeeker, // Return updated seeker data
+      data: updatedUser, // Return updated user data
     };
   } catch (error: any) {
     // Improved error handling and logging
-    console.error("Error updating seeker profile:", error);
+    console.error("Error updating user profile:", error);
 
     // Extract and return error message
     return {
@@ -133,7 +133,7 @@ export const updateSeekerProfile = async (seeker_id: any, seekerData: any) => {
 interface JobApplicationData {
   job_id: string;
   company_id: string;
-  seeker_id: string;
+  user_id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -155,7 +155,7 @@ export const submitJobApplication = async (
       formData.append(key, value);
     });
 
-    const response = await axiosSeeker.post("/post-job-application", formData, {
+    const response = await axiosUser.post("/post-job-application", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

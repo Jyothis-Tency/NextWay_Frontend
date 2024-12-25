@@ -4,9 +4,9 @@ import * as Yup from "yup";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { OTPVerifyAct } from "@/redux/Actions/seekerActions";
+import { OTPVerifyAct } from "@/redux/Actions/userActions";
 import { AppDispatch } from "@/redux/store";
-import { resentOtp } from "@/API/seekerAPI";
+import { resentOtp } from "@/API/userAPI";
 
 const TIMER_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
@@ -32,7 +32,7 @@ function OtpVerify() {
     let timer: NodeJS.Timeout;
 
     const checkAndUpdateTimer = () => {
-      const startTimeStr = localStorage.getItem("seekerOtpTimerStart");
+      const startTimeStr = localStorage.getItem("userOtpTimerStart");
       if (startTimeStr) {
         const startTime = parseInt(startTimeStr, 10);
         const now = Date.now();
@@ -41,7 +41,7 @@ function OtpVerify() {
         if (elapsedTime < TIMER_DURATION) {
           setTimeLeft(Math.ceil((TIMER_DURATION - elapsedTime) / 1000));
         } else {
-          localStorage.removeItem("seekerOtpTimerStart");
+          localStorage.removeItem("userOtpTimerStart");
           setTimeLeft(0);
           clearInterval(timer);
         }
@@ -61,9 +61,9 @@ function OtpVerify() {
   }, [timeLeft]);
 
   const startTimer = () => {
-    localStorage.removeItem("seekerOtpTimerStart");
+    localStorage.removeItem("userOtpTimerStart");
     const startTime = Date.now();
-    localStorage.setItem("seekerOtpTimerStart", startTime.toString());
+    localStorage.setItem("userOtpTimerStart", startTime.toString());
     setTimeLeft(TIMER_DURATION / 1000);
   };
 

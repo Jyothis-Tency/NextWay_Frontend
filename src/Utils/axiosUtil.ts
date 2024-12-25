@@ -1,27 +1,24 @@
 import axios from "axios";
 import { toast } from "sonner";
 
-const seekerURL = "http://localhost:3000/data/seeker";
+const userURL = "http://localhost:3000/data/user";
 const companyURL = "http://localhost:3000/data/company";
 const adminURL = "http://localhost:3000/data/admin";
 
-// Retrieve and parse the 'seeker' data in one step, then access seekerInfo
-const seeker_id = JSON.parse(
-  JSON.parse(localStorage.getItem("persist:root") || "{}").seeker || "{}"
-).seekerInfo?.seeker_id;
+// Retrieve and parse the 'user' data in one step, then access userInfo
+const user_id = JSON.parse(
+  JSON.parse(localStorage.getItem("persist:root") || "{}").user || "{}"
+).userInfo?.user_id;
 
 const company_id = JSON.parse(
   JSON.parse(localStorage.getItem("persist:root") || "{}").company || "{}"
 ).companyInfo?.company_id;
 
-// const adminInfo = JSON.parse(
-//   JSON.parse(localStorage.getItem("persist:root") || "{}").admin || "{}"
-// ).adminInfo;
 
-export const axiosSeeker = axios.create({
-  baseURL: seekerURL,
+export const axiosUser = axios.create({
+  baseURL: userURL,
   withCredentials: true,
-  headers: seeker_id ? { seeker_id: seeker_id } : {},
+  headers: user_id ? { user_id: user_id } : {},
 });
 
 export const axiosCompany = axios.create({
@@ -39,23 +36,35 @@ export const axiosAdmin = axios.create({
   withCredentials: true,
 });
 
-axiosSeeker.interceptors.response.use(
+axiosUser.interceptors.response.use(
   (response) => {
     // Return the response if successful
     return response;
   },
   (error) => {
-    // Check for specific "seeker blocked" error from middleware
+    // Check for specific "user blocked" error from middleware
     if (
       error.response &&
       error.response.status === 403 &&
-      error.response.data === "seeker blocked" // Ensure it's the specific message
+      error.response.data === "user blocked" // Ensure it's the specific message
     ) {
-      // Show a toast notification for blocked seekers
+      const persistedRootString = localStorage.getItem("persist:root");
+      if (persistedRootString) {
+        const persistedRoot = JSON.parse(persistedRootString);
+        if (persistedRoot.user) {
+          delete persistedRoot.user;
+          localStorage.setItem("persist:root", JSON.stringify(persistedRoot));
+        } else {
+          console.log("User data not found in persist:root");
+        }
+      } else {
+        console.log("'persist:root' key does not exist in localStorage");
+      }
+      // Show a toast notification for blocked users
       toast.error("Your account is blocked by admin. Redirecting to login...");
       // Redirect to login page after 1500ms
       setTimeout(() => {
-        window.location.href = "/seeker/login"; // Or use `navigate("/login")` if in React Router
+        window.location.href = "/user/login"; // Or use `navigate("/login")` if in React Router
       }, 1500);
     }
     // Return the error for other cases
@@ -68,13 +77,21 @@ axiosCompany.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Check for specific "seeker blocked" error from middleware
+    // Check for specific "user blocked" error from middleware
     if (
       error.response &&
       error.response.status === 403 &&
       error.response.data === "company blocked" // Ensure it's the specific message
     ) {
-      // Show a toast notification for blocked seekers
+      const persistedRootString = localStorage.getItem("persist:root");
+      if (persistedRootString) {
+        const persistedRoot = JSON.parse(persistedRootString);
+        if (persistedRoot.company) {
+          delete persistedRoot.company;
+          localStorage.setItem("persist:root", JSON.stringify(persistedRoot));
+        }
+      }
+      // Show a toast notification for blocked users
       toast.error("Your account is blocked by admin. Redirecting to login...");
       // Redirect to login page after 1500ms
       setTimeout(() => {

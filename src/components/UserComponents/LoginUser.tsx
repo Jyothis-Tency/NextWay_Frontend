@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { loginSeekerAct } from "@/redux/Actions/seekerActions";
+import { loginUserAct } from "@/redux/Actions/userActions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -15,7 +15,7 @@ const LoginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function LoginSeeker() {
+export default function LoginUser() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
@@ -29,7 +29,7 @@ export default function LoginSeeker() {
     onSubmit: async (values) => {
       try {
         const { email, password } = values;
-        const result = await dispatch(loginSeekerAct({ email, password })).unwrap();
+        const result = await dispatch(loginUserAct({ email, password })).unwrap();
         console.log(result);
 
         if (result) {

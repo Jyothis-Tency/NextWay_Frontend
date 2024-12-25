@@ -21,7 +21,7 @@ import {
   Search,
   Building,
 } from "lucide-react";
-import { fetchJobs, submitJobApplication } from "@/API/seekerAPI";
+import { fetchJobs, submitJobApplication } from "@/API/userAPI";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RootState } from "@/redux/store";
 import { toast } from "sonner";
-// import { Seeker } from "@/types/seeker"; // Adjust the import path as needed
+// import { user } from "@/types/user"; // Adjust the import path as needed
 
 export default function JobPosts() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -53,9 +53,7 @@ export default function JobPosts() {
     resume: null as File | null,
   });
   const navigate = useNavigate();
-  const seekerInfo = useSelector(
-    (state: RootState) => state.seeker.seekerInfo 
-  );
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   const companyInfo = JSON.parse(
     JSON.parse(localStorage.getItem("persist:root") || "{}").company || "{}"
@@ -63,7 +61,7 @@ export default function JobPosts() {
   const adminInfo = JSON.parse(
     JSON.parse(localStorage.getItem("persist:root") || "{}").admin || "{}"
   ).adminInfo;
-  console.log(seekerInfo);
+  console.log(userInfo);
   console.log(companyInfo);
   console.log(adminInfo);
 
@@ -84,17 +82,17 @@ export default function JobPosts() {
   }, []);
 
   useEffect(() => {
-    if (seekerInfo) {
+    if (userInfo) {
       setApplicationData((prevData) => ({
         ...prevData,
-        firstName: seekerInfo.firstName || "",
-        lastName: seekerInfo.lastName || "",
-        email: seekerInfo.email || "",
-        phone: seekerInfo.phone || "",
+        firstName: userInfo.firstName || "",
+        lastName: userInfo.lastName || "",
+        email: userInfo.email || "",
+        phone: userInfo.phone || "",
         location: "",
       }));
     }
-  }, [seekerInfo]);
+  }, [userInfo]);
 
   const handleSearch = async () => {
     if (searchQuery.trim() === "" && searchLocation.trim() === "") {
@@ -161,12 +159,12 @@ export default function JobPosts() {
   };
 
   const handleConfirmApply = async () => {
-    if (selectedJob && seekerInfo && applicationData.resume) {
+    if (selectedJob && userInfo && applicationData.resume) {
       try {
         await submitJobApplication({
           job_id: selectedJob._id,
           company_id: selectedJob.company_id,
-          seeker_id: seekerInfo.seeker_id,
+          user_id: userInfo.user_id,
           ...applicationData,
           resume: applicationData.resume,
         });
@@ -341,7 +339,7 @@ export default function JobPosts() {
                         </ul>
                       </div>
                       <div className="flex gap-4">
-                        {seekerInfo && (
+                        {userInfo && (
                           <Button
                             className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                             onClick={handleApply}

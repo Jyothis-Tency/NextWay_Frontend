@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
-import { toggleSeekerBlock } from "@/API/adminAPI"; // Import toggle function
+import { toggleUserBlock } from "@/API/adminAPI"; // Import toggle function
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-interface ISeeker {
-  seeker_id: string;
+interface IUser {
+  user_id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -26,58 +26,58 @@ interface ISeeker {
   isBlocked: boolean;
 }
 
-const SeekerList = () => {
-  const [seekers, setSeekers] = useState<ISeeker[]>([]);
+const UserList = () => {
+  const [users, setUsers] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSeekers = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await axiosAdmin.get("/all-seekers");
-        console.log("API response:", response.data.seekerData);
-        setSeekers(
-          Array.isArray(response.data.seekerData)
-            ? response.data.seekerData
+        const response = await axiosAdmin.get("/all-users");
+        console.log("API response:", response.data.userData);
+        setUsers(
+          Array.isArray(response.data.userData)
+            ? response.data.userData
             : []
         );
         setIsLoading(false);
       } catch (err) {
-        console.error("Error fetching seekers:", err);
-        setError("Failed to fetch seekers. Please try again later.");
+        console.error("Error fetching users:", err);
+        setError("Failed to fetch users. Please try again later.");
         setIsLoading(false);
       }
     };
 
-    fetchSeekers();
+    fetchUsers();
   }, []);
 
   const handleBlockUnblock = async (
-    seekerId: string,
+    userId: string,
     currentBlockStatus: boolean
   ) => {
     try {
-      const updatedSeeker = await toggleSeekerBlock(
-        seekerId,
+      const updatedUser = await toggleUserBlock(
+        userId,
         currentBlockStatus
       );
-      setSeekers(
-        seekers.map((seeker) =>
-          seeker.seeker_id === seekerId
-            ? { ...seeker, isBlocked: updatedSeeker.isBlocked }
-            : seeker
+      setUsers(
+        users.map((user) =>
+          user.user_id === userId
+            ? { ...user, isBlocked: updatedUser.isBlocked }
+            : user
         )
       );
     } catch (err) {
-      console.error("Error blocking/unblocking seeker:", err);
+      console.error("Error blocking/unblocking user:", err);
       // Optionally, show an error message to the user
-      toast.error("Failed to block-unblock seeker")
+      toast.error("Failed to block-unblock user")
     }
   };
 
-  const navigateToDetails = (seekerId: string) => {
-    navigate(`/admin/seeker/${seekerId}`);
+  const navigateToDetails = (userId: string) => {
+    navigate(`/admin/user/${userId}`);
   };
 
   return (
@@ -88,18 +88,18 @@ const SeekerList = () => {
         <div className="flex-1 flex flex-col">
           <main className="flex-1 overflow-y-auto pt-16 pl-64">
             <div className="p-6">
-              <h1 className="text-2xl font-bold mb-6">Seekers</h1>
+              <h1 className="text-2xl font-bold mb-6">Users</h1>
               {isLoading ? (
                 <div className="flex justify-center items-center h-64">
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               ) : error ? (
                 <div className="text-red-500 text-center">{error}</div>
-              ) : Array.isArray(seekers) && seekers.length > 0 ? (
+              ) : Array.isArray(users) && users.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Seeker ID</TableHead>
+                      <TableHead>User ID</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
@@ -107,31 +107,31 @@ const SeekerList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Array.isArray(seekers) &&
-                      seekers.map((seeker) => (
+                    {Array.isArray(users) &&
+                      users.map((user) => (
                         <TableRow
-                          key={seeker.seeker_id}
+                          key={user.user_id}
                           className="cursor-pointer hover:bg-gray-800"
-                          onClick={() => navigateToDetails(seeker.seeker_id)}
+                          onClick={() => navigateToDetails(user.user_id)}
                         >
-                          <TableCell>{seeker.seeker_id}</TableCell>
-                          <TableCell>{`${seeker.firstName} ${seeker.lastName}`}</TableCell>
-                          <TableCell>{seeker.email}</TableCell>
-                          <TableCell>{seeker.phone}</TableCell>
+                          <TableCell>{user.user_id}</TableCell>
+                          <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{user.phone}</TableCell>
                           <TableCell>
                             <Button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleBlockUnblock(
-                                  seeker.seeker_id,
-                                  seeker.isBlocked
+                                  user.user_id,
+                                  user.isBlocked
                                 );
                               }}
                               variant={
-                                seeker.isBlocked ? "default" : "destructive"
+                                user.isBlocked ? "default" : "destructive"
                               }
                             >
-                              {seeker.isBlocked ? "Unblock" : "Block"}
+                              {user.isBlocked ? "Unblock" : "Block"}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -140,7 +140,7 @@ const SeekerList = () => {
                 </Table>
               ) : (
                 <div className="text-center text-gray-500">
-                  No seekers found or invalid data format.
+                  No users found or invalid data format.
                 </div>
               )}
             </div>
@@ -152,4 +152,4 @@ const SeekerList = () => {
   );
 };
 
-export default SeekerList;
+export default UserList;

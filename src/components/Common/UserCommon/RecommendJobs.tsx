@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { axiosSeeker } from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
 
 interface JobPost {
   title: string;
@@ -33,7 +33,7 @@ const RecommendedJobs: React.FC = () => {
       setLoading(true);
       setError(""); // Clear previous errors
 
-      const response = await axiosSeeker.get(`/getAllJobPosts`);
+      const response = await axiosUser.get(`/getAllJobPosts`);
       const jobPosts: JobPost[] = response.data?.jobPosts || [];
       const companies: Company[] = response.data?.companies || [];
 

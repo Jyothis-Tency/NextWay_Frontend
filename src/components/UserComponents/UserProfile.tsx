@@ -25,11 +25,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { RootState } from "@/redux/store";
-import { axiosSeeker } from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 
-interface ISeeker {
-  seeker_id: string;
+interface IUser {
+  user_id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -73,14 +73,15 @@ interface ISeeker {
   jobAlerts?: string[];
 }
 
-interface SeekerProfileResponse {
-  seekerProfile: ISeeker;
-  image:any
+interface UserProfileResponse {
+  userProfile: IUser;
+  image: any;
 }
 
-const JobSeekerProfile: React.FC = () => {
-  const [seeker, setSeeker] = useState<ISeeker | null>(null);
+const JobUserProfile: React.FC = () => {
+  const [user, setUser] = useState<IUser | null>(null);
   const [image, setImage] = useState(null);
+  const [uploaded, setUploaded] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,30 +89,30 @@ const JobSeekerProfile: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const seekerId = useSelector(
-    (state: RootState) => state.seeker.seekerInfo?.seeker_id
+  const userId = useSelector(
+    (state: RootState) => state.user.userInfo?.user_id
   );
 
   useEffect(() => {
-    const fetchSeekerData = async () => {
+    const fetchUserData = async () => {
       try {
-        const response = await axiosSeeker.get<SeekerProfileResponse>(
-          `/seeker-profile/${seekerId}`
+        const response = await axiosUser.get<UserProfileResponse>(
+          `/user-profile/${userId}`
         );
-        console.log("seekerProfile - ", response.data.seekerProfile);
+        console.log("userProfile - ", response.data.userProfile);
         console.log("image - ", response.data.image);
-        
-        setSeeker(response.data.seekerProfile);
+
+        setUser(response.data.userProfile);
         setImage(response.data.image);
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch seeker data");
+        setError("Failed to fetch user data");
         setLoading(false);
       }
     };
 
-    fetchSeekerData();
-  }, [seekerId]);
+    fetchUserData();
+  }, [userId, uploaded]);
 
   const handleEditProfile = () => {
     navigate("../profile-edit");
@@ -130,10 +131,10 @@ const JobSeekerProfile: React.FC = () => {
       const formData = new FormData();
       formData.append("profilePicture", selectedFile);
       console.log(selectedFile);
-      const seeker_id = seekerId
+      const user_id = userId;
       try {
-        const response = await axiosSeeker.post(
-          `/upload-profile-picture/${seeker_id}`,
+        const response = await axiosUser.post(
+          `/upload-profile-picture/${user_id}`,
           formData,
           {
             headers: {
@@ -143,7 +144,8 @@ const JobSeekerProfile: React.FC = () => {
         );
 
         if (response.data.status) {
-          toast.success("Profile picture updated")
+          setUploaded("Done");
+          toast.success("Profile picture updated");
         } else {
           console.error("Failed to upload profile picture");
         }
@@ -176,10 +178,10 @@ const JobSeekerProfile: React.FC = () => {
     );
   }
 
-  if (!seeker) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        No seeker data found
+        No user data found
       </div>
     );
   }
@@ -199,12 +201,12 @@ const JobSeekerProfile: React.FC = () => {
                       alt="Profile picture"
                     />
                     <AvatarFallback>
-                      {seeker.firstName[0]}
-                      {seeker.lastName[0]}
+                      {user.firstName[0]}
+                      {user.lastName[0]}
                     </AvatarFallback>
                   </Avatar>
                   <Button
-                    className="absolute bottom-0 right-0 rounded-full p-1 bg-blue-500 hover:bg-blue-600"
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 bg-blue-500 hover:bg-blue-600 flex items-center justify-center"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Pencil className="h-4 w-4" />
@@ -219,10 +221,10 @@ const JobSeekerProfile: React.FC = () => {
                 </div>
                 <div>
                   <CardTitle className="text-2xl">
-                    {seeker.firstName} {seeker.lastName}
+                    {user.firstName} {user.lastName}
                   </CardTitle>
                   <CardDescription className="text-gray-400">
-                    {seeker.experience?.[0]?.jobTitle ?? "Job Seeker"}
+                    {user.experience?.[0]?.jobTitle ?? "Job User"}
                   </CardDescription>
                 </div>
               </div>
@@ -231,21 +233,21 @@ const JobSeekerProfile: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Icons.MapPin className="h-4 w-4 text-gray-400" />
-                  <span>{seeker.location ?? "Location not specified"}</span>
+                  <span>{user.location ?? "Location not specified"}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Icons.Mail className="h-4 w-4 text-gray-400" />
-                  <span>{seeker.email}</span>
+                  <span>{user.email}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Icons.Phone className="h-4 w-4 text-gray-400" />
-                  <span>{seeker.phone}</span>
+                  <span>{user.phone}</span>
                 </div>
-                {seeker.portfolioLink && (
+                {user.portfolioLink && (
                   <div className="flex items-center space-x-2">
                     <Icons.Link className="h-4 w-4 text-gray-400" />
                     <a
-                      href={seeker.portfolioLink}
+                      href={user.portfolioLink}
                       className="text-blue-400 hover:underline"
                     >
                       Portfolio
@@ -261,7 +263,7 @@ const JobSeekerProfile: React.FC = () => {
                 <CardTitle>About Me</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{seeker.bio ?? "No bio provided yet."}</p>
+                <p>{user.bio ?? "No bio provided yet."}</p>
               </CardContent>
             </Card>
             <Card className="bg-gray-800 text-white">
@@ -270,8 +272,8 @@ const JobSeekerProfile: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {seeker.skills?.length ? (
-                    seeker.skills.map((skill, index) => (
+                  {user.skills?.length ? (
+                    user.skills.map((skill, index) => (
                       <Badge key={index} variant="secondary">
                         {skill}
                       </Badge>
@@ -291,8 +293,8 @@ const JobSeekerProfile: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {seeker.experience?.length ? (
-                  seeker.experience.map((exp, index) => (
+                {user.experience?.length ? (
+                  user.experience.map((exp, index) => (
                     <div key={index}>
                       <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
                       <p className="text-gray-400">
@@ -320,8 +322,8 @@ const JobSeekerProfile: React.FC = () => {
               <CardTitle>Education</CardTitle>
             </CardHeader>
             <CardContent>
-              {seeker.education?.length ? (
-                seeker.education.map((edu, index) => (
+              {user.education?.length ? (
+                user.education.map((edu, index) => (
                   <div key={index}>
                     <h3 className="text-lg font-semibold">
                       {edu.degree} in {edu.fieldOfStudy}
@@ -347,33 +349,33 @@ const JobSeekerProfile: React.FC = () => {
                 <div>
                   <h3 className="font-semibold">Desired Roles</h3>
                   <p className="text-gray-300">
-                    {seeker.preferredRoles?.join(", ") ?? "Not specified"}
+                    {user.preferredRoles?.join(", ") ?? "Not specified"}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Preferred Location</h3>
                   <p className="text-gray-300">
-                    {seeker.preferredLocation ?? "Not specified"}
+                    {user.preferredLocation ?? "Not specified"}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Work Environment</h3>
                   <p className="text-gray-300">
-                    {seeker.remoteWork ? "Remote" : "On-site"}
+                    {user.remoteWork ? "Remote" : "On-site"}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Salary Expectation</h3>
                   <p className="text-gray-300">
-                    {seeker.salaryExpectation
-                      ? `$${seeker.salaryExpectation.toLocaleString()} per year`
+                    {user.salaryExpectation
+                      ? `$${user.salaryExpectation.toLocaleString()} per year`
                       : "Not specified"}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold">Willing to Relocate</h3>
                   <p className="text-gray-300">
-                    {seeker.willingToRelocate ? "Yes" : "No"}
+                    {user.willingToRelocate ? "Yes" : "No"}
                   </p>
                 </div>
               </div>
@@ -383,9 +385,9 @@ const JobSeekerProfile: React.FC = () => {
         <section className="flex justify-center space-x-4">
           <Button
             className="bg-red-600 hover:bg-red-700 text-white"
-            disabled={!seeker.resume}
+            disabled={!user.resume}
           >
-            {seeker.resume ? "Download Resume" : "No Resume Available"}
+            {user.resume ? "Download Resume" : "No Resume Available"}
           </Button>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -417,4 +419,4 @@ const JobSeekerProfile: React.FC = () => {
   );
 };
 
-export default JobSeekerProfile;
+export default JobUserProfile;

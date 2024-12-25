@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -12,7 +12,17 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { axiosCompany } from "@/Utils/axiosUtil";
+import { toast } from "sonner";
+import { Pencil } from "lucide-react";
 
 interface ICompany {
   company_id: string;
@@ -46,7 +56,11 @@ interface ICompany {
 
 export function CompanyProfile() {
   const [company, setCompany] = useState<ICompany | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const company_id = useSelector(
     (state: RootState) => state.company.companyInfo?.company_id
   );
@@ -56,9 +70,8 @@ export function CompanyProfile() {
       try {
         setLoading(true);
         const response = await axiosCompany.get(`get-company/${company_id}`);
-        console.log(`get-company - ${response.data.companyData.name}`);
-
-        setCompany(response.data.companyData);
+        setCompany(response.data.companyProfile);
+        setProfileImage(response.data.image);
       } catch (error) {
         console.error("Error fetching company data:", error);
         setCompany(null);
@@ -69,6 +82,54 @@ export function CompanyProfile() {
 
     if (company_id) fetchCompanyData();
   }, [company_id]);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    if (selectedFile && company_id) {
+      const formData = new FormData();
+      formData.append("profilePicture", selectedFile);
+      try {
+        const response = await axiosCompany.post(
+          `/upload-profile-img/${company_id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.data.status) {
+          toast.success("Company profile picture updated");
+          // Refetch company data to get the updated profile picture
+          const updatedResponse = await axiosCompany.get(
+            `get-company/${company_id}`
+          );
+          setCompany(updatedResponse.data.companyProfile);
+          setProfileImage(updatedResponse.data.image);
+        } else {
+          toast.error("Failed to upload company profile picture");
+        }
+      } catch (error) {
+        console.error("Error uploading company profile picture:", error);
+        toast.error("Error uploading company profile picture");
+      }
+    }
+    setIsModalOpen(false);
+    setSelectedFile(null);
+  };
+
+  const handleCancelUpload = () => {
+    setIsModalOpen(false);
+    setSelectedFile(null);
+  };
 
   if (loading) {
     return <div className="text-white text-center mt-8">Loading...</div>;
@@ -104,12 +165,28 @@ export function CompanyProfile() {
         <Card className="md:col-span-1 bg-gray-800 text-white">
           <CardHeader>
             <div className="flex items-center space-x-4">
-              <Avatar className="w-20 h-20">
-                <img
-                  src={company.logo || "/placeholder.svg?height=80&width=80"}
-                  alt="Company logo"
+              <div className="relative">
+                <Avatar className="w-20 h-20">
+                  <AvatarImage
+                    src={profileImage || "/placeholder.svg?height=80&width=80"}
+                    alt="Company logo"
+                  />
+                  <AvatarFallback>{company.name[0]}</AvatarFallback>
+                </Avatar>
+                <Button
+                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 bg-blue-500 hover:bg-blue-600 flex items-center justify-center"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  accept="image/*"
                 />
-              </Avatar>
+              </div>
               <div>
                 <CardTitle className="text-2xl">{company.name}</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -206,52 +283,23 @@ export function CompanyProfile() {
           </CardContent>
         </Card>
       </div>
-      {/* <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Job Posts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {company.jobPosts && company.jobPosts.length > 0 ? (
-              company.jobPosts.slice(0, 5).map((job, index) => (
-                <div key={index}>
-                  <h3 className="text-lg font-semibold">{job}</h3>
-                </div>
-              ))
-            ) : (
-              <p>No job posts added yet.</p>
-            )}
-            {(company.jobPosts?.length || 0) > 5 && (
-              <p className="text-blue-400 mt-2 cursor-pointer">
-                View all job posts
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Key Employees</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {company.employees && company.employees.length > 0 ? (
-              company.employees.slice(0, 5).map((employee, index) => (
-                <div key={index}>
-                  <h3 className="text-lg font-semibold">{employee.role}</h3>
-                </div>
-              ))
-            ) : (
-              <p>No key employees listed yet.</p>
-            )}
-            {(company.employees?.length || 0) > 5 && (
-              <p className="text-blue-400 mt-2 cursor-pointer">
-                View all employees
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card> */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Company Profile Picture Upload</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to upload this image as your new company
+              profile picture?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelUpload}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmUpload}>Confirm Upload</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

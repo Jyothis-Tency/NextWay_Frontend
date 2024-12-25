@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { axiosSeeker } from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
-import { updateSeekerProfile } from "@/API/seekerAPI";
+import { updateUserProfile } from "@/API/userAPI";
 import Header from "../Common/UserCommon/Header";
 import Footer from "../Common/UserCommon/Footer";
 
@@ -31,7 +31,7 @@ type Education = {
   endDate: Date | string;
 };
 
-type SeekerProfile = {
+type UserProfile = {
   firstName: string;
   lastName: string;
   email: string;
@@ -56,7 +56,7 @@ const validationSchema = Yup.object().shape({
   phone: Yup.string().required("Phone number is required"),
 });
 
-const initialValues: SeekerProfile = {
+const initialValues: UserProfile = {
   firstName: "",
   lastName: "",
   email: "",
@@ -74,24 +74,24 @@ const initialValues: SeekerProfile = {
   portfolioLink: "",
 };
 
-const JobSeekerProfileEdit = () => {
+const JobUserProfileEdit = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const seeker_id = useSelector(
-    (state: RootState) => state.seeker.seekerInfo?.seeker_id
+  const user_id = useSelector(
+    (state: RootState) => state.user.userInfo?.user_id
   );
 
-  const formik = useFormik<SeekerProfile>({
+  const formik = useFormik<UserProfile>({
     initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       console.log("Form is submitting with values:", values);
       setSubmitting(true);
       try {
-        console.log("Dispatching updateSeekerProfile");
-        const response = await updateSeekerProfile(seeker_id, values)
+        console.log("Dispatching updateUserProfile");
+        const response = await updateUserProfile(user_id, values);
         console.log("Update response:", response);
         if (response && response.success) {
           toast.success("Profile updated successfully");
@@ -114,24 +114,24 @@ const JobSeekerProfileEdit = () => {
   });
 
   useEffect(() => {
-    const fetchSeekerData = async () => {
-      if (!seeker_id) return;
+    const fetchUserData = async () => {
+      if (!user_id) return;
 
       try {
         setLoading(true);
-        const response = await axiosSeeker.get(`/seeker-profile/${seeker_id}`);
-        const seekerData = response.data.seekerProfile;
-        console.log("Fetched seeker data:", seekerData);
+        const response = await axiosUser.get(`/user-profile/${user_id}`);
+        const userData = response.data.userProfile;
+        console.log("Fetched user data:", userData);
         formik.setValues({
           ...initialValues,
-          ...seekerData,
-          experience: seekerData.experience || [],
-          education: seekerData.education || [],
-          preferredRoles: seekerData.preferredRoles || [],
-          skills: seekerData.skills || [],
-        } as SeekerProfile);
+          ...userData,
+          experience: userData.experience || [],
+          education: userData.education || [],
+          preferredRoles: userData.preferredRoles || [],
+          skills: userData.skills || [],
+        } as UserProfile);
       } catch (error: any) {
-        console.error("Error fetching seeker data:", error);
+        console.error("Error fetching user data:", error);
         toast.error(
           error.response?.data?.message ||
             "Failed to fetch profile data. Please try again."
@@ -141,8 +141,8 @@ const JobSeekerProfileEdit = () => {
       }
     };
 
-    fetchSeekerData();
-  }, [seeker_id]);
+    fetchUserData();
+  }, [user_id]);
 
   useEffect(() => {
     if (formik.values.experience && formik.values.experience.length > 0) {
@@ -693,4 +693,4 @@ const JobSeekerProfileEdit = () => {
   );
 };
 
-export default JobSeekerProfileEdit;
+export default JobUserProfileEdit;

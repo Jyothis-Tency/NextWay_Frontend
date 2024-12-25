@@ -23,7 +23,7 @@ import {
   CheckCircle,
   Users,
 } from "lucide-react";
-import { fetchJobById } from "@/API/seekerAPI"; // You'll need to implement this function
+import { fetchJobById } from "@/API/userAPI"; // You'll need to implement this function
 
 export default function JobPostDetailed() {
   const [job, setJob] = useState<any>(null);

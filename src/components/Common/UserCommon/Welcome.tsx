@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const WelcomeSection: React.FC = () => {
   const userName = useSelector(
-    (state: RootState) => state.seeker.seekerInfo?.firstName
+    (state: RootState) => state.user.userInfo?.firstName
   );
   console.log(userName);
   const navigate = useNavigate()

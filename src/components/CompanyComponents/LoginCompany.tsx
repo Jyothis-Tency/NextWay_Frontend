@@ -15,7 +15,7 @@ const LoginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function LoginSeeker() {
+export default function LoginUser() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();

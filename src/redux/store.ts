@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import seekerSlice from "./Slices/seekerSlice";
+import userSlice from "./Slices/userSlice";
 import companySlice from "./Slices/companySlice";
 import adminSlice from "./Slices/adminSlice";
 
@@ -11,7 +11,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  seeker: seekerSlice,
+  user: userSlice,
   company: companySlice,
   admin: adminSlice,
 });

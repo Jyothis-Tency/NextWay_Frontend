@@ -1,11 +1,12 @@
 import React from "react";
-import { LayoutDashboard, Users, Building } from "lucide-react";
+import { LayoutDashboard, Users, Building,DollarSign } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
   const sidebarContents = [
     { icon: LayoutDashboard, label: "Dashboard", path: "./dashboard" },
-    { icon: Users, label: "Seekers", path: "./seeker-list" },
+    { icon: Users, label: "Users", path: "./user-list" },
     { icon: Building, label: "Companies", path: "./company-list" },
+    { icon: DollarSign, label: "Subscriptions", path: "./subscriptions" },
   ];
 
   return (

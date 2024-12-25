@@ -4,17 +4,17 @@ import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Building, Briefcase, Loader2 } from "lucide-react";
-import { axiosAdmin,axiosSeeker } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosAdmin,axiosUser } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 
 interface DashboardData {
-  totalSeekers: number;
+  totalUsers: number;
   totalCompanies: number;
   activeJobPosts: number;
 }
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
-    totalSeekers: 0,
+    totalUsers: 0,
     totalCompanies: 0,
     activeJobPosts: 0,
   });
@@ -24,15 +24,15 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [seekersResponse, companiesResponse,jobPostsResponse] = await Promise.all([
-          axiosAdmin.get("/all-seekers"),
+        const [usersResponse, companiesResponse,jobPostsResponse] = await Promise.all([
+          axiosAdmin.get("/all-users"),
           axiosAdmin.get("/all-companies"),
-          axiosSeeker.get("/getAllJobPosts"),
+          axiosUser.get("/getAllJobPosts"),
         ]);
         console.log(jobPostsResponse.data.jobPosts.length);
         
-        const totalSeekers = Array.isArray(seekersResponse.data.seekerData)
-          ? seekersResponse.data.seekerData.length
+        const totalUsers = Array.isArray(usersResponse.data.userData)
+          ? usersResponse.data.userData.length
           : 0;
         const totalCompanies = Array.isArray(companiesResponse.data.companyData)
           ? companiesResponse.data.companyData.length
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
         console.log("...",activeJobPosts);
         
         setDashboardData({
-          totalSeekers,
+          totalUsers,
           totalCompanies,
           activeJobPosts // This is still hardcoded as we don't have an API for this yet
         });
@@ -78,13 +78,13 @@ const AdminDashboard = () => {
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Total Seekers
+                        Total Users
                       </CardTitle>
                       <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {dashboardData.totalSeekers}
+                        {dashboardData.totalUsers}
                       </div>
                     </CardContent>
                   </Card>

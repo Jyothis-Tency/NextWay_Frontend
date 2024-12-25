@@ -1,10 +1,10 @@
 import React from "react";
-import JobSeekerProfileEdit from "@/components/SeekerComponents/ProfileEdit";
+import JobUserProfileEdit from "@/components/UserComponents/ProfileEdit";
 
 const ProfileEditPage = () => {
   return (
     <div>
-      <JobSeekerProfileEdit />
+      <JobUserProfileEdit />
     </div>
   );
 };

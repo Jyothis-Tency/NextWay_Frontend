@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {axiosSeeker} from "@/Utils/axiosUtil";
+import {axiosUser} from "@/Utils/axiosUtil";
 
-export const registerSeekerAct = (userData: {
+export const registerUserAct = (userData: {
   firstName: string;
   lastName: string;
   email: string;
@@ -12,7 +12,7 @@ export const registerSeekerAct = (userData: {
   return async () => {
     try {
       console.log(`userData in registerFrom at userActions: ${userData}`);
-      const response = await axiosSeeker.post(`/register`, userData);
+      const response = await axiosUser.post(`/register`, userData);
       console.log(response);
       if (response.status === 200) {
         localStorage.setItem("userEmail", userData.email);
@@ -42,7 +42,7 @@ export const OTPVerifyAct = (otp: string) => {
   return async () => {
     try {
       const email = localStorage.getItem("userEmail");
-      const response = await axiosSeeker.post(`/verify-otp`, {
+      const response = await axiosUser.post(`/verify-otp`, {
         email,
         receivedOTP: otp,
       });
@@ -70,14 +70,14 @@ export const OTPVerifyAct = (otp: string) => {
   };
 };
 
-export const loginSeekerAct = createAsyncThunk(
-  "seeker/login",
+export const loginUserAct = createAsyncThunk(
+  "user/login",
   async (
     { email, password }: { email: string; password: string },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosSeeker.post(`/login`, { email, password });
+      const response = await axiosUser.post(`/login`, { email, password });
       console.log(response);
       
       if (response.status === 200) {
@@ -108,7 +108,7 @@ export const loginSeekerAct = createAsyncThunk(
 export const forgotPasswordEmailAct = (email: string) => {
   return async () => {
     try {
-      const response = await axiosSeeker.post(`/forgot-password-email`, {
+      const response = await axiosUser.post(`/forgot-password-email`, {
         email,
       });
       if (response.status === 200) {
@@ -137,7 +137,7 @@ export const forgotPasswordOTPAct = (otp: string) => {
   return async () => {
     try {
       const email = localStorage.getItem("userEmail");
-      const response = await axiosSeeker.post(`/forgot-password-OTP`, {
+      const response = await axiosUser.post(`/forgot-password-OTP`, {
         email,
         otp,
       });
@@ -168,7 +168,7 @@ export const forgotPasswordOTPAct = (otp: string) => {
 export const forgotPasswordResetAct = (email: string, password: string) => {
   return async () => {
     try {
-      const response = await axiosSeeker.post(`/forgot-password-reset`, {
+      const response = await axiosUser.post(`/forgot-password-reset`, {
         email,
         password,
       });
@@ -208,7 +208,7 @@ export const updateUserProfile = (profileData: {
       );
 
       const { userId, ...data } = profileData;
-      const response = await axiosSeeker.put(
+      const response = await axiosUser.put(
         `${URL}/edit-profile/${userId}`,
         data
       );

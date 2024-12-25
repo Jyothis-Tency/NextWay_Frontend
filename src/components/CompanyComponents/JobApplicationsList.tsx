@@ -19,7 +19,7 @@ import { axiosCompany } from "@/Utils/axiosUtil";
 interface IJobApplication {
   _id: string;
   job_id: string;
-  seeker_id: string;
+  user_id: string;
   company_id: string;
   firstName: string;
   lastName: string;

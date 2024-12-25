@@ -1,7 +1,8 @@
 import AdminDashBoardPage from "@/Pages/AdminPages/AdminDashBoardPage";
 import CompanyListPage from "@/Pages/AdminPages/CompanyList";
 import AdminLoginPage from "@/Pages/AdminPages/LoginPage";
-import SeekerListPage from "@/Pages/AdminPages/SeekerListPage";
+import UserListPage from "@/Pages/AdminPages/UserListPage";
+import SubscriptionsPage from "@/Pages/AdminPages/SubscriptionsPage";
 import AdminProtector from "@/Utils/adminProtector";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
@@ -21,10 +22,10 @@ const AdminRoutes: React.FC = () => {
           }
         />
         <Route
-          path="seeker-list"
+          path="user-list"
           element={
             <AdminProtector>
-              <SeekerListPage />
+              <UserListPage />
             </AdminProtector>
           }
         />
@@ -33,6 +34,14 @@ const AdminRoutes: React.FC = () => {
           element={
             <AdminProtector>
               <CompanyListPage />
+            </AdminProtector>
+          }
+        />
+        <Route
+          path="subscriptions"
+          element={
+            <AdminProtector>
+              <SubscriptionsPage />
             </AdminProtector>
           }
         />

@@ -1,5 +1,5 @@
 import React from "react";
-import JobPostDetailed from "@/components/SeekerComponents/JobPostDetailed";
+import JobPostDetailed from "@/components/UserComponents/JobPostDetailed";
 import Header from "../../components/Common/UserCommon/Header";
 import Footer from "../../components/Common/UserCommon/Footer";
 

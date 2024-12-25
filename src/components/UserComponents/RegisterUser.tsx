@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
-import { registerSeekerAct } from "../../redux/Actions/seekerActions";
+import { registerUserAct } from "../../redux/Actions/userActions";
 import { toast } from "sonner";
 
 const registerSchema = Yup.object().shape({
@@ -36,7 +36,7 @@ const registerSchema = Yup.object().shape({
     .required("Confirm password is required"),
 });
 
-const RegisterSeeker: React.FC = () => {
+const RegisterUser: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const formik = useFormik({
@@ -52,7 +52,7 @@ const RegisterSeeker: React.FC = () => {
     onSubmit: async (values) => {
       try {
         localStorage.setItem("register-email", values.email);
-        const result = await dispatch(registerSeekerAct(values));
+        const result = await dispatch(registerUserAct(values));
         console.log(result);
 
         if (result?.success) {
@@ -218,4 +218,4 @@ const RegisterSeeker: React.FC = () => {
   );
 };
 
-export default RegisterSeeker;
+export default RegisterUser;

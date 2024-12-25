@@ -12,8 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { clearSeeker } from "@/redux/Slices/seekerSlice";
-// import { logoutUser } from "@/redux/slices/seekerSlice"; // Assuming you have this action
+import { clearUser } from "@/redux/Slices/userSlice";
+// import { logoutUser } from "@/redux/slices/userSlice"; // Assuming you have this action
 
 const Header: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -23,7 +23,7 @@ const Header: React.FC = () => {
   const dispatch = useDispatch();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const userData = useSelector((state: RootState) => state.seeker.seekerInfo);
+  const userData = useSelector((state: RootState) => state.user.userInfo);
   const firstName = userData?.firstName;
   const lastName = userData?.lastName;
   const isLoggedIn = !!userData;
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
   };
 
   const confirmLogout = () => {
-    dispatch(clearSeeker());
+    dispatch(clearUser());
     setIsLogoutModalOpen(false);
     navigate("../login");
   };
@@ -63,13 +63,13 @@ const Header: React.FC = () => {
       <nav className="hidden md:flex space-x-6">
         <a
           onClick={() => navigate("../home")}
-          className="text-gray-300 hover:text-white"
+          className="text-gray-300 hover:text-white cursor-pointer"
         >
           Home
         </a>
         <a
           onClick={() => navigate("../job-posts")}
-          className="text-gray-300 hover:text-white"
+          className="text-gray-300 hover:text-white cursor-pointer"
         >
           Jobs
         </a>
@@ -104,9 +104,7 @@ const Header: React.FC = () => {
                 <div className="px-4 py-2 text-sm text-gray-300">
                   {firstName} {lastName}
                 </div>
-                <div className="px-4 py-2 text-xs text-gray-500">
-                  Job Seeker
-                </div>
+                <div className="px-4 py-2 text-xs text-gray-500">Job User</div>
                 {/* <a
                   className="block px-4 py-2 text-xs text-red-500 hover:bg-gray-700"
                   href="/recruiter/dashboard"
@@ -114,14 +112,20 @@ const Header: React.FC = () => {
                   Go to Recruiter Page
                 </a> */}
                 <a
-                  href="/seeker/profile"
-                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                  href="/user/profile"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
                 >
                   Profile
                 </a>
                 <a
+                  href="/user/subscriptions"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                >
+                  Subscription
+                </a>
+                <a
                   href="/settings"
-                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
                 >
                   Settings
                 </a>

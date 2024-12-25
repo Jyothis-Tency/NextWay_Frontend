@@ -1,5 +1,5 @@
 import React from "react";
-import OTPVerify from "@/components/SeekerComponents/OTPVerify";
+import OTPVerify from "@/components/UserComponents/OTPVerify";
 
 const OtpVerifyPage: React.FC = () => {
   return (
