@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Header } from "@/components/Common/RecruiterCommon/Header";
-import { Footer } from "@/components/Common/RecruiterCommon/Footer";
-import { Sidebar } from "@/components/Common/RecruiterCommon/Sidebar";
+import { Header } from "@/components/Common/CompanyCommon/Header";
+import { Footer } from "@/components/Common/CompanyCommon/Footer";
+import { Sidebar } from "@/components/Common/CompanyCommon/Sidebar";
 import { CompanyProfile } from "@/components/CompanyComponents/CompanyProfile";
 import { CreateJobPost } from "@/components/CompanyComponents/CreateJobPost";
 import { JobPostDetails } from "@/components/CompanyComponents/JobPostDetails";
@@ -15,7 +15,7 @@ const JobPostDetailsPage = () => {
         <Sidebar currentPage={currentPage} />
         <div className="flex-1 flex flex-col">
           <main className="flex-1 overflow-y-auto pt-16">
-            <JobPostDetails/>
+            <JobPostDetails />
           </main>
           <Footer />
         </div>

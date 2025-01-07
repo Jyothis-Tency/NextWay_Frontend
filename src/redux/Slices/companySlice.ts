@@ -8,6 +8,7 @@ interface Company {
   phone: string;
   role: string;
   isBlocked: boolean;
+  profileImage: any;
 }
 
 interface CompanyState {

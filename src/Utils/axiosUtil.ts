@@ -4,6 +4,7 @@ import { toast } from "sonner";
 const userURL = "http://localhost:3000/data/user";
 const companyURL = "http://localhost:3000/data/company";
 const adminURL = "http://localhost:3000/data/admin";
+const chatURL = "http://localhost:3000/data/chat";
 
 // Retrieve and parse the 'user' data in one step, then access userInfo
 const user_id = JSON.parse(
@@ -33,6 +34,11 @@ if (company_id) {
 
 export const axiosAdmin = axios.create({
   baseURL: adminURL,
+  withCredentials: true,
+});
+
+export const axiosChat = axios.create({
+  baseURL: chatURL,
   withCredentials: true,
 });
 

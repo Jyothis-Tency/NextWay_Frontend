@@ -16,6 +16,7 @@ import CompanyProtector from "@/Utils/companyProtector";
 import JobApplicationsListPage from "@/Pages/CompanyPages/JobApplicationsListPage";
 import JobApplicationByPostsPage from "@/Pages/CompanyPages/JobApplicationByPostsPage";
 import JobApplicationDetailedPage from "@/Pages/CompanyPages/JobApplicationDetailedPage";
+import CompanyChatPage from "@/Pages/CompanyPages/CompanyChatPage";
 
 const CompanyRoutes = () => {
   return (
@@ -95,6 +96,14 @@ const CompanyRoutes = () => {
           element={
             <CompanyProtector>
               <JobApplicationDetailedPage />
+            </CompanyProtector>
+          }
+        />
+        <Route
+          path="chat"
+          element={
+            <CompanyProtector>
+              <CompanyChatPage />
             </CompanyProtector>
           }
         />

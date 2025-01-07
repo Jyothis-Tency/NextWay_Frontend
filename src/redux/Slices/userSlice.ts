@@ -9,6 +9,7 @@ interface User {
   phone: string;
   role: string;
   isBlocked: boolean;
+  profileImage: any;
 }
 
 interface UserState {

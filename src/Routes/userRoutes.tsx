@@ -11,6 +11,7 @@ import ProfileEditPage from "@/Pages/UserPages/ProfileEditPage";
 import SubscriptionsPage from "@/Pages/UserPages/SubscriptionsPage";
 import UserProtector from "@/Utils/userProtector";
 import MyJobsPage from "@/Pages/UserPages/MyJobsPage";
+import UserChatPage from "@/Pages/UserPages/UserChatPage";
 
 const UserRoutes = () => {
   return (
@@ -54,6 +55,14 @@ const UserRoutes = () => {
           element={
             <UserProtector>
               <MyJobsPage />
+            </UserProtector>
+          }
+        />
+        <Route
+          path="chat"
+          element={
+            <UserProtector>
+              <UserChatPage />
             </UserProtector>
           }
         />

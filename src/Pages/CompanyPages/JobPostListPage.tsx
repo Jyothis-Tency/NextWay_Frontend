@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Header } from "@/components/Common/RecruiterCommon/Header";
-import { Footer } from "@/components/Common/RecruiterCommon/Footer";
-import { Sidebar } from "@/components/Common/RecruiterCommon/Sidebar";
+import { Header } from "@/components/Common/CompanyCommon/Header";
+import { Footer } from "@/components/Common/CompanyCommon/Footer";
+import { Sidebar } from "@/components/Common/CompanyCommon/Sidebar";
 import { JobPostsList } from "@/components/CompanyComponents/JobPostsList";
 
 const JobPostListPage = () => {

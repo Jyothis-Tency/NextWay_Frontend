@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
@@ -38,26 +39,23 @@ export const Header: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userName = useSelector(
-    (state: RootState) => state.company.companyInfo?.name
+  const companyData = useSelector(
+    (state: RootState) => state.company.companyInfo
   );
 
   useEffect(() => {
     const socket = io("http://localhost:3000");
 
-    // Log when the socket connects
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id); // Log the socket ID
+      console.log("Socket connected:", socket.id);
     });
 
-    // Log when the socket disconnects
     socket.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason); // Log the reason for disconnection
+      console.log("Socket disconnected:", reason);
     });
 
-    // Listen for job application submissions
     socket.on("jobApplicationSubmitted", (data) => {
-      console.log("Job application submitted event received:", data); // Log the received data
+      console.log("Job application submitted event received:", data);
 
       setNotifications((prevNotifications) => [
         ...prevNotifications,
@@ -69,7 +67,6 @@ export const Header: React.FC = () => {
       ]);
     });
 
-    // Load notifications from localStorage on component mount
     const storedNotifications = localStorage.getItem("notifications");
     if (storedNotifications) {
       setNotifications(JSON.parse(storedNotifications));
@@ -77,11 +74,10 @@ export const Header: React.FC = () => {
 
     return () => {
       socket.disconnect();
-      console.log("Socket disconnected on cleanup"); // Log when the socket is disconnected on cleanup
+      console.log("Socket disconnected on cleanup");
     };
   }, []);
 
-  // Update notifications in localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("notifications", JSON.stringify(notifications));
   }, [notifications]);
@@ -100,7 +96,6 @@ export const Header: React.FC = () => {
     setNotifications(
       notifications.filter((notification) => notification.id !== id)
     );
-    // Remove the cleared notification from localStorage
     const updatedNotifications = notifications.filter(
       (notification) => notification.id !== id
     );
@@ -108,8 +103,11 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
-      <div className="flex items-center space-x-2">
+    <header className="bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
+      <div
+        className="flex items-center space-x-2 cursor-pointer"
+        onClick={() => navigate("../dashboard")}
+      >
         <span className="text-2xl font-bold text-white">Next</span>
         <span className="text-2xl font-bold text-red-600">Gig</span>
         <span className="text-sm font-semibold text-gray-400 ml-2">
@@ -121,6 +119,7 @@ export const Header: React.FC = () => {
           variant="ghost"
           size="icon"
           className="text-gray-400 hover:text-white hover:bg-gray-800"
+          onClick={() => navigate("../chat")}
         >
           <Mail className="w-5 h-5" />
         </Button>
@@ -173,19 +172,25 @@ export const Header: React.FC = () => {
               variant="ghost"
               className="flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800"
             >
-              <User className="w-5 h-5" />
-              <ChevronDown className="w-4 h-4" />
+              {companyData?.profileImage ? (
+                <Avatar className="w-7 h-7">
+                  <AvatarImage src={companyData.profileImage} alt="Profile" />
+                  <AvatarFallback>
+                    <User className="w-3 h-3" />
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <User className="w-5 h-5" />
+              )}
+              {/* <ChevronDown className="w-4 h-4" /> */}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
-            <DropdownMenuLabel>{userName}</DropdownMenuLabel>
+            <DropdownMenuLabel>{companyData?.name}</DropdownMenuLabel>
             <DropdownMenuLabel className="text-xs text-gray-500">
               Recruiter
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuItem onClick={() => navigate("../profile")}>
-              Profile
-            </DropdownMenuItem> */}
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
