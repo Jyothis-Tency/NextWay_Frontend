@@ -126,26 +126,33 @@ const Subscriptions: React.FC = () => {
     try {
       const selectedPlan = plans.find((plan) => plan._id === planId);
       if (!selectedPlan) throw new Error("Selected plan not found");
+      console.log("userId", userId);
+      console.log("planId", planId);
 
-      // Create Razorpay order
-      const orderResponse = await axiosSubscription.post(`/`, {
-        planId,
-        userId,
+      // Create Razorpay data
+      const response = await axiosSubscription.post(`/initialize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data: { userId, planId },
       });
-      console.log(orderResponse);
+      console.log(response);
 
-      const { order } = orderResponse.data;
+      const data = response.data;
 
-      console.log("order----", order);
+      if (response.status !== 200) {
+        throw new Error(data.message || "Failed to initialize payment");
+      }
+
+      console.log("data----", data);
 
       const options: any = {
         key: RAZORPAY_KEY_ID,
-        amount: order.amount.toString(),
-        currency: order.currency,
-        name: "Your Company Name",
+        amount: data.amount.toString(),
+        currency: data.currency,
+        name: "Next Gig",
         description: `Subscription to ${selectedPlan.name}`,
         image: "/logo.png",
-        order_id: order.id,
+        order_id: data.orderId,
         handler: async (response: any) => {
           try {
             // Verify payment and create subscription
@@ -161,16 +168,15 @@ const Subscriptions: React.FC = () => {
               planId
             );
 
-            const verifyResponse = await axiosUser.post(
-              `/subscribe/verify-payment`,
-              {
-                razorpay_order_id: response.razorpay_order_id,
+            const verifyResponse = await axiosSubscription.post(`/verify`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
-                userId,
-                planId,
-              }
-            );
+              }),
+            });
 
             if (verifyResponse.data.success) {
               toast.success("Successfully subscribed to the plan");
