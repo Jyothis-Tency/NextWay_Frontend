@@ -13,7 +13,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
   const userInRedux = useSelector((state: RootState) => state.user);
   const companyInRedux = useSelector((state: RootState) => state.company);
   console.log("companyInRedux", companyInRedux);

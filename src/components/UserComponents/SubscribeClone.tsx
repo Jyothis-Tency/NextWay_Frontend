@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RootState } from "@/redux/store";
-import { axiosUser, axiosAdmin,axiosSubscription } from "@/Utils/axiosUtil";
+import { axiosUser, axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
@@ -128,7 +128,7 @@ const Subscriptions: React.FC = () => {
       if (!selectedPlan) throw new Error("Selected plan not found");
 
       // Create Razorpay order
-      const orderResponse = await axiosUser.post(`/razorpay/create-order`, {
+      const orderResponse = await axiosSubscription.post(`/`, {
         planId,
         userId,
       });

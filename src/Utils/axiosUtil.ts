@@ -5,6 +5,7 @@ const userURL = "http://localhost:3000/data/user";
 const companyURL = "http://localhost:3000/data/company";
 const adminURL = "http://localhost:3000/data/admin";
 const chatURL = "http://localhost:3000/data/chat";
+const subscribeURL = "http://localhost:3000/data/subscribe";
 
 // Retrieve and parse the 'user' data in one step, then access userInfo
 const user_id = JSON.parse(
@@ -39,6 +40,11 @@ export const axiosAdmin = axios.create({
 
 export const axiosChat = axios.create({
   baseURL: chatURL,
+  withCredentials: true,
+});
+
+export const axiosSubscription = axios.create({
+  baseURL: subscribeURL,
   withCredentials: true,
 });
 
