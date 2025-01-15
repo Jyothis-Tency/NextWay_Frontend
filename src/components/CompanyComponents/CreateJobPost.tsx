@@ -423,7 +423,7 @@ export function CreateJobPost() {
                 type="button"
                 className="bg-red-500 hover:bg-red-600"
                 variant="outline"
-                onClick={() => navigate("/company-profile")}
+                onClick={() => navigate("../job-post-list")}
               >
                 Cancel
               </Button>

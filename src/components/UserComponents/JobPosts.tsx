@@ -181,6 +181,43 @@ export default function JobPosts() {
     }
   };
 
+  const findAndSelectJob = (jobId: string, jobs: any[]) => {
+    const job = jobs.find((job) => job._id === jobId);
+    if (job) {
+      setSelectedJob(job);
+      // Scroll the job into view in the job list
+      const jobElement = document.getElementById(`job-${jobId}`);
+      if (jobElement) {
+        jobElement.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const getJobPosts = async () => {
+      try {
+        const jobs = await fetchJobs();
+        setFilteredJobs(jobs);
+
+        // Get jobId from URL query parameters
+        const params = new URLSearchParams(window.location.search);
+        const jobId = params.get("jobId");
+
+        if (jobId) {
+          // If we have a jobId, find and select that job
+          findAndSelectJob(jobId, jobs);
+        } else if (jobs.length > 0) {
+          // Otherwise, select the first job as before
+          setSelectedJob(jobs[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    getJobPosts();
+  }, []);
+
   return (
     <div className="bg-black text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -230,6 +267,7 @@ export default function JobPosts() {
                   filteredJobs.map((job) => (
                     <div key={job._id} className="mb-4">
                       <button
+                        id={`job-${job._id}`}
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-4 rounded-lg transition-colors ${
                           selectedJob?._id === job._id

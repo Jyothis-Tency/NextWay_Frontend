@@ -149,7 +149,11 @@ export function JobPostDetails() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Job Details</h1>
         <div className="space-x-4">
-          <Button onClick={() => navigate("/job-list")} variant="outline">
+          <Button
+            className="text-black"
+            onClick={() => navigate("../job-post-list")}
+            variant="outline"
+          >
             Back to Job List
           </Button>
           <Button onClick={handleDelete} variant="destructive">
@@ -334,6 +338,7 @@ export function JobPostDetails() {
                           />
                           <Button
                             type="button"
+                            className=""
                             onClick={() => remove(index)}
                             variant="destructive"
                           >
@@ -343,6 +348,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
+                        className="text-black"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -384,6 +390,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
+                        className="text-black"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -425,6 +432,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
+                        className="text-black"
                         onClick={() => push("")}
                         variant="outline"
                       >

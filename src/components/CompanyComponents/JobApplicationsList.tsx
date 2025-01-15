@@ -82,13 +82,13 @@ export function JobApplicationsList() {
     <div className="space-y-6 p-6 ml-64">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Job Applications</h1>
-        <Button
+        {/* <Button
           onClick={() => navigate("../job-posts")}
           className="bg-blue-500 hover:bg-blue-600"
         >
           <Icons.ArrowLeft className="w-4 h-4 mr-2" />
           Back to Job Posts
-        </Button>
+        </Button> */}
       </div>
       <Card className="bg-gray-800 text-white">
         <CardHeader>

@@ -24,25 +24,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
-// import { logoutUser } from "@/redux/slices/userSlice"; // Assuming you have this action
+
+interface Notification {
+  id: number;
+  type: "newJob" | "applicationStatus";
+  title: string;
+  message: string;
+  time: string;
+  data: {
+    jobId?: string;
+    applicationId?: string;
+    company?: string;
+    jobTitle?: string;
+    status?: string;
+  };
+}
 
 const Header: React.FC = () => {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(3);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
   const { toast } = useToast();
-  const [notifications, setNotifications] = useState<
-    Array<{
-      title: string;
-      message: string;
-      time: Date;
-    }>
-  >([]);
 
   const userData = useSelector((state: RootState) => state.user.userInfo);
   const firstName = userData?.firstName;
@@ -50,42 +54,33 @@ const Header: React.FC = () => {
   const isLoggedIn = !!userData;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    const storedNotifications = localStorage.getItem("userNotifications");
+    if (storedNotifications) {
+      setNotifications(JSON.parse(storedNotifications));
+    }
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    localStorage.setItem("userNotifications", JSON.stringify(notifications));
+  }, [notifications]);
 
   useEffect(() => {
     if (socket) {
       socket.on("notification:newJob", (data) => {
-        const newNotification = {
+        console.log("New Job Notification:", data);
+        const newNotification: Notification = {
+          id: Date.now(),
+          type: "newJob",
           title: "New Job Posted!",
           message: `${data.company} is hiring for ${data.title} in ${data.location}`,
-          time: new Date(),
+          time: new Date().toLocaleString(),
+          data: {
+            jobId: data.job_id,
+            company: data.company,
+            jobTitle: data.title,
+          },
         };
         setNotifications((prev) => [newNotification, ...prev]);
-        setNotificationCount((prev) => prev + 1);
 
         toast({
           title: newNotification.title,
@@ -94,13 +89,22 @@ const Header: React.FC = () => {
       });
 
       socket.on("notification:applicationStatus", (data) => {
-        const newNotification = {
+        console.log("Application Status Notification:", data);
+        const newNotification: Notification = {
+          id: Date.now(),
+          type: "applicationStatus",
           title: "Application Status Updated!",
           message: `Your application for ${data.title} at ${data.company} is now ${data.status}`,
-          time: new Date(),
+          time: new Date().toLocaleString(),
+          data: {
+            applicationId: data.applicationId,
+            jobId: data.jobId,
+            company: data.company,
+            jobTitle: data.title,
+            status: data.status,
+          },
         };
         setNotifications((prev) => [newNotification, ...prev]);
-        setNotificationCount((prev) => prev + 1);
 
         toast({
           title: newNotification.title,
@@ -116,6 +120,41 @@ const Header: React.FC = () => {
       }
     };
   }, [socket]);
+
+  const handleNotificationClick = (notification: Notification) => {
+    console.log("Notification Clicked:", notification);
+    switch (notification.type) {
+      case "newJob":
+        // Navigate to the specific job details page
+        if (notification.data.jobId) {
+          navigate("../job-posts");
+        }
+        break;
+      case "applicationStatus":
+        // Navigate to the specific application in My Applications
+        if (notification.data.applicationId) {
+          navigate(`../my-jobs`);
+        }
+        break;
+    }
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    localStorage.setItem("userNotifications", JSON.stringify([]));
+  };
+
+  const clearNotification = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation(); // Prevent triggering the notification click
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== id
+    );
+    setNotifications(updatedNotifications);
+    localStorage.setItem(
+      "userNotifications",
+      JSON.stringify(updatedNotifications)
+    );
+  };
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
@@ -170,25 +209,49 @@ const Header: React.FC = () => {
                 className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
               >
                 <Bell className="w-5 h-5" />
-                {notificationCount > 0 && (
+                {notifications.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {notificationCount}
+                    {notifications.length}
                   </span>
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuContent className="w-80 bg-gray-800 text-gray-300 border-gray-700">
+              <div className="flex justify-between items-center px-2">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                {notifications.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-red-400 hover:text-red-300"
+                    onClick={clearAllNotifications}
+                  >
+                    Clear All
+                  </Button>
+                )}
+              </div>
               <DropdownMenuSeparator />
               {notifications.length > 0 ? (
-                notifications.map((notification, index) => (
-                  <DropdownMenuItem key={index}>
-                    <div className="flex flex-col">
-                      <span className="font-bold">{notification.title}</span>
-                      <span className="text-sm">{notification.message}</span>
+                notifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className="flex flex-col items-start py-2 cursor-pointer hover:bg-gray-700"
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <span className="font-bold">{notification.title}</span>
+                    <span className="text-sm">{notification.message}</span>
+                    <div className="flex justify-between items-center w-full mt-1">
                       <span className="text-xs text-gray-500">
-                        {new Date(notification.time).toLocaleString()}
+                        {notification.time}
                       </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-red-400 hover:text-red-300"
+                        onClick={(e) => clearNotification(e, notification.id)}
+                      >
+                        Clear
+                      </Button>
                     </div>
                   </DropdownMenuItem>
                 ))

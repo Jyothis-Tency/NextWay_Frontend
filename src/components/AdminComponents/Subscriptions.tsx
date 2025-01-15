@@ -10,14 +10,21 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { axiosAdmin } from "@/Utils/axiosUtil";
+import { axiosAdmin,axiosSubscription } from "@/Utils/axiosUtil";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
 import { Loader2 } from "lucide-react";
 import { createSubscriptionPlan, editSubscriptionPlan } from "@/API/adminAPI";
 import { toast } from "sonner";
-import { log } from "node:console";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface SubscriptionPlan {
   _id: string;
@@ -26,6 +33,22 @@ interface SubscriptionPlan {
   duration: number;
   features: string[];
   isBlocked: boolean;
+  createdAt: string;
+}
+
+interface UserSubscription {
+  _id: string;
+  user_id: string;
+  plan_id: string;
+  planName: string;
+  startDate: string;
+  endDate: string;
+  price: number;
+  features: string[];
+  paymentId: string;
+  status: string;
+  subscriptionId: string;
+  isCurrent: boolean;
   createdAt: string;
 }
 
@@ -40,6 +63,9 @@ const FeatureRegistry = {
 
 const Subscriptions: React.FC = () => {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [allSubscriptions, setAllSubscriptions] = useState<UserSubscription[]>(
+    []
+  );
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
@@ -49,6 +75,7 @@ const Subscriptions: React.FC = () => {
 
   useEffect(() => {
     fetchPlans();
+    fetchAllSubscriptions();
   }, []);
 
   const fetchPlans = async () => {
@@ -62,6 +89,16 @@ const Subscriptions: React.FC = () => {
       setError("Failed to fetch subscription plans. Please try again later.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchAllSubscriptions = async () => {
+    try {
+      const response = await axiosSubscription.get("/all-Subscriptions");
+      setAllSubscriptions(response.data);
+    } catch (error) {
+      console.error("Error fetching all subscriptions:", error);
+      toast.error("Failed to fetch all subscriptions");
     }
   };
 
@@ -120,12 +157,12 @@ const Subscriptions: React.FC = () => {
                 <h1 className="text-2xl font-bold">Subscription Plans</h1>
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className={`${
-                    isDisabled
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-red-600 hover:bg-red-700"
-                  }`}
-                  disabled={isDisabled}
+                  // className={`${
+                  //   isDisabled
+                  //     ? "bg-gray-400 cursor-not-allowed"
+                  //     : "bg-red-600 hover:bg-red-700"
+                  // }`}
+                  // disabled={isDisabled}
                 >
                   Create Subscription Plan
                 </Button>
@@ -158,6 +195,55 @@ const Subscriptions: React.FC = () => {
                   No subscription plans found.
                 </div>
               )}
+
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold mb-4">
+                  All User Subscriptions
+                </h2>
+                <div className="bg-gray-800 rounded-lg overflow-hidden">
+                  <div
+                    className="overflow-x-auto"
+                    style={{ maxHeight: "400px" }}
+                  >
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>User ID</TableHead>
+                          <TableHead>Plan Name</TableHead>
+                          <TableHead>Start Date</TableHead>
+                          <TableHead>End Date</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead>Status</TableHead>
+                          {/* <TableHead>Is Current</TableHead> */}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {allSubscriptions.map((subscription) => (
+                          <TableRow key={subscription._id}>
+                            <TableCell>{subscription.user_id}</TableCell>
+                            <TableCell>{subscription.planName}</TableCell>
+                            <TableCell>
+                              {new Date(
+                                subscription.startDate
+                              ).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              {new Date(
+                                subscription.endDate
+                              ).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>₹{subscription.price}</TableCell>
+                            <TableCell>{subscription.status}</TableCell>
+                            {/* <TableCell>
+                              {subscription.isCurrent ? "Yes" : "No"}
+                            </TableCell> */}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </div>
             </div>
           </main>
           <Footer />
@@ -527,7 +613,7 @@ const SubscriptionCard: React.FC<{
             </li>
           ))}
         </ul>
-        <p className="mb-4">Status: {plan.isBlocked ? "Blocked" : "Active"}</p>
+        {/* <p className="mb-4">Status: {plan.isBlocked ? "Blocked" : "Active"}</p> */}
         <div className="flex justify-between">
           <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700">
             Edit

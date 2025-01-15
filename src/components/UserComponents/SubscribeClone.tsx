@@ -488,7 +488,7 @@ const Subscriptions: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="text-white">
-                    <TableHead className="text-white">Plan Name</TableHead>
+                 
                     <TableHead className="text-white">Plan Name</TableHead>
                     <TableHead className="text-white">Start Date</TableHead>
                     <TableHead className="text-white">End Date</TableHead>
