@@ -12,39 +12,64 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { RootState } from "@/redux/store";
 import { axiosUser, axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
+import { useSocket } from "@/Context/SocketContext";
+
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 interface SubscriptionPlan {
   _id: string;
   name: string;
   price: number;
-  duration: number; // in days
+  duration: number;
   features: string[];
 }
 
 interface SubscriptionHistory {
-  _id: string;
-  planName: string;
-  startDate: string;
-  endDate: string;
-  price: number;
-  isCurrent: boolean;
-  status: "active" | "expired" | "cancelled";
+  _id:string;
+  user_id: string; // Reference to the User model
+  plan_id: string; // Reference to the SubscriptionPlan model
+  planName: string; // Name of the subscription plan
+  startDate: Date;
+  features: string[]; // Start date of the subscription
+  endDate: Date; // End date of the subscription
+  price: number; // Price of the subscription
+  paymentId: string; // Payment identifier
+  status: String;
+  subscriptionId?: string; // Status of the subscription
+  isCurrent?: boolean; // Indicates if this is the user's current subscription
+  createdAt?: Date; // Timestamp when the subscription record was created
 }
 
 interface CurrentSubscription {
-  planName: string;
-  startDate: string;
-  endDate: string;
-  price: number;
-  status: "active" | "expired" | "cancelled";
+  _id:"strings";
+  user_id: string; // Reference to the User model
+  plan_id: string; // Reference to the SubscriptionPlan model
+  planName: string; // Name of the subscription plan
+  startDate: Date;
+  features: string[]; // Start date of the subscription
+  endDate: Date; // End date of the subscription
+  price: number; // Price of the subscription
+  paymentId: string; // Payment identifier
+  status: String;
+  subscriptionId?: string; // Status of the subscription
+  isCurrent?: boolean; // Indicates if this is the user's current subscription
+  createdAt?: Date; // Timestamp when the subscription record was created
 }
 
 const Subscriptions: React.FC = () => {
+  const socket = useSocket();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [history, setHistory] = useState<SubscriptionHistory[]>([]);
   const [currentSubscription, setCurrentSubscription] =
@@ -55,12 +80,83 @@ const Subscriptions: React.FC = () => {
   const [errorPlans, setErrorPlans] = useState<string | null>(null);
   const [errorHistory, setErrorHistory] = useState<string | null>(null);
   const [errorCurrent, setErrorCurrent] = useState<string | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const userId = userInfo?.user_id;
   const userName = `${userInfo?.firstName} ${userInfo?.lastName}`;
   const userEmail = userInfo?.email;
   const userPhone = userInfo?.phone;
+
+  const fetchSubscriptionData = async () => {
+    if (userId) {
+      try {
+        setLoadingHistory(true);
+        setLoadingCurrent(true);
+
+        const [historyResponse, currentResponse] = await Promise.all([
+          axiosUser.get(`/subscription-history/${userId}`),
+          axiosUser.get(`/current-subscription/${userId}`),
+        ]);
+
+        setHistory(historyResponse.data.history || []);
+        setCurrentSubscription(currentResponse.data.current || null);
+        console.log(
+          "currentResponse.data.current",
+          currentResponse.data.current
+        );
+      } catch (err) {
+        console.error("Error fetching subscription data:", err);
+        toast.error("Failed to refresh subscription data");
+      } finally {
+        setLoadingHistory(false);
+        setLoadingCurrent(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (socket && userId) {
+      socket.emit("join:subscription", userId);
+
+      socket.on(
+        "subscription:updated",
+        async (data: {
+          type:
+            | "new_subscription"
+            | "subscription_cancelled"
+            | "subscription_renewed";
+          subscription?: any;
+          subscriptionId?: string;
+          newEndDate?: Date;
+        }) => {
+          console.log("Subscription update received:", data);
+
+          switch (data.type) {
+            case "new_subscription":
+              toast.success("New subscription activated successfully!");
+              break;
+            case "subscription_cancelled":
+              toast.info("Subscription has been cancelled");
+
+              break;
+            case "subscription_renewed":
+              toast.success("Subscription has been renewed successfully!");
+              break;
+          }
+
+          await fetchSubscriptionData();
+        }
+      );
+
+      return () => {
+        socket.off("subscription:updated");
+        socket.emit("leave:subscription", userId);
+      };
+    }
+  }, [socket, userId]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -79,13 +175,9 @@ const Subscriptions: React.FC = () => {
 
     const fetchHistory = async () => {
       try {
-        console.log("fetchHistory");
-
         const historyResponse = await axiosUser.get(
           `/subscription-history/${userId}`
         );
-        console.log("historyResponse :", historyResponse);
-
         setHistory(historyResponse.data.history || []);
       } catch (err) {
         console.error("Error fetching subscription history:", err);
@@ -100,6 +192,10 @@ const Subscriptions: React.FC = () => {
           `/current-subscription/${userId}`
         );
         setCurrentSubscription(currentResponse.data.current || null);
+        console.log(
+          "currentResponse.data.current",
+          currentResponse.data.current
+        );
       } catch (err) {
         console.error("Error fetching current subscription:", err);
       } finally {
@@ -114,9 +210,19 @@ const Subscriptions: React.FC = () => {
     }
   }, [userId]);
 
-  const handleSubscribe = async (planId: string) => {
-    console.log("handleSubscribe");
+  const handleSubscribeClick = (planId: string) => {
+    setSelectedPlanId(planId);
+    setIsConfirmModalOpen(true);
+  };
 
+  const handleConfirmSubscribe = async () => {
+    if (selectedPlanId) {
+      setIsConfirmModalOpen(false);
+      await handleSubscribe(selectedPlanId);
+    }
+  };
+
+  const handleSubscribe = async (planId: string) => {
     const res = await loadRazorpay();
     if (!res) {
       toast.error("Razorpay SDK failed to load. Are you online?");
@@ -126,24 +232,18 @@ const Subscriptions: React.FC = () => {
     try {
       const selectedPlan = plans.find((plan) => plan._id === planId);
       if (!selectedPlan) throw new Error("Selected plan not found");
-      console.log("userId", userId);
-      console.log("planId", planId);
 
-      // Create Razorpay data
       const response = await axiosSubscription.post(`/initialize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         data: { userId, planId },
       });
-      console.log(response);
 
       const data = response.data;
 
       if (response.status !== 200) {
         throw new Error(data.message || "Failed to initialize payment");
       }
-
-      console.log("data----", data);
 
       const options: any = {
         key: RAZORPAY_KEY_ID,
@@ -155,19 +255,6 @@ const Subscriptions: React.FC = () => {
         order_id: data.orderId,
         handler: async (response: any) => {
           try {
-            // Verify payment and create subscription
-            console.log(
-              "response.razorpay_signature",
-              response.razorpay_signature
-            );
-            console.log(
-              response.razorpay_order_id,
-              response.razorpay_payment_id,
-              response.razorpay_signature,
-              userId,
-              planId
-            );
-
             const verifyResponse = await axiosSubscription.post(`/verify`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -179,21 +266,11 @@ const Subscriptions: React.FC = () => {
             });
 
             if (verifyResponse.data.success) {
-              toast.success("Successfully subscribed to the plan");
-              const historyResponse = await axiosUser.get(
-                `/subscription-history/${userId}`
-              );
-              console.log(historyResponse.data.history);
-
-              setHistory(historyResponse.data.history || []);
-              const currentResponse = await axiosUser.get(
-                `/current-subscription/${userId}`
-              );
-              console.log(currentResponse.data.current);
-
-              setCurrentSubscription(currentResponse.data.current || null);
+              toast.success("Payment successful! Processing subscription...");
             } else {
-              toast.error("Subscription failed. Please try again.");
+              toast.error(
+                "Subscription verification failed. Please try again."
+              );
             }
           } catch (err: any) {
             console.error("Error verifying payment:", err);
@@ -221,6 +298,27 @@ const Subscriptions: React.FC = () => {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    try {
+      if (!currentSubscription?.subscriptionId) {
+        toast.error("No active subscription found");
+        return;
+      }
+
+      await axiosSubscription.delete(
+        `/cancel/${currentSubscription.subscriptionId}`
+      );
+      setIsCancelModalOpen(false);
+      toast.success("Cancellation request submitted");
+
+      // Refresh subscription data
+      await fetchSubscriptionData();
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      toast.error("Failed to cancel subscription");
+    }
+  };
+
   return (
     <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)]">
       <section>
@@ -238,24 +336,22 @@ const Subscriptions: React.FC = () => {
         ) : currentSubscription ? (
           <Card className="bg-gray-800 text-white mb-12 max-w-2xl mx-auto">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-between gap-3 mb-6">
                 <h3 className="text-2xl font-semibold">
                   {currentSubscription.planName}
                 </h3>
-                {/* <Badge
-                  variant={
-                    currentSubscription.status === "active"
-                      ? "secondary"
-                      : currentSubscription.status === "expired"
-                      ? "destructive"
-                      : "outline"
-                  }
-                  className="text-lg py-2 px-4"
-                >
-                  {currentSubscription.status}
-                </Badge> */}
+                {/* <h3 className="text-2xl font-semibold">
+                  {currentSubscription.subscriptionId}
+                </h3> */}
+                {currentSubscription.status === "active" && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setIsCancelModalOpen(true)}
+                  >
+                    Cancel Subscription
+                  </Button>
+                )}
               </div>
-
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-gray-400" />
@@ -268,7 +364,6 @@ const Subscriptions: React.FC = () => {
                     </span>
                   </p>
                 </div>
-
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <p>
@@ -280,7 +375,6 @@ const Subscriptions: React.FC = () => {
                     </span>
                   </p>
                 </div>
-
                 <div className="flex items-center gap-3">
                   <CreditCard className="h-5 w-5 text-gray-400" />
                   <p>
@@ -350,7 +444,7 @@ const Subscriptions: React.FC = () => {
                       ))}
                     </ul>
                     <Button
-                      onClick={() => handleSubscribe(plan._id)}
+                      onClick={() => handleSubscribeClick(plan._id)}
                       className={`w-full ${
                         isCurrentPlan
                           ? "bg-gray-600 hover:bg-gray-600 cursor-not-allowed"
@@ -395,6 +489,7 @@ const Subscriptions: React.FC = () => {
                 <TableHeader>
                   <TableRow className="text-white">
                     <TableHead className="text-white">Plan Name</TableHead>
+                    <TableHead className="text-white">Plan Name</TableHead>
                     <TableHead className="text-white">Start Date</TableHead>
                     <TableHead className="text-white">End Date</TableHead>
                     <TableHead className="text-white">Price</TableHead>
@@ -437,6 +532,49 @@ const Subscriptions: React.FC = () => {
           </Card>
         )}
       </section>
+
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Subscription</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Are you sure you want to subscribe to this plan?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSubscribe}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+          <DialogHeader>
+            <DialogTitle>Cancel Subscription</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Are you sure you want to cancel your subscription? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsCancelModalOpen(false)}
+            >
+              Keep Subscription
+            </Button>
+            <Button variant="destructive" onClick={handleCancelSubscription}>
+              Yes, Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };

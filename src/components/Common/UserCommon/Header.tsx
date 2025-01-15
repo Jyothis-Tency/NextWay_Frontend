@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bell, Mail, User} from "lucide-react";
+import { Bell, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSocket } from "@/Context/SocketContext";
+import { useToast } from "@/components/ui/use-toast";
 // import { logoutUser } from "@/redux/slices/userSlice"; // Assuming you have this action
 
 const Header: React.FC = () => {
@@ -32,6 +34,15 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const socket = useSocket();
+  const { toast } = useToast();
+  const [notifications, setNotifications] = useState<
+    Array<{
+      title: string;
+      message: string;
+      time: Date;
+    }>
+  >([]);
 
   const userData = useSelector((state: RootState) => state.user.userInfo);
   const firstName = userData?.firstName;
@@ -64,6 +75,47 @@ const Header: React.FC = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("notification:newJob", (data) => {
+        const newNotification = {
+          title: "New Job Posted!",
+          message: `${data.company} is hiring for ${data.title} in ${data.location}`,
+          time: new Date(),
+        };
+        setNotifications((prev) => [newNotification, ...prev]);
+        setNotificationCount((prev) => prev + 1);
+
+        toast({
+          title: newNotification.title,
+          description: newNotification.message,
+        });
+      });
+
+      socket.on("notification:applicationStatus", (data) => {
+        const newNotification = {
+          title: "Application Status Updated!",
+          message: `Your application for ${data.title} at ${data.company} is now ${data.status}`,
+          time: new Date(),
+        };
+        setNotifications((prev) => [newNotification, ...prev]);
+        setNotificationCount((prev) => prev + 1);
+
+        toast({
+          title: newNotification.title,
+          description: newNotification.message,
+        });
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("notification:newJob");
+        socket.off("notification:applicationStatus");
+      }
+    };
+  }, [socket]);
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
@@ -128,7 +180,23 @@ const Header: React.FC = () => {
             <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
+              {notifications.length > 0 ? (
+                notifications.map((notification, index) => (
+                  <DropdownMenuItem key={index}>
+                    <div className="flex flex-col">
+                      <span className="font-bold">{notification.title}</span>
+                      <span className="text-sm">{notification.message}</span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(notification.time).toLocaleString()}
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>
+                  No new notifications
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>

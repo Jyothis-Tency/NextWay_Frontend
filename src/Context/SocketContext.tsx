@@ -16,7 +16,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const userInRedux = useSelector((state: RootState) => state.user);
   const companyInRedux = useSelector((state: RootState) => state.company);
   console.log("companyInRedux", companyInRedux);
-  
+
   // Determine client type and ID
   const clientType = userInRedux.userInfo ? "user" : "company";
   const clientId =
@@ -36,10 +36,17 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       newSocket.on("connect", () => {
         console.log("Socket connected", newSocket.id);
+        // If it's a user, automatically join their subscription room on connection
+        if (clientType === "user") {
+          newSocket.emit("join:subscription", clientId);
+        }
         setSocket(newSocket);
       });
 
       return () => {
+        if (clientType === "user") {
+          newSocket.emit("leave:subscription", clientId);
+        }
         newSocket.disconnect();
       };
     } else {
