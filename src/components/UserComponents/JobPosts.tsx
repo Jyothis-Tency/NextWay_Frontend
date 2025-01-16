@@ -34,7 +34,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RootState } from "@/redux/store";
 import { toast } from "sonner";
-// import { user } from "@/types/user"; // Adjust the import path as needed
 
 export default function JobPosts() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -52,18 +51,10 @@ export default function JobPosts() {
     coverLetter: "",
     resume: null as File | null,
   });
+  const [isSkillBasedSorting, setIsSkillBasedSorting] = useState(false);
+  const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-
-  const companyInfo = JSON.parse(
-    JSON.parse(localStorage.getItem("persist:root") || "{}").company || "{}"
-  ).companyInfo;
-  const adminInfo = JSON.parse(
-    JSON.parse(localStorage.getItem("persist:root") || "{}").admin || "{}"
-  ).adminInfo;
-  console.log(userInfo);
-  console.log(companyInfo);
-  console.log(adminInfo);
 
   useEffect(() => {
     const getJobPosts = async () => {
@@ -96,7 +87,6 @@ export default function JobPosts() {
 
   const handleSearch = async () => {
     if (searchQuery.trim() === "" && searchLocation.trim() === "") {
-      // If both search fields are empty, show all jobs
       try {
         const jobs = await fetchJobs();
         setFilteredJobs(jobs);
@@ -125,8 +115,43 @@ export default function JobPosts() {
     }
   };
 
+  const handleSkillBasedSort = () => {
+    setIsSkillBasedSorting(!isSkillBasedSorting);
+    if (!isSkillBasedSorting) {
+      const sortedJobs = [...filteredJobs].sort((a, b) => {
+        const aMatchCount = countSkillMatches(a.requirements);
+        const bMatchCount = countSkillMatches(b.requirements);
+        return bMatchCount - aMatchCount;
+      });
+      setFilteredJobs(sortedJobs);
+      if (sortedJobs.length > 0) {
+        setSelectedJob(sortedJobs[0]);
+      }
+    } else {
+      handleSearch(); // Reset to original order
+    }
+  };
+
+  const countSkillMatches = (requirements: string[]) => {
+    if (!userInfo || !userInfo.skills) return 0;
+    return requirements.filter((req) =>
+      userInfo.skills.some((skill) =>
+        req.toLowerCase().includes(skill.toLowerCase())
+      )
+    ).length;
+  };
+
+  const hasUserApplied = (job: any) => {
+    return (
+      job.applicants.includes(userInfo?.user_id) ||
+      appliedJobs.includes(job._id)
+    );
+  };
+
   const handleApply = () => {
-    setIsApplicationModalOpen(true);
+    if (!hasUserApplied(selectedJob)) {
+      setIsApplicationModalOpen(true);
+    }
   };
 
   const handleViewCompany = () => {
@@ -172,6 +197,7 @@ export default function JobPosts() {
         });
         setIsOverviewModalOpen(false);
         toast.success("Job Applied Successfully");
+        setAppliedJobs((prev) => [...prev, selectedJob._id]);
       } catch (error) {
         toast.error("Error occurred while applying");
         console.error("Error submitting application:", error);
@@ -180,43 +206,6 @@ export default function JobPosts() {
       toast.error("Please upload your resume before applying");
     }
   };
-
-  const findAndSelectJob = (jobId: string, jobs: any[]) => {
-    const job = jobs.find((job) => job._id === jobId);
-    if (job) {
-      setSelectedJob(job);
-      // Scroll the job into view in the job list
-      const jobElement = document.getElementById(`job-${jobId}`);
-      if (jobElement) {
-        jobElement.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  useEffect(() => {
-    const getJobPosts = async () => {
-      try {
-        const jobs = await fetchJobs();
-        setFilteredJobs(jobs);
-
-        // Get jobId from URL query parameters
-        const params = new URLSearchParams(window.location.search);
-        const jobId = params.get("jobId");
-
-        if (jobId) {
-          // If we have a jobId, find and select that job
-          findAndSelectJob(jobId, jobs);
-        } else if (jobs.length > 0) {
-          // Otherwise, select the first job as before
-          setSelectedJob(jobs[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
-    getJobPosts();
-  }, []);
 
   return (
     <div className="bg-black text-white">
@@ -252,6 +241,18 @@ export default function JobPosts() {
             </div>
           </div>
         </section>
+        <div className="flex justify-end mb-4">
+          <Button
+            onClick={handleSkillBasedSort}
+            className={`${
+              isSkillBasedSorting
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white`}
+          >
+            {isSkillBasedSorting ? "Reset Sorting" : "Sort by Skills"}
+          </Button>
+        </div>
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Job list */}
           <Card className="w-full lg:w-1/3 bg-gray-800 text-white">
@@ -280,6 +281,11 @@ export default function JobPosts() {
                           {job.company.companyName}
                         </p>
                         <p className="text-sm text-black-400">{job.location}</p>
+                        {isSkillBasedSorting && (
+                          <p className="text-sm text-green-400">
+                            Skill Matches: {countSkillMatches(job.requirements)}
+                          </p>
+                        )}
                       </button>
                       {job._id !==
                         filteredJobs[filteredJobs.length - 1]._id && (
@@ -382,19 +388,23 @@ export default function JobPosts() {
                       <div className="flex gap-4">
                         {userInfo && (
                           <Button
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                            onClick={handleApply}
+                            className={`flex-1 ${
+                              hasUserApplied(selectedJob)
+                                ? "bg-gray-500 hover:bg-gray-500 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700"
+                            } text-white`}
+                            onClick={
+                              hasUserApplied(selectedJob)
+                                ? undefined
+                                : handleApply
+                            }
+                            disabled={hasUserApplied(selectedJob)}
                           >
-                            Apply
+                            {hasUserApplied(selectedJob)
+                              ? "Already Applied"
+                              : "Apply"}
                           </Button>
                         )}
-                        {/* <Button
-                          className="flex-1 bg-gray-600 hover:bg-gray-700 text-white"
-                          onClick={handleViewCompany}
-                        >
-                          <Building className="mr-2 h-4 w-4" />
-                          View Company
-                        </Button> */}
                       </div>
                     </div>
                   </ScrollArea>

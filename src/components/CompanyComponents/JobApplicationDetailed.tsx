@@ -66,6 +66,7 @@ interface IJobApplication {
 
 export function JobApplicationDetailed() {
   const [application, setApplication] = useState<IJobApplication | null>(null);
+  console.log("applicationnnnn",application);
   const [userDetails, setUserDetails] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const { applicationId } = useParams<{ applicationId: string }>();
@@ -111,6 +112,31 @@ export function JobApplicationDetailed() {
       console.error("Error updating application status:", error);
     }
   };
+
+    const openResume = () => {
+      if (application && application.resume) {
+        // Remove the "data:application/pdf;base64," prefix if present
+        const base64Data = application.resume.replace(
+          /^data:application\/pdf;base64,/,
+          ""
+        );
+
+        // Convert base64 to Blob
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        // Open the PDF in a new tab
+        window.open(url, "_blank");
+      }
+    };
 
   if (loading) {
     return <div className="text-center text-white">Loading...</div>;
@@ -381,14 +407,13 @@ export function JobApplicationDetailed() {
             <CardTitle>Resume</CardTitle>
           </CardHeader>
           <CardContent>
-            <a
-              href={application.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
+            <Button
+              onClick={openResume}
+              className="bg-blue-500 hover:bg-blue-600"
             >
-              View Resume
-            </a>
+              <Icons.FileText className="w-4 h-4 mr-2" />
+              Open Resume
+            </Button>
           </CardContent>
         </Card>
       )}

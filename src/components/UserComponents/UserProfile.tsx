@@ -92,6 +92,8 @@ const JobUserProfile: React.FC = () => {
   const userId = useSelector(
     (state: RootState) => state.user.userInfo?.user_id
   );
+  const userD = useSelector((state: RootState) => state.user.userInfo);
+  console.log("userD - ", userD);
 
   useEffect(() => {
     const fetchUserData = async () => {

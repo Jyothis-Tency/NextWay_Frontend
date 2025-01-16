@@ -12,6 +12,7 @@ import {
   Pencil,
   Plus,
   ArrowLeft,
+  FileText,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -28,4 +29,5 @@ export const Icons = {
   Pencil,
   Plus,
   ArrowLeft,
+  FileText,
 };

@@ -193,44 +193,43 @@ export const forgotPasswordResetAct = (email: string, password: string) => {
   };
 };
 
-export const updateUserProfile = (profileData: {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  location?: string;
-}): any => {
-  return async () => {
+export const updateUserProfileAct = createAsyncThunk(
+  "user/updateProfile",
+  async (
+    profileData: {
+      userId: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone?: string;
+      location?: string;
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      console.log(
-        `Profile Data in updateUserProfile: ${JSON.stringify(profileData)}`
-      );
-
       const { userId, ...data } = profileData;
-      const response = await axiosUser.put(
-        `${URL}/edit-profile/${userId}`,
-        data
-      );
-
+      const response = await axiosUser.put(`/edit-profile/${userId}`, data);
+      console.log("response.data in updateUserProfileAct",response.data);
+      
       if (response.status === 200) {
-        console.log(`Profile updated successfully: ${response.data}`);
-        return { success: true, message: "Profile updated successfully!" };
-      }
-    } catch (error: any) {
-      console.error(`Error in updateUserProfile:`, error);
-
-      if (error.response) {
         return {
-          success: false,
-          message: error.response.data?.message || "Failed to update profile",
+          success: true,
+          message: "Profile updated successfully!",
+          updatedData: response.data,
         };
       }
+    } catch (error: any) {
+      console.error(`Error in updateUserProfileAct:`, error);
 
-      return {
-        success: false,
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data?.message || "Failed to update profile",
+        });
+      }
+
+      return rejectWithValue({
         message: "Something went wrong. Please try again later.",
-      };
+      });
     }
-  };
-};
+  }
+);

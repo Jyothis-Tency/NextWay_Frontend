@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loginUserAct } from "../Actions/userActions";
+import { loginUserAct, updateUserProfileAct } from "../Actions/userActions";
 
 interface User {
   user_id: string;
@@ -10,6 +10,8 @@ interface User {
   role: string;
   isBlocked: boolean;
   profileImage: any;
+  location: string;
+  skills: string[];
 }
 
 interface UserState {
@@ -35,7 +37,28 @@ const userSlice = createSlice({
         if (action.payload) {
           state.userInfo = action.payload.userData; // Assuming userData contains the user details
         }
+      })
+
+      //  builder
+      //    .addCase(updateUserProfileAct.pending, (state) => {
+      //      state.loading = true;
+      //      state.error = null;
+      //    })
+      .addCase(updateUserProfileAct.fulfilled, (state, action) => {
+        //  state.loading = false;
+        console.log("action.payload in userSlice", action.payload);
+        if (state.userInfo && action.payload?.updatedData) {
+          // Update only the relevant user fields
+          state.userInfo = {
+            ...state.userInfo,
+            ...action.payload.updatedData,
+          };
+        }
       });
+    //  .addCase(updateUserProfileAct.rejected, (state, action) => {
+    //    state.loading = false;
+    //    state.error = action.payload?.message || "Failed to update profile";
+    //  });
   },
 });
 

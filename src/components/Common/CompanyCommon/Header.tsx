@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Bell, Mail, User, ChevronDown } from "lucide-react";
+import { Bell, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,63 +24,88 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
-import io from "socket.io-client";
+import { useSocket } from "@/Context/SocketContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Notification {
   id: number;
+  type: "jobApplicationSubmitted" | "other";
+  title: string;
   message: string;
-  timestamp: string;
+  time: string;
+  data: {
+    applicationId?: string;
+    jobId?: string;
+    applicantName?: string;
+    jobTitle?: string;
+
+    applicantEmail?: string;
+  };
 }
 
 export const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { toast } = useToast();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const socket = useSocket();
 
   const companyData = useSelector(
     (state: RootState) => state.company.companyInfo
   );
 
+  socket?.emit("join:company", companyData?.company_id);
+
   useEffect(() => {
-    const socket = io("http://localhost:3000");
-
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
-    });
-
-    socket.on("jobApplicationSubmitted", (data) => {
-      console.log("Job application submitted event received:", data);
-
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        {
-          id: Date.now(),
-          message: data.message,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ]);
-    });
-
-    const storedNotifications = localStorage.getItem("notifications");
+    const storedNotifications = localStorage.getItem("companyNotifications");
     if (storedNotifications) {
       setNotifications(JSON.parse(storedNotifications));
     }
-
-    return () => {
-      socket.disconnect();
-      console.log("Socket disconnected on cleanup");
-    };
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("notifications", JSON.stringify(notifications));
+    localStorage.setItem("companyNotifications", JSON.stringify(notifications));
   }, [notifications]);
+
+  useEffect(() => {
+    if (socket) {
+      socket?.emit("join:company", companyData?.company_id);
+
+      const handleJobApplicationSubmitted = (data: any) => {
+        console.log("Job application submitted event received:", data);
+        const newNotification: Notification = {
+          id: Date.now(),
+          type: "jobApplicationSubmitted",
+          title: "New Job Application",
+          message: `${data.applicantName} applied for ${data.jobTitle}`,
+          time: new Date().toLocaleString(),
+          data: {
+            applicationId: data.applicationId,
+            jobId: data.jobId,
+            applicantName: data.applicantName,
+            jobTitle: data.jobTitle,
+            applicantEmail: data.applicantEmail,
+          },
+        };
+
+        setNotifications((prev) => [newNotification, ...prev]);
+
+        // Show toast notification
+        toast({
+          title: newNotification.title,
+          description: newNotification.message,
+        });
+      };
+
+      socket.on("jobApplicationSubmitted", handleJobApplicationSubmitted);
+
+      return () => {
+        socket.off("jobApplicationSubmitted", handleJobApplicationSubmitted);
+      };
+    }
+  }, [socket, companyData?.company_id, toast]);
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
@@ -92,14 +117,31 @@ export const Header: React.FC = () => {
     navigate("../login");
   };
 
-  const clearNotification = (id: number) => {
-    setNotifications(
-      notifications.filter((notification) => notification.id !== id)
-    );
+  const handleNotificationClick = (notification: Notification) => {
+    console.log("Notification Clicked:", notification);
+    if (
+      notification.type === "jobApplicationSubmitted" &&
+      notification.data.applicationId
+    ) {
+      navigate(`../applications/${notification.data.applicationId}`);
+    }
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    localStorage.setItem("companyNotifications", JSON.stringify([]));
+  };
+
+  const clearNotification = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
     const updatedNotifications = notifications.filter(
       (notification) => notification.id !== id
     );
-    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    setNotifications(updatedNotifications);
+    localStorage.setItem(
+      "companyNotifications",
+      JSON.stringify(updatedNotifications)
+    );
   };
 
   return (
@@ -139,26 +181,42 @@ export const Header: React.FC = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-80 bg-gray-800 text-gray-300 border-gray-700">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <div className="flex justify-between items-center px-2">
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              {notifications.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-red-400 hover:text-red-300"
+                  onClick={clearAllNotifications}
+                >
+                  Clear All
+                </Button>
+              )}
+            </div>
             <DropdownMenuSeparator />
             {notifications.length > 0 ? (
               notifications.map((notification) => (
                 <DropdownMenuItem
                   key={notification.id}
-                  className="flex flex-col items-start py-2"
+                  className="flex flex-col items-start py-2 cursor-pointer hover:bg-gray-700"
+                  onClick={() => handleNotificationClick(notification)}
                 >
+                  <span className="font-bold">{notification.title}</span>
                   <span className="text-sm">{notification.message}</span>
-                  <span className="text-xs text-gray-500">
-                    {notification.timestamp}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-1 text-xs text-red-400 hover:text-red-300"
-                    onClick={() => clearNotification(notification.id)}
-                  >
-                    Clear
-                  </Button>
+                  <div className="flex justify-between items-center w-full mt-1">
+                    <span className="text-xs text-gray-500">
+                      {notification.time}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-red-400 hover:text-red-300"
+                      onClick={(e) => clearNotification(e, notification.id)}
+                    >
+                      Clear
+                    </Button>
+                  </div>
                 </DropdownMenuItem>
               ))
             ) : (
@@ -182,7 +240,6 @@ export const Header: React.FC = () => {
               ) : (
                 <User className="w-5 h-5" />
               )}
-              {/* <ChevronDown className="w-4 h-4" /> */}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
@@ -208,6 +265,7 @@ export const Header: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-black"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               Cancel
