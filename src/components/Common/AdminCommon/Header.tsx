@@ -48,14 +48,14 @@ export const Header: React.FC = () => {
         <span className="text-sm font-semibold text-gray-400 ml-2">Admin</span>
       </div>
       <div className="flex items-center space-x-6">
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           className="text-gray-400 hover:text-white hover:bg-gray-800"
         >
           <Mail className="w-5 h-5" />
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           variant="ghost"
           size="icon"
           className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
@@ -66,7 +66,7 @@ export const Header: React.FC = () => {
               {notificationCount}
             </span>
           )}
-        </Button>
+        </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -100,6 +100,7 @@ export const Header: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-black"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               Cancel

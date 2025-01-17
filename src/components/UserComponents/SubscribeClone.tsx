@@ -32,6 +32,7 @@ interface SubscriptionPlan {
   _id: string;
   name: string;
   price: number;
+  period: string;
   duration: number;
   features: string[];
 }
@@ -41,6 +42,7 @@ interface SubscriptionHistory {
   user_id: string; // Reference to the User model
   plan_id: string; // Reference to the SubscriptionPlan model
   planName: string; // Name of the subscription plan
+  period: string; // Duration of the subscription (e.g., monthly, yearly)
   startDate: Date;
   features: string[]; // Start date of the subscription
   endDate: Date; // End date of the subscription
@@ -60,6 +62,7 @@ interface CurrentSubscription {
   startDate: Date;
   features: string[]; // Start date of the subscription
   endDate: Date; // End date of the subscription
+  period: string;
   price: number; // Price of the subscription
   paymentId: string; // Payment identifier
   status: String;
@@ -71,6 +74,7 @@ interface CurrentSubscription {
 const Subscriptions: React.FC = () => {
   const socket = useSocket();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  console.log("plans", plans);
   const [history, setHistory] = useState<SubscriptionHistory[]>([]);
   const [currentSubscription, setCurrentSubscription] =
     useState<CurrentSubscription | null>(null);
@@ -100,7 +104,7 @@ const Subscriptions: React.FC = () => {
           axiosUser.get(`/subscription-history/${userId}`),
           axiosUser.get(`/current-subscription/${userId}`),
         ]);
-
+        
         setHistory(historyResponse.data.history || []);
         setCurrentSubscription(currentResponse.data.current || null);
         console.log(
@@ -109,7 +113,7 @@ const Subscriptions: React.FC = () => {
         );
       } catch (err) {
         console.error("Error fetching subscription data:", err);
-        toast.error("Failed to refresh subscription data");
+        // toast.error("Failed to refresh subscription data");
       } finally {
         setLoadingHistory(false);
         setLoadingCurrent(false);
@@ -346,6 +350,7 @@ const Subscriptions: React.FC = () => {
                 {currentSubscription.status === "active" && (
                   <Button
                     variant="destructive"
+                    className="text-black"
                     onClick={() => setIsCancelModalOpen(true)}
                   >
                     Cancel Subscription
@@ -367,11 +372,9 @@ const Subscriptions: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <p>
-                    End Date:{" "}
+                    Period:{" "}
                     <span className="font-medium">
-                      {new Date(
-                        currentSubscription.endDate
-                      ).toLocaleDateString()}
+                      {currentSubscription.period}
                     </span>
                   </p>
                 </div>
@@ -432,7 +435,7 @@ const Subscriptions: React.FC = () => {
                   <CardContent>
                     <div className="flex items-center space-x-2 mb-4">
                       <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>Duration: {plan.duration} days</span>
+                      <span>Period: {plan.period}</span>
                     </div>
                     <h4 className="font-semibold mb-2">Features:</h4>
                     <ul className="space-y-2 mb-4">
@@ -488,10 +491,9 @@ const Subscriptions: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="text-white">
-                 
                     <TableHead className="text-white">Plan Name</TableHead>
                     <TableHead className="text-white">Start Date</TableHead>
-                    <TableHead className="text-white">End Date</TableHead>
+                    <TableHead className="text-white">Period</TableHead>
                     <TableHead className="text-white">Price</TableHead>
                     <TableHead className="text-white">Status</TableHead>
                   </TableRow>
@@ -503,9 +505,7 @@ const Subscriptions: React.FC = () => {
                       <TableCell>
                         {new Date(item.startDate).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>
-                        {new Date(item.endDate).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell>{item.period}</TableCell>
                       <TableCell>₹{item.price}</TableCell>
                       <TableCell>
                         <Badge>
@@ -544,6 +544,7 @@ const Subscriptions: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-black"
               onClick={() => setIsConfirmModalOpen(false)}
             >
               Cancel
@@ -565,6 +566,7 @@ const Subscriptions: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-black"
               onClick={() => setIsCancelModalOpen(false)}
             >
               Keep Subscription

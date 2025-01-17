@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
+import { log } from "console";
 
 interface Notification {
   id: number;
@@ -71,10 +72,10 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     if (socket) {
-      socket?.emit("join:company", companyData?.company_id);
+      console.log("Socket connected in header:", socket.id);
 
-      const handleJobApplicationSubmitted = (data: any) => {
-        console.log("Job application submitted event received:", data);
+      socket.on("notification:newApplication", (data) => {
+        console.log("New application notification received on socket:", data);
         const newNotification: Notification = {
           id: Date.now(),
           type: "jobApplicationSubmitted",
@@ -89,23 +90,19 @@ export const Header: React.FC = () => {
             applicantEmail: data.applicantEmail,
           },
         };
-
-        setNotifications((prev) => [newNotification, ...prev]);
-
-        // Show toast notification
-        toast({
-          title: newNotification.title,
-          description: newNotification.message,
-        });
-      };
-
-      socket.on("jobApplicationSubmitted", handleJobApplicationSubmitted);
-
-      return () => {
-        socket.off("jobApplicationSubmitted", handleJobApplicationSubmitted);
-      };
+        if (data.companyId === companyData?.company_id) {
+          setNotifications((prevNotifications) => [
+            newNotification,
+            ...prevNotifications,
+          ]);
+          toast({
+            title: "New Job Application",
+            description: `${data.applicantName} applied for ${data.jobTitle}`,
+          });
+        }
+      });
     }
-  }, [socket, companyData?.company_id, toast]);
+  }, [socket]);
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
@@ -123,7 +120,9 @@ export const Header: React.FC = () => {
       notification.type === "jobApplicationSubmitted" &&
       notification.data.applicationId
     ) {
-      navigate(`../applications/${notification.data.applicationId}`);
+      navigate(
+        `../job-application-detailed/${notification.data.applicationId}`
+      );
     }
   };
 

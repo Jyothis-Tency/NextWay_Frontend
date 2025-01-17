@@ -10,7 +10,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { axiosAdmin,axiosSubscription } from "@/Utils/axiosUtil";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
@@ -30,7 +37,7 @@ interface SubscriptionPlan {
   _id: string;
   name: string;
   price: number;
-  duration: number;
+  period: string;
   features: string[];
   isBlocked: boolean;
   createdAt: string;
@@ -41,6 +48,7 @@ interface UserSubscription {
   user_id: string;
   plan_id: string;
   planName: string;
+  period: string;
   startDate: string;
   endDate: string;
   price: number;
@@ -157,12 +165,12 @@ const Subscriptions: React.FC = () => {
                 <h1 className="text-2xl font-bold">Subscription Plans</h1>
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  // className={`${
-                  //   isDisabled
-                  //     ? "bg-gray-400 cursor-not-allowed"
-                  //     : "bg-red-600 hover:bg-red-700"
-                  // }`}
-                  // disabled={isDisabled}
+                  className={`${
+                    isDisabled
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                  disabled={isDisabled}
                 >
                   Create Subscription Plan
                 </Button>
@@ -211,10 +219,10 @@ const Subscriptions: React.FC = () => {
                           <TableHead>User ID</TableHead>
                           <TableHead>Plan Name</TableHead>
                           <TableHead>Start Date</TableHead>
-                          <TableHead>End Date</TableHead>
+                          <TableHead>Period</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead>Status</TableHead>
-                          {/* <TableHead>Is Current</TableHead> */}
+                          
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -227,16 +235,14 @@ const Subscriptions: React.FC = () => {
                                 subscription.startDate
                               ).toLocaleDateString()}
                             </TableCell>
-                            <TableCell>
-                              {new Date(
-                                subscription.endDate
+                            <TableCell>{subscription.period}</TableCell>
+                              {/* {new Date(
+                                subscription.period
                               ).toLocaleDateString()}
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell>₹{subscription.price}</TableCell>
                             <TableCell>{subscription.status}</TableCell>
-                            {/* <TableCell>
-                              {subscription.isCurrent ? "Yes" : "No"}
-                            </TableCell> */}
+                            
                           </TableRow>
                         ))}
                       </TableBody>
@@ -275,16 +281,30 @@ const CreateSubscriptionModal: React.FC<{
 }> = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [duration, setDuration] = useState("");
+  const [period, setPeriod] = useState("");
   const [features, setFeatures] = useState<string[]>([]);
   const [isFeatureDropdownOpen, setIsFeatureDropdownOpen] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: { [key: string]: string } = {};
+
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!price.trim()) newErrors.price = "Price is required";
+    if (!period) newErrors.period = "Period is required";
+    if (features.length === 0)
+      newErrors.features = "At least one feature is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     onSubmit({
       name,
       price: Number(price),
-      duration: Number(duration),
+      period,
       features,
     });
     resetForm();
@@ -293,8 +313,9 @@ const CreateSubscriptionModal: React.FC<{
   const resetForm = () => {
     setName("");
     setPrice("");
-    setDuration("");
+    setPeriod("");
     setFeatures([]);
+    setErrors({});
   };
 
   const addFeature = (feature: string) => {
@@ -329,6 +350,9 @@ const CreateSubscriptionModal: React.FC<{
                 className="w-full text-black"
                 required
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="price">Price (INR)</Label>
@@ -340,17 +364,26 @@ const CreateSubscriptionModal: React.FC<{
                 className="w-full text-black"
                 required
               />
+              {errors.price && (
+                <p className="text-red-500 text-sm">{errors.price}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (days)</Label>
-              <Input
-                id="duration"
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="w-full text-black"
-                required
-              />
+              <Label htmlFor="period">Period</Label>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger className="w-full text-black">
+                  <SelectValue placeholder="Select a period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">weekly</SelectItem>
+                  <SelectItem value="monthly">monthly</SelectItem>
+
+                  <SelectItem value="yearly">yearly</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.period && (
+                <p className="text-red-500 text-sm">{errors.period}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Features</Label>
@@ -382,6 +415,9 @@ const CreateSubscriptionModal: React.FC<{
                   </div>
                 )}
               </div>
+              {errors.features && (
+                <p className="text-red-500 text-sm">{errors.features}</p>
+              )}
             </div>
             {features.length > 0 && (
               <div className="space-y-2">
@@ -433,27 +469,42 @@ const EditSubscriptionModal: React.FC<{
 }> = ({ isOpen, onClose, onSubmit, plan }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [duration, setDuration] = useState("");
+  const [period, setPeriod] = useState("");
   const [features, setFeatures] = useState<string[]>([]);
   const [isFeatureDropdownOpen, setIsFeatureDropdownOpen] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (plan) {
+      const correctPrice = plan.price.toString();
       setName(plan.name);
-      setPrice(plan.price.toString());
-      setDuration(plan.duration.toString());
+      setPrice(correctPrice);
+      setPeriod(plan.period);
       setFeatures(plan.features);
     }
   }, [plan]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: { [key: string]: string } = {};
+
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!price.trim()) newErrors.price = "Price is required";
+    if (!period) newErrors.period = "Period is required";
+    if (features.length === 0)
+      newErrors.features = "At least one feature is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     if (plan) {
       onSubmit({
         ...plan,
         name,
         price: Number(price),
-        duration: Number(duration),
+        period,
         features,
       });
     }
@@ -491,6 +542,9 @@ const EditSubscriptionModal: React.FC<{
                 className="w-full text-black"
                 required
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="price">Price (INR)</Label>
@@ -502,17 +556,26 @@ const EditSubscriptionModal: React.FC<{
                 className="w-full text-black"
                 required
               />
+              {errors.price && (
+                <p className="text-red-500 text-sm">{errors.price}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (days)</Label>
-              <Input
-                id="duration"
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="w-full text-black"
-                required
-              />
+              <Label htmlFor="period">Period</Label>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger className="w-full text-black">
+                  <SelectValue placeholder="Select a period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">weekly</SelectItem>
+                  <SelectItem value="monthly">monthly</SelectItem>
+
+                  <SelectItem value="yearly">yearly</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.period && (
+                <p className="text-red-500 text-sm">{errors.period}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Features</Label>
@@ -544,6 +607,9 @@ const EditSubscriptionModal: React.FC<{
                   </div>
                 )}
               </div>
+              {errors.features && (
+                <p className="text-red-500 text-sm">{errors.features}</p>
+              )}
             </div>
             {features.length > 0 && (
               <div className="space-y-2">
@@ -601,7 +667,7 @@ const SubscriptionCard: React.FC<{
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="mb-2">Duration: {plan.duration} days</p>
+        <p className="mb-2">Period: {plan.period}</p>
         <p className="mb-2">
           Created: {new Date(plan.createdAt).toLocaleDateString()}
         </p>
@@ -613,12 +679,11 @@ const SubscriptionCard: React.FC<{
             </li>
           ))}
         </ul>
-        {/* <p className="mb-4">Status: {plan.isBlocked ? "Blocked" : "Active"}</p> */}
         <div className="flex justify-between">
           <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700">
             Edit
           </Button>
-          <Button
+          {/* <Button
             onClick={onToggleBlock}
             className={`${
               plan.isBlocked
@@ -627,7 +692,7 @@ const SubscriptionCard: React.FC<{
             }`}
           >
             {plan.isBlocked ? "Unblock" : "Block"}
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>

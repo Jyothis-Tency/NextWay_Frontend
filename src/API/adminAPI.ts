@@ -4,7 +4,8 @@ interface SubscriptionPlan {
   _id: string;
   name: string;
   price: number;
-  duration: number;
+  period: string;
+  // duration: number;
   features: string[];
   isBlocked: boolean;
   createdAt: string;

@@ -123,7 +123,7 @@ export function JobPostsList() {
                     <TableCell>{job.location}</TableCell>
                     <TableCell>{job.employmentType}</TableCell>
                     <TableCell>
-                      ${job.salaryRange.min.toLocaleString()} - $
+                      ₹{job.salaryRange.min.toLocaleString()} - $
                       {job.salaryRange.max.toLocaleString()}
                     </TableCell>
                     <TableCell>

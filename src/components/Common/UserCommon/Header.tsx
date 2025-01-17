@@ -319,6 +319,7 @@ const Header: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
+              className="text-black"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               Cancel
