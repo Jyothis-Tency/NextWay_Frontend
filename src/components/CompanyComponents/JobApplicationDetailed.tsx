@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosCompany, axiosUser } from "@/Utils/axiosUtil";
+import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
 
 interface IUser {
   user_id: string;
@@ -59,6 +60,11 @@ interface IJobApplication {
   resume: string;
   coverLetter: string;
   status: "Pending" | "Shortlisted" | "Rejected" | "Hired";
+  interview?: {
+    interviewStatus: "scheduled" | "over" | "canceled" | "postponed";
+    dateTime?: Date;
+    message?: string;
+  };
   companyName: string;
   jobTitle: string;
   createdAt: string;
@@ -66,12 +72,16 @@ interface IJobApplication {
 
 export function JobApplicationDetailed() {
   const [application, setApplication] = useState<IJobApplication | null>(null);
-  console.log("applicationnnnn",application);
+  console.log("applicationnnnn", application);
   const [userDetails, setUserDetails] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const { applicationId } = useParams<{ applicationId: string }>();
   const userId = "some_user_id";
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<
+    "schedule" | "postpone" | "cancel" | "reopen"
+  >("schedule");
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
@@ -113,30 +123,57 @@ export function JobApplicationDetailed() {
     }
   };
 
-    const openResume = () => {
-      if (application && application.resume) {
-        // Remove the "data:application/pdf;base64," prefix if present
-        const base64Data = application.resume.replace(
-          /^data:application\/pdf;base64,/,
-          ""
-        );
+  const openResume = () => {
+    if (application && application.resume) {
+      // Remove the "data:application/pdf;base64," prefix if present
+      const base64Data = application.resume.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
 
-        // Convert base64 to Blob
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: "application/pdf" });
-
-        // Create a URL for the Blob
-        const url = URL.createObjectURL(blob);
-
-        // Open the PDF in a new tab
-        window.open(url, "_blank");
+      // Convert base64 to Blob
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-    };
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      // Create a URL for the Blob
+      const url = URL.createObjectURL(blob);
+
+      // Open the PDF in a new tab
+      window.open(url, "_blank");
+    }
+  };
+
+  const handleInterviewAction = (
+    action: "schedule" | "postpone" | "cancel" | "reopen"
+  ) => {
+    setModalType(action);
+    setIsModalOpen(true);
+  };
+
+  const handleInterviewUpdate = async (dateTime: string, message: string) => {
+    try {
+      console.log("dateTime", dateTime);
+      console.log("message", message);
+      
+      const response = await axiosCompany.put(
+        `set-interview-details/${applicationId}`,
+        {
+          interviewStatus: modalType === "cancel" ? "canceled" : "scheduled",
+          dateTime: modalType !== "cancel" ? dateTime : undefined,
+          message,
+        }
+      );
+      setApplication(response.data.application);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error updating interview:", error);
+    }
+  };
 
   if (loading) {
     return <div className="text-center text-white">Loading...</div>;
@@ -217,13 +254,53 @@ export function JobApplicationDetailed() {
 
       <Card className="bg-gray-800 text-white">
         <CardHeader>
+          <CardTitle>Interview Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {application.interview &&
+          (application.interview.interviewStatus === "over" ||
+            application.interview.interviewStatus) ? (
+            <>
+              <p>Status: {application.interview.interviewStatus}</p>
+              {application.interview.dateTime && (
+                <p>
+                  Scheduled for:{" "}
+                  {new Date(application.interview.dateTime).toLocaleString()}
+                </p>
+              )}
+              {application.interview.interviewStatus === "scheduled" && (
+                <>
+                  <Button onClick={() => handleInterviewAction("postpone")}>
+                    Postpone
+                  </Button>
+                  <Button onClick={() => handleInterviewAction("cancel")}>
+                    Cancel
+                  </Button>
+                </>
+              )}
+              {application.interview.interviewStatus === "canceled" && (
+                <Button onClick={() => handleInterviewAction("reopen")}>
+                  Reopen Interview
+                </Button>
+              )}
+            </>
+          ) : (
+            <Button onClick={() => handleInterviewAction("schedule")}>
+              Schedule Interview
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gray-800 text-white">
+        <CardHeader>
           <CardTitle>Applicant Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center mb-6">
             {userDetails.profileImage && (
               <img
-                src={userDetails.profileImage}
+                src={userDetails.profileImage || "/placeholder.svg"}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border-4 border-blue-500 shadow-lg mb-4"
               />
@@ -417,6 +494,13 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       )}
+
+      <InterviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleInterviewUpdate}
+        type={modalType}
+      />
     </div>
   );
 }

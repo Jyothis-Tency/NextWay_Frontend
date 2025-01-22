@@ -28,6 +28,7 @@
     "@radix-ui/react-toast": "^1.2.4",
     "@reduxjs/toolkit": "^2.3.0",
     "@stripe/stripe-js": "^5.5.0",
+    "@zegocloud/zego-uikit-prebuilt": "^2.14.1",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
@@ -49,6 +50,7 @@
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",
     "yup": "^1.4.0",
+    "zego-express-engine-webrtc": "^3.7.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
