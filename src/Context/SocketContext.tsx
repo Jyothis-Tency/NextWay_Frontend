@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import { RootState } from "@/redux/store";
+import { setVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -15,6 +16,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const userInRedux = useSelector((state: RootState) => state.user);
   const companyInRedux = useSelector((state: RootState) => state.company);
+  const dispatch = useDispatch();
   console.log("companyInRedux", companyInRedux);
 
   // Determine client type and ID
@@ -43,6 +45,20 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setSocket(newSocket);
       });
 
+      if (clientType === "user") {
+        newSocket.on("interview:started", (interviewData) => {
+          console.log("Interview started:", interviewData);
+
+          // Dispatch interview details to Redux
+          dispatch(
+            setVideoCallInvitation({
+              roomId: interviewData.roomID,
+              applicationId: interviewData.applicationId,
+            })
+          );
+        });
+      }
+
       return () => {
         if (clientType === "user") {
           newSocket.emit("leave:subscription", clientId);
@@ -52,7 +68,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       setSocket(null);
     }
-  }, [clientId, clientType]);
+  }, [clientId, clientType,dispatch]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

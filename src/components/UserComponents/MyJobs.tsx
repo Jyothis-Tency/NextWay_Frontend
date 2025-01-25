@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Loader2,
   Briefcase,
@@ -9,6 +10,7 @@ import {
   BookmarkIcon,
   PlusCircle,
   Clock,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { axiosUser } from "@/Utils/axiosUtil";
 
 interface JobApplication {
@@ -30,6 +32,11 @@ interface JobApplication {
   job_id: { title: string; _id: string };
   company_id: { name: string; _id: string };
   status: "Pending" | "Shortlisted" | "Rejected" | "Hired";
+  interview?: {
+    interviewStatus: "scheduled" | "over" | "canceled" | "postponed";
+    dateTime?: Date;
+    message?: string;
+  };
   createdAt: string;
   companyName: string;
   jobTitle: string;
@@ -41,6 +48,8 @@ const MyJobs: React.FC = () => {
   const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
   const [activeTab, setActiveTab] = useState("pending");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const videoCallState = useSelector((state: RootState) => state.videoCall);
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const userId = userInfo?.user_id;
@@ -62,6 +71,14 @@ const MyJobs: React.FC = () => {
 
     fetchJobApplications();
   }, [userId]);
+
+  const handleJoinInterview = async (roomID: string) => {
+    try {
+      navigate(`../video-call?roomId=${roomID}`);
+    } catch (err) {
+      console.error("Error joining interview:", err);
+    }
+  };
 
   const renderJobApplicationsTable = (applications: JobApplication[]) => (
     <Card className="bg-gray-800 text-white mb-12">
@@ -107,6 +124,89 @@ const MyJobs: React.FC = () => {
       </CardContent>
     </Card>
   );
+
+  const renderInterviewsTable = (applications: JobApplication[]) => {
+    const applicationsWithInterviews = applications.filter(
+      (app) => app.interview
+    );
+
+    if (applicationsWithInterviews.length === 0) {
+      return (
+        <Card className="bg-gray-800 text-white mb-12">
+          <CardContent className="p-6">
+            <p className="text-center text-gray-400">No Interviews Scheduled</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <Card className="bg-gray-800 text-white mb-12">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">Interviews</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow className="text-white">
+                <TableHead className="text-white">Job Title</TableHead>
+                <TableHead className="text-white">Company</TableHead>
+                <TableHead className="text-white">Interview Status</TableHead>
+                <TableHead className="text-white">Date & Time</TableHead>
+                <TableHead className="text-white">Message</TableHead>
+                <TableHead className="text-white">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {applicationsWithInterviews.map((app) => (
+                <TableRow key={app._id} className="text-white">
+                  <TableCell>{app.jobTitle}</TableCell>
+                  <TableCell>{app.companyName}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        app.interview?.interviewStatus === "scheduled"
+                          ? "default"
+                          : app.interview?.interviewStatus === "over"
+                          ? "secondary"
+                          : app.interview?.interviewStatus === "canceled"
+                          ? "destructive"
+                          : "default"
+                      }
+                    >
+                      {app.interview?.interviewStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {app.interview?.dateTime
+                      ? new Date(app.interview.dateTime).toLocaleString()
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{app.interview?.message || "N/A"}</TableCell>
+                  <TableCell>
+                    <Button
+                      disabled={
+                        !(
+                          videoCallState &&
+                          videoCallState.roomId &&
+                          videoCallState.applicationId === app._id
+                        )
+                      }
+                      onClick={() =>
+                        handleJoinInterview(videoCallState.roomId || "")
+                      }
+                    >
+                      Join Interview
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
+  };
 
   if (loading) {
     return (
@@ -171,7 +271,7 @@ const MyJobs: React.FC = () => {
         className="w-full"
         onValueChange={setActiveTab}
       >
-        <TabsList className="grid w-full grid-cols-4 gap-4">
+        <TabsList className="grid w-full grid-cols-5 gap-4">
           <TabsTrigger
             value="pending"
             className={`bg-gray-700 text-white ${
@@ -207,6 +307,15 @@ const MyJobs: React.FC = () => {
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Hired ({hiredApplications.length})
+          </TabsTrigger>
+          <TabsTrigger
+            value="interviews"
+            className={`bg-gray-700 text-white ${
+              activeTab === "interviews" ? "border border-black" : ""
+            }`}
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            Interviews
           </TabsTrigger>
         </TabsList>
         <TabsContent value="pending">
@@ -266,6 +375,10 @@ const MyJobs: React.FC = () => {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+        <TabsContent value="interviews">
+          <h2 className="text-2xl font-semibold mb-4">Interviews</h2>
+          {renderInterviewsTable(jobApplications)}
         </TabsContent>
       </Tabs>
     </main>

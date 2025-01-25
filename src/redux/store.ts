@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import userSlice from "./Slices/userSlice";
 import companySlice from "./Slices/companySlice";
 import adminSlice from "./Slices/adminSlice";
+import videoCallSlice from "./Slices/videoCallSlice";
 
 const persistConfig = {
   key: "root",
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   user: userSlice,
   company: companySlice,
   admin: adminSlice,
+  videoCall: videoCallSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

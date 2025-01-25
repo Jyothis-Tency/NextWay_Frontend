@@ -12,6 +12,7 @@ import SubscriptionsPage from "@/Pages/UserPages/SubscriptionsPage";
 import UserProtector from "@/Utils/userProtector";
 import MyJobsPage from "@/Pages/UserPages/MyJobsPage";
 import UserChatPage from "@/Pages/UserPages/UserChatPage";
+import VideoCallUserPage from "@/Pages/UserPages/VideoCallUserPage";
 
 const UserRoutes = () => {
   return (
@@ -63,6 +64,14 @@ const UserRoutes = () => {
           element={
             <UserProtector>
               <UserChatPage />
+            </UserProtector>
+          }
+        />
+        <Route
+          path="video-call"
+          element={
+            <UserProtector>
+              <VideoCallUserPage />
             </UserProtector>
           }
         />

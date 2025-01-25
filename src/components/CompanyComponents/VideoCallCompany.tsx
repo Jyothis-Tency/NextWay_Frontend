@@ -1,18 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { clearVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
+import { useNavigate } from "react-router-dom";
 
-// Generate a random ID
-function randomID(len: number = 5): string {
-  const chars =
-    "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
-  let result = "";
-  for (let i = 0; i < len; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
+const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
+const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
 
-// Get URL parameters
 export function getUrlParams(
   url: string = window.location.href
 ): URLSearchParams {
@@ -20,22 +15,42 @@ export function getUrlParams(
   return new URLSearchParams(urlStr);
 }
 
-const App: React.FC = () => {
-  const roomID = getUrlParams().get("roomID") || randomID(5);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+const VideoCallCompany: React.FC = () => {
+  console.log("VideoCallCompany");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const jobApplicationId = getUrlParams().get("applicationId");
+
+  console.log("getUrlParams().get(roomId)", getUrlParams().get("roomId"));
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const companyState = useSelector((state: RootState) => state.company);
+  const company_id = companyState.companyInfo?.company_id || "";
+  const company_name = companyState.companyInfo?.name || "";
+  const roomID = getUrlParams().get("roomId") || "";
+  if (!roomID) {
+    console.error("No roomID found in URL");
+  }
   useEffect(() => {
     const myMeeting = async () => {
       if (containerRef.current) {
         // Replace with your actual appID and serverSecret
-        const appID = 1234567890; // Replace with your ZEGOCLOUD appID
-        const serverSecret = "your_server_secret"; // Replace with your ZEGOCLOUD serverSecret
+        const appID = ZEGO_APP_ID; // Replace with your ZEGOCLOUD appID
+        const serverSecret = ZEGO_SERVER_SECRET; // Replace with your ZEGOCLOUD serverSecret
+        console.log("🔑 Token Generation Parameters:", {
+          appID,
+          serverSecret,
+          roomID,
+          company_id,
+          company_name,
+        });
         const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
           appID,
           serverSecret,
           roomID,
-          randomID(5), // User ID
-          randomID(5) // User Name
+          company_id, // User ID
+          company_name // User Name
         );
 
         // Create instance object from Kit Token
@@ -44,22 +59,24 @@ const App: React.FC = () => {
         // Start the call
         zp.joinRoom({
           container: containerRef.current,
-          sharedLinks: [
-            {
-              name: "Personal link",
-              url:
-                window.location.protocol +
-                "//" +
-                window.location.host +
-                window.location.pathname +
-                "?roomID=" +
-                roomID,
-            },
-          ],
+
           scenario: {
             mode: ZegoUIKitPrebuilt.GroupCall, // Change to OneONoneCall for 1-on-1 calls
           },
+          turnOnMicrophoneWhenJoining: true,
+          turnOnCameraWhenJoining: true,
+          showPreJoinView: false,
+          onLeaveRoom() {
+            zp.destroy(); 
+            console.log("onLeaveRoom");
+            dispatch(clearVideoCallInvitation());
+            navigate(`../job-application-detailed/${jobApplicationId}`);
+          },
         });
+
+        return () => {
+          zp.destroy(); // Use destroy method to clean up the instance
+        };
       }
     };
 
@@ -75,4 +92,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default VideoCallCompany;

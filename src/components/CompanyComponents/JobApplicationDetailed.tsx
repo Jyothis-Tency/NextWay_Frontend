@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosCompany, axiosUser } from "@/Utils/axiosUtil";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
+import { v4 as uuidv4 } from "uuid";
+import { useSocket } from "@/Context/SocketContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface IUser {
   user_id: string;
@@ -72,6 +76,7 @@ interface IJobApplication {
 
 export function JobApplicationDetailed() {
   const [application, setApplication] = useState<IJobApplication | null>(null);
+  const [confirm, setConfirm] = useState(false);
   console.log("applicationnnnn", application);
   const [userDetails, setUserDetails] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,6 +87,13 @@ export function JobApplicationDetailed() {
   const [modalType, setModalType] = useState<
     "schedule" | "postpone" | "cancel" | "reopen"
   >("schedule");
+
+  const companyState = useSelector((state: RootState) => state.company);
+
+  const socket = useSocket();
+  function randomID(): string {
+    return uuidv4();
+  }
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
@@ -106,7 +118,7 @@ export function JobApplicationDetailed() {
     };
 
     if (applicationId) fetchApplicationDetails();
-  }, [applicationId, userId]);
+  }, [applicationId, userId, confirm]);
 
   const handleStatusChange = async (newStatus: string) => {
     try {
@@ -159,7 +171,7 @@ export function JobApplicationDetailed() {
     try {
       console.log("dateTime", dateTime);
       console.log("message", message);
-      
+
       const response = await axiosCompany.put(
         `set-interview-details/${applicationId}`,
         {
@@ -170,8 +182,27 @@ export function JobApplicationDetailed() {
       );
       setApplication(response.data.application);
       setIsModalOpen(false);
+      setConfirm((prev) => !prev);
     } catch (error) {
       console.error("Error updating interview:", error);
+    }
+  };
+
+  const startInterview = async () => {
+    try {
+      console.log("Starting interview...");
+
+      const roomID = randomID();
+      console.log("roomID", roomID);
+      socket?.emit("start-interview", {
+        roomID,
+        applicationId,
+        user_id: application?.user_id,
+      });
+
+      navigate(`../video-call?roomId=${roomID}&applicationId=${applicationId}`);
+    } catch (error) {
+      console.error("Error starting interview:", error);
     }
   };
 
@@ -275,6 +306,9 @@ export function JobApplicationDetailed() {
                   </Button>
                   <Button onClick={() => handleInterviewAction("cancel")}>
                     Cancel
+                  </Button>
+                  <Button onClick={() => startInterview()}>
+                    Start Interview
                   </Button>
                 </>
               )}

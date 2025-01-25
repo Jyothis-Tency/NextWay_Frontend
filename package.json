@@ -49,6 +49,7 @@
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",
+    "uuid": "^11.0.5",
     "yup": "^1.4.0",
     "zego-express-engine-webrtc": "^3.7.4",
     "zod": "^3.23.8"
