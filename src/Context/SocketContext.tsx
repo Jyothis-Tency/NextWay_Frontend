@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import { RootState } from "@/redux/store";
-import { setVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
+import { setVideoCallInvitation,clearVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -57,6 +57,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
             })
           );
         });
+
+        newSocket.on("interview:ended", () => {
+          console.log("Interview ended in socketContext");
+          dispatch(clearVideoCallInvitation());
+        });
+        
       }
 
       return () => {

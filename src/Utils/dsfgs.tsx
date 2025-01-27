@@ -6,7 +6,6 @@ import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "@/Context/SocketContext";
 import { toast } from "sonner";
-import { set } from "react-hook-form";
 
 const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
 const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
@@ -21,13 +20,13 @@ export function getUrlParams(
 const VideoCallUser: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [userEndedCall, setUserEndedCall] = useState(false);
   const socket = useSocket();
   const { roomId } = useSelector((state: RootState) => state.videoCall);
-  console.log("roooooooomId", roomId);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const zegoInstanceRef = useRef<any>(null);
   const previousRoomIdRef = useRef<string | null>(null);
+
+  const [userEndedCall, setUserEndedCall] = useState(false);
 
   const userState = useSelector((state: RootState) => state.user);
   const user_id = userState.userInfo?.user_id || "";
@@ -35,49 +34,43 @@ const VideoCallUser: React.FC = () => {
     `${userState.userInfo?.firstName} ${userState.userInfo?.lastName}` || "";
   const roomID = getUrlParams().get("roomId") || roomId || "";
 
-  const handleLeaveRoom = async (zp: any, isIntentonal: boolean = false) => {
+  const handleLeaveRoom = async (zp: any) => {
     try {
-      if (isIntentonal) {
-        setUserEndedCall(true);
-      }
-      if (typeof zp.leaveRoom === "function") {
-        await zp.leaveRoom();
-      } else {
-        console.warn("leaveRoom method not found, skipping.");
-      }
+      await zp.logoutRoom();
       socket?.emit("user:leave", {
         roomID,
         userId: user_id,
       });
-      if (zp) {
-        zp.destroy();
-      }
+      zp.destroy();
       console.log("onLeaveRoom");
-      if (!isIntentonal) {
+
+      // Only clear video call invitation if not user-initiated leave
+      if (!userEndedCall) {
         dispatch(clearVideoCallInvitation());
       }
+
       navigate("../my-jobs");
     } catch (error) {
       console.error("Error during room leave:", error);
       // Force cleanup even if there's an error
-      if (zp) {
-        zp.destroy();
+      zp.destroy();
+      if (!userEndedCall) {
+        dispatch(clearVideoCallInvitation());
       }
-      dispatch(clearVideoCallInvitation());
       navigate("../my-jobs");
+    }
+  };
+
+  const handleUserLeave = () => {
+    setUserEndedCall(true);
+    const zp = zegoInstanceRef.current;
+    if (zp) {
+      handleLeaveRoom(zp);
     }
   };
 
   useEffect(() => {
     const myMeeting = async () => {
-      if (!roomID) {
-        console.error("Room ID is missing. Cannot initialize the call.");
-        return;
-      }
-      if (containerRef.current === null) {
-        console.error("Container element is null. Cannot initialize Zego UI.");
-        return;
-      }
       if (containerRef.current) {
         const appID = ZEGO_APP_ID;
         const serverSecret = ZEGO_SERVER_SECRET;
@@ -91,10 +84,6 @@ const VideoCallUser: React.FC = () => {
         );
 
         const zp = ZegoUIKitPrebuilt.create(kitToken);
-        if (!zp) {
-          console.error("Zego UIKit Prebuilt instance could not be created.");
-          return;
-        }
         zegoInstanceRef.current = zp;
 
         zp.joinRoom({
@@ -105,16 +94,13 @@ const VideoCallUser: React.FC = () => {
           turnOnMicrophoneWhenJoining: true,
           turnOnCameraWhenJoining: true,
           showPreJoinView: false,
-
           onLeaveRoom() {
-            handleLeaveRoom(zp,true);
+            handleLeaveRoom(zp);
           },
           onUserLeave: (users: any[]) => {
             console.log("Users left the room:", users);
           },
         });
-
-        
 
         socket?.on("interview:end", (room_Id) => {
           if (roomID === room_Id) {
@@ -170,6 +156,12 @@ const VideoCallUser: React.FC = () => {
           <span className="text-2xl font-bold text-white">Next</span>
           <span className="text-2xl font-bold text-red-600">Gig</span>
         </div>
+        <button
+          onClick={handleUserLeave}
+          className="ml-auto text-red-600 font-bold"
+        >
+          End Call
+        </button>
       </header>
       <div
         className="myCallContainer flex-grow"

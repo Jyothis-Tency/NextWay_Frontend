@@ -200,7 +200,7 @@ export function JobApplicationDetailed() {
         user_id: application?.user_id,
       });
 
-      navigate(`../video-call?roomId=${roomID}&applicationId=${applicationId}`);
+      navigate(`../video-call?roomId=${roomID}&applicationId=${applicationId}&user_id=${application?.user_id}`);
     } catch (error) {
       console.error("Error starting interview:", error);
     }
