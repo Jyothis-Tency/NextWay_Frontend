@@ -65,7 +65,7 @@ interface IJobApplication {
   coverLetter: string;
   status: "Pending" | "Shortlisted" | "Rejected" | "Hired";
   interview?: {
-    interviewStatus: "scheduled" | "over" | "canceled" | "postponed";
+    interviewStatus: "scheduled" | "conducted" | "canceled" | "postponed";
     dateTime?: Date;
     message?: string;
   };
@@ -194,11 +194,12 @@ export function JobApplicationDetailed() {
 
       const roomID = randomID();
       console.log("roomID", roomID);
-      socket?.emit("start-interview", {
-        roomID,
-        applicationId,
-        user_id: application?.user_id,
-      });
+      // socket?.emit("start-interview", {
+      //   roomID,
+      //   applicationId,
+      //   user_id: application?.user_id,
+      //   companyName:companyState.companyInfo?.name||`Unknown Company`,
+      // });
 
       navigate(`../video-call?roomId=${roomID}&applicationId=${applicationId}&user_id=${application?.user_id}`);
     } catch (error) {
@@ -289,7 +290,7 @@ export function JobApplicationDetailed() {
         </CardHeader>
         <CardContent>
           {application.interview &&
-          (application.interview.interviewStatus === "over" ||
+          (application.interview.interviewStatus === "conducted" ||
             application.interview.interviewStatus) ? (
             <>
               <p>Status: {application.interview.interviewStatus}</p>
@@ -311,6 +312,11 @@ export function JobApplicationDetailed() {
                     Start Interview
                   </Button>
                 </>
+              )}
+              {application.interview.interviewStatus === "conducted" && (
+                <Button onClick={() => handleInterviewAction("schedule")}>
+                  Schedule Interview
+                </Button>
               )}
               {application.interview.interviewStatus === "canceled" && (
                 <Button onClick={() => handleInterviewAction("reopen")}>

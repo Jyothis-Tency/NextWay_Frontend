@@ -6,6 +6,8 @@ import { clearVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "@/Context/SocketContext";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { start } from "repl";
 
 const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
 const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
@@ -20,6 +22,9 @@ export function getUrlParams(
 const VideoCallCompany: React.FC = () => {
   console.log("VideoCallCompany");
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [startTime, setStartTime] = useState(0);
+  
+  const [isUserAllowed, setIsUserAllowed] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const socket = useSocket();
@@ -39,6 +44,18 @@ const VideoCallCompany: React.FC = () => {
   }
   const forceRefreshLayout = () => {
     setRefreshFlag((prev) => !prev);
+  };
+  const allowUserToEnter = () => {
+    setStartTime(Date.now())
+    socket?.emit("start-interview", {
+      roomID,
+      applicationId: jobApplicationId,
+      user_id,
+      companyName: company_name,
+   
+    });
+    setIsUserAllowed(true);
+    toast.success("User has been allowed to enter the interview");
   };
   useEffect(() => {
     const myMeeting = async () => {
@@ -79,6 +96,7 @@ const VideoCallCompany: React.FC = () => {
               roomID,
               applicationId: jobApplicationId,
               user_id,
+              startTime: startTime,
             });
             zp.destroy();
             console.log("onLeaveRoom");
@@ -88,7 +106,7 @@ const VideoCallCompany: React.FC = () => {
           onUserLeave: (users: any[]) => {
             // Just log when users leave, but stay in the call
             console.log("Users left the room:", users);
-            forceRefreshLayout()
+            forceRefreshLayout();
           },
         });
 
@@ -123,6 +141,14 @@ const VideoCallCompany: React.FC = () => {
             Company
           </span>
         </div>
+        {!isUserAllowed && (
+          <Button
+            onClick={allowUserToEnter}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Allow User to Enter
+          </Button>
+        )}
       </header>
       <div
         className="myCallContainer flex-grow"

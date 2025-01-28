@@ -54,6 +54,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
             setVideoCallInvitation({
               roomId: interviewData.roomID,
               applicationId: interviewData.applicationId,
+              companyName:interviewData.companyName||`Unknown Company`,
             })
           );
         });

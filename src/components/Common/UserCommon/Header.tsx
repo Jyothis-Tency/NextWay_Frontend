@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+
 import { Bell, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -24,6 +25,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
+import { set } from "react-hook-form";
 
 interface Notification {
   id: number;
@@ -43,15 +46,20 @@ interface Notification {
 const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const videoCallState = useSelector((state: RootState) => state.videoCall);
+
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useSocket();
-  const { toast } = useToast();
 
   const userData = useSelector((state: RootState) => state.user.userInfo);
+
   const firstName = userData?.firstName;
   const lastName = userData?.lastName;
   const isLoggedIn = !!userData;
+
+
 
   useEffect(() => {
     const storedNotifications = localStorage.getItem("userNotifications");
@@ -82,10 +90,10 @@ const Header: React.FC = () => {
         };
         setNotifications((prev) => [newNotification, ...prev]);
 
-        toast({
-          title: newNotification.title,
-          description: newNotification.message,
-        });
+        // toast({
+        //   title: newNotification.title,
+        //   description: newNotification.message,
+        // });
       });
 
       socket.on("notification:applicationStatus", (data) => {
@@ -106,10 +114,10 @@ const Header: React.FC = () => {
         };
         setNotifications((prev) => [newNotification, ...prev]);
 
-        toast({
-          title: newNotification.title,
-          description: newNotification.message,
-        });
+        // toast({
+        //   title: newNotification.title,
+        //   description: newNotification.message,
+        // });
       });
     }
 

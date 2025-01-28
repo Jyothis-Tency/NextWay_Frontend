@@ -40,7 +40,7 @@ const VideoCallUser: React.FC = () => {
       if (isIntentonal) {
         setUserEndedCall(true);
       }
-      if (typeof zp.leaveRoom === "function") {
+      if (zp && typeof zp.leaveRoom === "function") {
         await zp.leaveRoom();
       } else {
         console.warn("leaveRoom method not found, skipping.");
@@ -107,14 +107,12 @@ const VideoCallUser: React.FC = () => {
           showPreJoinView: false,
 
           onLeaveRoom() {
-            handleLeaveRoom(zp,true);
+            handleLeaveRoom(zp, true);
           },
           onUserLeave: (users: any[]) => {
             console.log("Users left the room:", users);
           },
         });
-
-        
 
         socket?.on("interview:end", (room_Id) => {
           if (roomID === room_Id) {

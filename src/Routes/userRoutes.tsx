@@ -13,10 +13,15 @@ import UserProtector from "@/Utils/userProtector";
 import MyJobsPage from "@/Pages/UserPages/MyJobsPage";
 import UserChatPage from "@/Pages/UserPages/UserChatPage";
 import VideoCallUserPage from "@/Pages/UserPages/VideoCallUserPage";
+import { AnimatePresence } from "framer-motion";
+import InterviewModal from "../components/Common/CompanyCommon/IncomingInterViewModal";
 
 const UserRoutes = () => {
   return (
     <>
+      <AnimatePresence>
+        <InterviewModal />
+      </AnimatePresence>
       <Routes>
         <Route path="home" element={<HomePage />} />
 
