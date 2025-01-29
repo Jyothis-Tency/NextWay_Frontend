@@ -9,7 +9,16 @@ import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
 import { v4 as uuidv4 } from "uuid";
 import { useSocket } from "@/Context/SocketContext";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "../ui/textarea";
 
 interface IUser {
   user_id: string;
@@ -88,6 +97,10 @@ export function JobApplicationDetailed() {
   const [modalType, setModalType] = useState<
     "schedule" | "postpone" | "cancel" | "reopen"
   >("schedule");
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] =
+    useState<IJobApplication["status"]>("Pending");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const companyState = useSelector((state: RootState) => state.company);
 
@@ -121,19 +134,27 @@ export function JobApplicationDetailed() {
     if (applicationId) fetchApplicationDetails();
   }, [applicationId, userId, confirm]);
 
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = async (
+    status: IJobApplication["status"],
+    message: string
+  ) => {
     try {
       await axiosCompany.put(`update-application-status/${applicationId}`, {
-        status: newStatus,
+        status,
+        statusMessage: message,
       });
       setApplication((prev) =>
-        prev
-          ? { ...prev, status: newStatus as IJobApplication["status"] }
-          : null
+        prev ? { ...prev, status, statusMessage: message } : null
       );
+      setStatusMessage("");
     } catch (error) {
       console.error("Error updating application status:", error);
     }
+  };
+
+  const openStatusModal = (status: IJobApplication["status"]) => {
+    setNewStatus(status);
+    setIsStatusModalOpen(true);
   };
 
   const openResume = () => {
@@ -202,7 +223,9 @@ export function JobApplicationDetailed() {
       //   companyName:companyState.companyInfo?.name||`Unknown Company`,
       // });
 
-      navigate(`../video-call?roomId=${roomID}&applicationId=${applicationId}&user_id=${application?.user_id}`);
+      navigate(
+        `../video-call?roomId=${roomID}&applicationId=${applicationId}&user_id=${application?.user_id}`
+      );
     } catch (error) {
       console.error("Error starting interview:", error);
     }
@@ -266,7 +289,9 @@ export function JobApplicationDetailed() {
               </p>
               <select
                 value={application.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
+                onChange={(e) =>
+                  openStatusModal(e.target.value as IJobApplication["status"])
+                }
                 className="mt-2 bg-gray-700 text-white rounded p-2"
               >
                 <option value="Pending">Pending</option>
@@ -275,6 +300,10 @@ export function JobApplicationDetailed() {
                 <option value="Hired">Hired</option>
               </select>
             </div>
+            <p>
+              <b>Status message for user: </b>
+              {application.statusMessage}
+            </p>
           </div>
           {application.coverLetter && (
             <div className="mt-4">
@@ -542,6 +571,32 @@ export function JobApplicationDetailed() {
         onSubmit={handleInterviewUpdate}
         type={modalType}
       />
+      <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Status</DialogTitle>
+          </DialogHeader>
+          <p>
+            Selected status of this application: <b>{newStatus}</b>
+          </p>
+          <Textarea
+            value={statusMessage}
+            onChange={(e) => setStatusMessage(e.target.value)}
+            placeholder="Enter status message"
+          />
+          <DialogFooter>
+            <Button onClick={() => setIsStatusModalOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                handleStatusChange(newStatus, statusMessage);
+                setIsStatusModalOpen(false);
+              }}
+            >
+              Update
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

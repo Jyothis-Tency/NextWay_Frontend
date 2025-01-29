@@ -247,6 +247,11 @@ export const Header: React.FC = () => {
               Recruiter
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() => window.open("/user/home", "_blank")}
+            >
+              Go to User Section
+            </DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>

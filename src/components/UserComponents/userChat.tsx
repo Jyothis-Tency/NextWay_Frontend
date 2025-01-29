@@ -8,6 +8,8 @@ import { axiosChat, axiosCompany } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 
 interface IMessage {
   _id: string;
@@ -46,6 +48,12 @@ export function UserChatInterface() {
   const [searchResults, setSearchResults] = useState<CompanySearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [displayChats, setDisplayChats] = useState<IChat[]>([]);
+  const [allProfileImages, setAllProfileImages] = useState<
+    {
+      company_id: string;
+      profileImage: string;
+    }[]
+  >([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const user = useSelector((state: RootState) => state.user.userInfo);
@@ -113,6 +121,7 @@ export function UserChatInterface() {
 
   useEffect(() => {
     setDisplayChats(chats);
+    getAllProfileImages()
   }, [chats]);
 
   useEffect(() => {
@@ -120,6 +129,16 @@ export function UserChatInterface() {
       scrollToBottom();
     }
   }, [currentChat?.messages]);
+
+  const getAllProfileImages = async () => {
+    try {
+      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      console.log(response.data);
+      setAllProfileImages(response.data);
+    } catch (error) {
+      console.error("Error fetching profile images:", error);
+    }
+  };
 
   const fetchChatHistory = async () => {
     if (!user) return;
@@ -245,6 +264,23 @@ export function UserChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const renderUserAvatar = (companyId: string, companyName: string) => {
+    const userProfileImage = allProfileImages.find(
+      (img) => img.company_id === companyId
+    )?.profileImage;
+
+    return (
+      <Avatar className="h-8 w-12 mr-2 mb-3">
+        <AvatarImage
+          src={userProfileImage || CompanyStatic}
+          alt={companyName}
+          className="w-12 h-12 rounded-full"
+        />
+        <AvatarFallback>{companyName[0]}</AvatarFallback>
+      </Avatar>
+    );
+  };
+
   return (
     <div className="flex h-full bg-[#0a0c10]">
       <div className="w-80 bg-[#0d1117] border-r border-gray-800">
@@ -288,6 +324,27 @@ export function UserChatInterface() {
                   }`}
                 >
                   <div className="flex items-center">
+                    {renderUserAvatar(chat.company_id, chat.companyName)}
+                    {/* {allProfileImages
+                      ? allProfileImages
+                          .filter((img) => chat.company_id === img.company_id)
+                          .map(
+                            (img, index) => (
+                              console.log("img img img", img),
+                              (
+                                <Avatar className="h-8 w-12 mr-2 mb-4">
+                                  <AvatarImage
+                                    key={index}
+                                    src={img.profileImage}
+                                    alt="Company Logo"
+                                    className="w-12 h-12 rounded-full"
+                                  />
+                                </Avatar>
+                                
+                              )
+                            )
+                          )
+                      : null} */}
                     {/* <Avatar className="h-8 w-8 mr-2">
                       {chat.companyAvatar ? (
                         <AvatarImage
@@ -333,6 +390,10 @@ export function UserChatInterface() {
         {currentChat ? (
           <>
             <div className="px-4 py-3 border-b border-gray-800 flex items-center">
+              {renderUserAvatar(
+                currentChat.company_id,
+                currentChat.companyName
+              )}
               {/* <Avatar className="h-8 w-8 mr-3">
                 {currentChat.companyAvatar ? (
                   <AvatarImage
@@ -374,15 +435,19 @@ export function UserChatInterface() {
                             )}
                           </p>
                         </div>
-                        {/* <Avatar className="h-8 w-8">
+                        <Avatar className="h-8 w-12 rounded-sm">
                           {user.profileImage ? (
-                            <AvatarImage src={user.profileImage} alt="User" />
+                            <AvatarImage
+                              src={user.profileImage}
+                              alt="User"
+                              className="w-12 h-12 rounded-full"
+                            />
                           ) : (
                             <AvatarFallback>
                               {user.firstName?.[0]}
                             </AvatarFallback>
                           )}
-                        </Avatar> */}
+                        </Avatar>
                       </>
                     ) : (
                       <>
@@ -398,6 +463,7 @@ export function UserChatInterface() {
                             </AvatarFallback>
                           )}
                         </Avatar> */}
+                        {renderUserAvatar(currentChat.company_id, currentChat.companyName)}
                         <div className="max-w-[80%] bg-[#1c2128] text-white rounded-t-2xl rounded-br-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">

@@ -100,15 +100,15 @@ export default function JobPosts() {
       const filtered = filteredJobs.filter(
         (job) =>
           (job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.requirements.some((req: string) =>
-            req.toLowerCase().includes(searchQuery.toLowerCase())
-          ) ||
+            job.requirements.some((req: string) =>
+              req.toLowerCase().includes(searchQuery.toLowerCase())
+            ) ||
             job.company.companyName
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
             job.description
               .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ) &&
+              .includes(searchQuery.toLowerCase())) &&
           job.location.toLowerCase().includes(searchLocation.toLowerCase())
       );
       setFilteredJobs(filtered);
@@ -245,16 +245,18 @@ export default function JobPosts() {
           </div>
         </section>
         <div className="flex justify-end mb-4">
-          <Button
-            onClick={handleSkillBasedSort}
-            className={`${
-              isSkillBasedSorting
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            } text-white`}
-          >
-            {isSkillBasedSorting ? "Reset Sorting" : "Sort by Skills"}
-          </Button>
+          {userInfo && (
+            <Button
+              onClick={handleSkillBasedSort}
+              className={`${
+                isSkillBasedSorting
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              } text-white`}
+            >
+              {isSkillBasedSorting ? "Reset Sorting" : "Sort by Skills"}
+            </Button>
+          )}
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Job list */}

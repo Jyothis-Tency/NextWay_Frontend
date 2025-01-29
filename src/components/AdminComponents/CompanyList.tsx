@@ -12,9 +12,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosAdmin, axiosCompany } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 interface ICompany {
   company_id: string;
@@ -28,14 +30,55 @@ const CompanyList = () => {
   const [companies, setCompanies] = useState<ICompany[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allProfileImages, setAllProfileImages] = useState<
+    {
+      company_id: string;
+      profileImage: string;
+    }[]
+  >([]);
   const navigate = useNavigate();
+
+  const getAllProfileImages = async () => {
+    try {
+      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      console.log(response.data);
+      setAllProfileImages(response.data);
+    } catch (error) {
+      console.error("Error fetching profile images:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllProfileImages();
+  }, [companies]);
+
+  const renderCompanyAvatar = (companyId: string, companyName: string) => {
+    const companyProfileImage = allProfileImages.find(
+      (img) => img.company_id === companyId
+    )?.profileImage;
+
+    return (
+      <Avatar className="h-8 w-12 mr-2 mb-3">
+        <AvatarImage
+          src={companyProfileImage || CompanyStatic}
+          alt={companyName}
+          className="w-12 h-12 rounded-full"
+        />
+        <AvatarFallback>{companyName[0]}</AvatarFallback>
+      </Avatar>
+    );
+  };
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         const response = await axiosAdmin.get("/all-companies");
         console.log("API response:", response.data.companyData);
-        setCompanies(Array.isArray(response.data.companyData) ? response.data.companyData : []);
+        setCompanies(
+          Array.isArray(response.data.companyData)
+            ? response.data.companyData
+            : []
+        );
         setIsLoading(false);
       } catch (err) {
         console.error("Error fetching companies:", err);
@@ -93,6 +136,7 @@ const CompanyList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Profile Image</TableHead>
                       <TableHead>Company ID</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Industry</TableHead>
@@ -107,6 +151,12 @@ const CompanyList = () => {
                         className="cursor-pointer hover:bg-gray-800"
                         onClick={() => navigateToDetails(company.company_id)}
                       >
+                        <TableCell>
+                          {renderCompanyAvatar(
+                            company.company_id,
+                            company.name
+                          )}
+                        </TableCell>
                         <TableCell>{company.company_id}</TableCell>
                         <TableCell>{company.name}</TableCell>
                         <TableCell>{company.industry}</TableCell>

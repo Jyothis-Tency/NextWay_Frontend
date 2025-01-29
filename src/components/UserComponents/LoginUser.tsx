@@ -157,9 +157,17 @@ export default function LoginUser() {
               <div className="text-sm">
                 <a
                   onClick={goToForgotPassword}
-                  className="text-red-600 hover:underline"
+                  className="text-red-600 hover:underline cursor-pointer"
                 >
                   Forgot your password?
+                </a>
+              </div>
+              <div className="text-sm">
+                <a
+                  onClick={() => navigate("../home")}
+                  className="text-red-600 hover:underline cursor-pointer"
+                >
+                  Back To Home Page
                 </a>
               </div>
             </div>
@@ -175,7 +183,10 @@ export default function LoginUser() {
           <div className="mt-6 text-center">
             <p className="text-sm text-white">
               Don't have an account?{" "}
-              <a  onClick={()=>navigate("../register")} className="text-red-600 hover:underline">
+              <a
+                onClick={() => navigate("../register")}
+                className="text-red-600 hover:underline"
+              >
                 Sign up here
               </a>
             </p>

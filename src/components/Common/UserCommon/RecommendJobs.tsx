@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { axiosUser } from "@/Utils/axiosUtil";
+import { axiosCompany, axiosUser } from "@/Utils/axiosUtil";
+import CompanyStatic from "../../../../public/Comany-Static-Logo.svg";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 interface JobPost {
   title: string;
@@ -24,16 +26,25 @@ interface CombinedJobPost extends JobPost {
 }
 
 const RecommendedJobs: React.FC = () => {
+  console.log("Inside RecommendedJobs");
+
   const [recommendedJobs, setRecommendedJobs] = useState<CombinedJobPost[]>([]);
+  const [allProfileImages, setAllProfileImages] = useState<
+    {
+      company_id: string;
+      profileImage: string;
+    }[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-
+  console.log("allProfileImages", allProfileImages);
   const fetchRecommendedJobs = async () => {
     try {
       setLoading(true);
       setError(""); // Clear previous errors
 
       const response = await axiosUser.get(`/getAllJobPosts`);
+
       const jobPosts: JobPost[] = response.data?.jobPosts || [];
       const companies: Company[] = response.data?.companies || [];
 
@@ -65,6 +76,37 @@ const RecommendedJobs: React.FC = () => {
   useEffect(() => {
     fetchRecommendedJobs();
   }, []);
+
+  const getAllProfileImages = async () => {
+    try {
+      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      console.log(response.data);
+      setAllProfileImages(response.data);
+    } catch (error) {
+      console.error("Error fetching profile images:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllProfileImages();
+  }, [recommendedJobs]);
+
+  const renderCompanyAvatar = (companyId: string, companyName: string) => {
+    const companyProfileImage = allProfileImages.find(
+      (img) => img.company_id === companyId
+    )?.profileImage;
+
+    return (
+      <Avatar className="h-8 w-12 mr-2 mb-3">
+        <AvatarImage
+          src={companyProfileImage || CompanyStatic}
+          alt={companyName}
+          className="w-12 h-12 rounded-full"
+        />
+        <AvatarFallback>{companyName[0]}</AvatarFallback>
+      </Avatar>
+    );
+  };
 
   return (
     <section className="space-y-6">
@@ -101,11 +143,24 @@ const RecommendedJobs: React.FC = () => {
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex gap-2">
-                    <img
-                      src={job.logo}
-                      alt={job.companyName}
-                      className="w-10 h-10 rounded-lg"
-                    />
+                    {renderCompanyAvatar(job.company_id, job.companyName)}
+                    {/* {allProfileImages
+                      ? allProfileImages
+                          .filter((img) => job.company_id === img.company_id)
+                          .map(
+                            (img, index) => (
+                              console.log("img img img", img),
+                              (
+                                <img
+                                  key={index}
+                                  src={img.profileImage}
+                                  alt="Company Logo"
+                                  className="w-12 h-12 rounded-full"
+                                />
+                              )
+                            )
+                          )
+                      : null} */}
                     <div>
                       <h3 className="font-semibold group-hover:text-red-500 transition-colors">
                         {job.title}

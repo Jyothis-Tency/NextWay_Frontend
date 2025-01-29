@@ -48,7 +48,6 @@ const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const videoCallState = useSelector((state: RootState) => state.videoCall);
 
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useSocket();
@@ -58,8 +57,6 @@ const Header: React.FC = () => {
   const firstName = userData?.firstName;
   const lastName = userData?.lastName;
   const isLoggedIn = !!userData;
-
-
 
   useEffect(() => {
     const storedNotifications = localStorage.getItem("userNotifications");
@@ -199,7 +196,7 @@ const Header: React.FC = () => {
         </a>
       </nav>
 
-      {isLoggedIn && (
+      {isLoggedIn ? (
         <div className="flex items-center space-x-6">
           <Button
             variant="ghost"
@@ -296,6 +293,11 @@ const Header: React.FC = () => {
                 Job User
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => window.open("/company/dashboard", "_blank")}
+              >
+                Go to Company Section
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => navigate("/user/profile")}>
                 Profile
               </DropdownMenuItem>
@@ -313,6 +315,22 @@ const Header: React.FC = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+      ) : (
+        <div className="flex items-center space-x-6">
+          <a
+            className="text-gray-300 hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
+            onClick={() => navigate("../login")}
+          >
+            Login as User
+          </a>
+          <span className="text-gray-500">|</span>
+          <a
+            className="text-gray-300 hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
+            onClick={() => window.open("/company/login", "_blank")}
+          >
+            Login as Company
+          </a>
         </div>
       )}
 

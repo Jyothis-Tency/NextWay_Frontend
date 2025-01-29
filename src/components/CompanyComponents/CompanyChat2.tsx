@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { axiosChat, axiosUser } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import UserStatic from "../../../public/User-Static-Logo.svg";
@@ -267,11 +267,11 @@ export function CompanyChatInterface() {
     )?.profileImage;
 
     return (
-      <Avatar className="h-8 w-12 mr-2 mb-3">
+      <Avatar className="h-8 w-8 mr-2">
         <AvatarImage
           src={userProfileImage || UserStatic}
           alt={userName}
-          className="w-12 h-12 rounded-full"
+          className="w-8 h-8 rounded-full"
         />
         <AvatarFallback>{userName[0]}</AvatarFallback>
       </Avatar>
@@ -321,12 +321,6 @@ export function CompanyChatInterface() {
                 >
                   <div className="flex items-center">
                     {renderUserAvatar(chat.user_id, chat.userName)}
-
-                    {/* <Avatar className="h-8 w-8 mr-2">
-                     
-                        <AvatarFallback>{chat.userName?.[0]}</AvatarFallback>
-                     
-                    </Avatar> */}
                     <div className="flex-1">
                       <div className="font-semibold text-white">
                         {chat.userName}
@@ -363,18 +357,6 @@ export function CompanyChatInterface() {
           <>
             <div className="px-4 py-3 border-b border-gray-800 flex items-center">
               {renderUserAvatar(currentChat.user_id, currentChat.userName)}
-              {/* <Avatar className="h-8 w-8 mr-3">
-                {currentChat.userAvatar ? (
-                  <AvatarImage
-                    src={currentChat.userAvatar}
-                    alt={currentChat.userName}
-                  />
-                ) : (
-                  <AvatarFallback className="bg-gray-700">
-                    {currentChat.userName.charAt(0)}
-                  </AvatarFallback>
-                )}
-              </Avatar> */}
               <h2 className="text-lg font-medium text-white">
                 {currentChat.userName}
               </h2>
@@ -422,18 +404,6 @@ export function CompanyChatInterface() {
                           currentChat.user_id,
                           currentChat.userName
                         )}
-                        {/* <Avatar className="h-8 w-8">
-                          {currentChat.userAvatar ? (
-                            <AvatarImage
-                              src={currentChat.userAvatar}
-                              alt={currentChat.userName}
-                            />
-                          ) : (
-                            <AvatarFallback>
-                              {currentChat.userName?.[0]}
-                            </AvatarFallback>
-                          )}
-                        </Avatar> */}
                         <div className="max-w-[80%] bg-[#1c2128] text-white rounded-t-2xl rounded-br-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">

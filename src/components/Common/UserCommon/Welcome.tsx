@@ -45,8 +45,17 @@ const WelcomeSection: React.FC = () => {
               Connecting talent with opportunities
             </p>
             <div className="space-x-4">
-              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full text-lg">
-                Get Started
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full text-lg"
+                onClick={() => navigate("../login")}
+              >
+                Login As User
+              </Button>
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full text-lg"
+                onClick={() => window.open("/company/login", "_blank")}
+              >
+                Login As Company
               </Button>
               {/* <Button className="bg-transparent hover:bg-white hover:text-black text-white px-8 py-3 rounded-full text-lg border-2 border-white">
                 Learn More

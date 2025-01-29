@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin } from "@/Utils/axiosUtil";
+import { axiosAdmin, axiosCompany } from "@/Utils/axiosUtil";
+import CompanyStatic from "../../../../public/Comany-Static-Logo.svg";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 interface Company {
+  company_id: string;
   name: string;
   rating: string;
   employees: string;
@@ -12,6 +15,12 @@ interface Company {
 
 const TopCompanies: React.FC = () => {
   const [topCompanies, setTopCompanies] = useState<Company[]>([]);
+  const [allProfileImages, setAllProfileImages] = useState<
+    {
+      company_id: string;
+      profileImage: string;
+    }[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
@@ -22,7 +31,7 @@ const TopCompanies: React.FC = () => {
 
       const response = await axiosAdmin.get("/all-companies");
       console.log(response);
-      
+
       setTopCompanies(response.data?.companyData || []);
     } catch (error) {
       console.error("Error fetching top companies:", error);
@@ -32,10 +41,40 @@ const TopCompanies: React.FC = () => {
     }
   };
 
+  const getAllProfileImages = async () => {
+    try {
+      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      console.log(response.data);
+      setAllProfileImages(response.data);
+    } catch (error) {
+      console.error("Error fetching profile images:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTopCompanies();
   }, []);
 
+  useEffect(() => {
+    getAllProfileImages();
+  }, [topCompanies]);
+
+      const renderCompanyAvatar = (companyId: string, companyName: string) => {
+        const companyProfileImage = allProfileImages.find(
+          (img) => img.company_id === companyId
+        )?.profileImage;
+
+        return (
+          <Avatar className="h-8 w-12 mr-2 mb-3">
+            <AvatarImage
+              src={companyProfileImage || CompanyStatic}
+              alt={companyName}
+              className="w-12 h-12 rounded-full"
+            />
+            <AvatarFallback>{companyName[0]}</AvatarFallback>
+          </Avatar>
+        );
+      };
   return (
     <section className="space-y-4">
       <h2 className="text-2xl font-bold">Top Companies</h2>
@@ -53,11 +92,8 @@ const TopCompanies: React.FC = () => {
                 className="bg-[#1a1f2e] p-4 rounded-xl border border-red-500 hover:shadow-[0_0_20px_rgba(255,0,0,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px]"
               >
                 <div className="flex items-start gap-3">
-                  <img
-                    src={company.logo}
-                    alt={company.name}
-                    className="w-8 h-8 rounded-lg object-cover"
-                  />
+                  {renderCompanyAvatar(company.company_id,company.name)}
+                  
                   <div className="flex-1">
                     <h3 className="font-semibold text-sm text-white">
                       {company.name}
@@ -73,12 +109,12 @@ const TopCompanies: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <Button
+                {/* <Button
                   className="w-full mt-2 bg-red-600 hover:bg-red-700 text-white text-sm h-8"
                   variant="default"
                 >
                   View Jobs
-                </Button>
+                </Button> */}
               </div>
             ))}
           </div>
