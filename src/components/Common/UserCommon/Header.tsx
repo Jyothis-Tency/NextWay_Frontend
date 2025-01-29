@@ -96,19 +96,19 @@ const Header: React.FC = () => {
         // });
       });
 
-      socket.on("notification:applicationStatus", (data) => {
+      socket.on("notification:applicationStatusUpdate", (data) => {
         console.log("Application Status Notification:", data);
         const newNotification: Notification = {
           id: Date.now(),
           type: "applicationStatus",
           title: "Application Status Updated!",
-          message: `Your application for ${data.title} at ${data.company} is now ${data.status}`,
+          message: `Your application for ${data.jobTitle} at ${data.companyName} is now ${data.status}`,
           time: new Date().toLocaleString(),
           data: {
             applicationId: data.applicationId,
             jobId: data.jobId,
-            company: data.company,
-            jobTitle: data.title,
+            company: data.companyName,
+            jobTitle: data.jobTitle,
             status: data.status,
           },
         };
