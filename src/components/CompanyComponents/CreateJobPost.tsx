@@ -65,8 +65,8 @@ const validationSchema = Yup.object().shape({
 export function CreateJobPost() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const company_id = useSelector(
-    (state: RootState) => state.company.companyInfo?.company_id
+  const companyData = useSelector(
+    (state: RootState) => state.company.companyInfo
   );
 
   const initialValues: IJobPost = {
@@ -86,7 +86,9 @@ export function CreateJobPost() {
 
   const handleSubmit = async (values: IJobPost) => {
     try {
-      const jobData = { ...values, company_id };
+      const company_id = companyData?.company_id;
+      const companyName = companyData?.name;
+      const jobData = { ...values, company_id, companyName };
       const response = await createOrUpdateJobPost(jobData);
       if (response?.success) {
         console.log("Job post created successfully:", response?.message);

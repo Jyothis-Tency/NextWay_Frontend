@@ -26,6 +26,29 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { axiosCompany } from "@/Utils/axiosUtil";
 
+ interface IJobApplication  {
+  job_id: string;
+  user_id: string;
+  company_id: string;
+  companyName: string;
+  jobTitle: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  location?: string;
+  phone?: string;
+  resume: string; // URL to the resume file
+  coverLetter?: string; // Optional cover letter text
+  status: "Pending" | "Viewed" | "Shortlisted" | "Rejected" | "Hired";
+  interview?: {
+    interviewStatus: "scheduled" | "over" | "canceled" | "postponed";
+    dateTime?: Date;
+    message?: string;
+  };
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 const analyticsData = [
   { name: "Jan", applications: 400, interviews: 240, hires: 24 },
   { name: "Feb", applications: 300, interviews: 139, hires: 20 },
@@ -46,7 +69,8 @@ const hiringFunnelData = [
 
 export const DashboardContent: React.FC = () => {
   const [jobs, setJobs] = useState([]);
-  const [applications,setApplications]=useState([])
+  const [applications, setApplications] = useState([])
+  const [interviews,setInterviews] = useState([])
   const company_id = useSelector(
     (state: RootState) => state.company.companyInfo?.company_id
   );
@@ -61,6 +85,16 @@ export const DashboardContent: React.FC = () => {
         );
         setApplications(applications.data.jobApplications)
         setJobs(response.data.jobPosts);
+        const filteredInterviews = applications.data.jobApplications
+          .filter(
+            (application:IJobApplication) =>
+              application.interview !== null &&
+              (application.interview?.interviewStatus === "scheduled" ||
+                application.interview?.interviewStatus === "postponed")
+          )
+          .map((application:IJobApplication) => application); // Optional if you just need to pass the filtered applications
+
+        setInterviews(filteredInterviews);
       } catch (error) {
         console.error("Error fetching jobs:", error);
       }
@@ -81,18 +115,18 @@ export const DashboardContent: React.FC = () => {
         {[
           {
             title: "Total Job Posts",
-            description: "Active job listings",
+            description: "Total active job posts currently",
             value: jobs.length,
           },
           {
             title: "Total Applications",
-            description: "Received this month",
+            description: "Total applications received currently",
             value: applications.length,
           },
           {
             title: "Interviews Scheduled",
-            description: "For the next 7 days",
-            value: 0,
+            description: "Total interviews scheduled currently",
+            value: interviews.length,
           },
         ].map((item, index) => (
           <Card

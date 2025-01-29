@@ -26,7 +26,8 @@ export function InterviewModal({
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [message, setMessage] = useState("");
-
+  console.log("date", date);
+  console.log("time", time);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const dateTime = type === "cancel" ? "" : `${date}T${time}`;

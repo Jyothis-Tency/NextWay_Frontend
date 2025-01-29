@@ -8,6 +8,7 @@ import { useSocket } from "@/Context/SocketContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { start } from "repl";
+import { timeStamp } from "console";
 
 const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
 const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
@@ -22,12 +23,16 @@ export function getUrlParams(
 const VideoCallCompany: React.FC = () => {
   console.log("VideoCallCompany");
   const [refreshFlag, setRefreshFlag] = useState(false);
-  const [startTime, setStartTime] = useState(0);
-  
+  const [userInOtherInterview, setUserInOtherInterview] = useState(false);
+  // const [startTime, setStartTime] = useState(``);
+
   const [isUserAllowed, setIsUserAllowed] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const socket = useSocket();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutDuration = 3000; //
 
   const jobApplicationId = getUrlParams().get("applicationId");
   const user_id = getUrlParams().get("user_id");
@@ -45,14 +50,45 @@ const VideoCallCompany: React.FC = () => {
   const forceRefreshLayout = () => {
     setRefreshFlag((prev) => !prev);
   };
+
+  // Start emitting presence
+  const startPresenceEmission = () => {
+    // Clear any existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current as NodeJS.Timeout);
+    }
+
+    // Start new interval
+    intervalRef.current = setInterval(() => {
+      console.log("Emitting presence setInterval");
+      socket?.emit("user:in-interview", {
+        userId: user_id,
+        companyId: company_id,
+        roomID,
+      });
+    }, 2000); // Emit every 2 seconds
+  };
+
+  // Stop emitting presence
+  const stopPresenceEmission = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current as NodeJS.Timeout);
+      intervalRef.current = null;
+    }
+  };
+
   const allowUserToEnter = () => {
-    setStartTime(Date.now())
+    const timeStamp = Date.now();
+    const currentDateTime = new Date(timeStamp);
+    const date = currentDateTime.toISOString().split("T")[0];
+    const time = currentDateTime.toISOString().split("T")[1].split(".")[0];
+    localStorage.setItem("startTime", `${date}T${time}`);
+
     socket?.emit("start-interview", {
       roomID,
       applicationId: jobApplicationId,
       user_id,
       companyName: company_name,
-   
     });
     setIsUserAllowed(true);
     toast.success("User has been allowed to enter the interview");
@@ -91,16 +127,25 @@ const VideoCallCompany: React.FC = () => {
           turnOnMicrophoneWhenJoining: true,
           turnOnCameraWhenJoining: true,
           showPreJoinView: false,
+
+          onUserJoin(users) {
+            startPresenceEmission();
+          },
+          
           onLeaveRoom() {
+            const startTime = localStorage.getItem("startTime") || "";
+
             socket?.emit("end-interview", {
               roomID,
               applicationId: jobApplicationId,
               user_id,
               startTime: startTime,
             });
+            stopPresenceEmission();
             zp.destroy();
             console.log("onLeaveRoom");
             dispatch(clearVideoCallInvitation());
+            localStorage.removeItem("startTime");
             navigate(`../job-application-detailed/${jobApplicationId}`);
           },
           onUserLeave: (users: any[]) => {
@@ -120,6 +165,7 @@ const VideoCallCompany: React.FC = () => {
 
         return () => {
           socket?.off("user:left");
+          stopPresenceEmission();
           zp.destroy(); // Use destroy method to clean up the instance
         };
       }
@@ -127,6 +173,52 @@ const VideoCallCompany: React.FC = () => {
 
     myMeeting();
   }, [roomID]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleInterviewStatus = (data: {
+      userId: string;
+      companyId: string;
+      roomID: number;
+    }) => {
+      console.log("user:in-interview-going on on");
+      console.log("Interview status event received:", data);
+      const { userId, companyId } = data;
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      if (user_id === userId && company_id !== companyId) {
+        setUserInOtherInterview(true);
+
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => {
+          setUserInOtherInterview(false);
+          console.log(
+            "No interview status received for 3 seconds, marking as not in interview"
+          );
+        }, timeoutDuration);
+      }
+    };
+
+    socket.on("user:in-interview-going", handleInterviewStatus);
+
+    return () => {
+      socket.off("user:in-interview-going", handleInterviewStatus);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [socket, user_id, timeoutDuration]);
+
+  useEffect(() => {
+    return () => {
+      stopPresenceEmission();
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-screen">
@@ -143,10 +235,17 @@ const VideoCallCompany: React.FC = () => {
         </div>
         {!isUserAllowed && (
           <Button
-            onClick={allowUserToEnter}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+            onClick={!userInOtherInterview ? allowUserToEnter : undefined}
+            disabled={userInOtherInterview}
+            className={`px-4 py-2 rounded ${
+              userInOtherInterview
+                ? "bg-gray-400 cursor-not-allowed opacity-50"
+                : "bg-green-600 hover:bg-green-700"
+            } text-white`}
           >
-            Allow User to Enter
+            {userInOtherInterview
+              ? "User in another interview"
+              : "Allow User to Enter"}
           </Button>
         )}
       </header>

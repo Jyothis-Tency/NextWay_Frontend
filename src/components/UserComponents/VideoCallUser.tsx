@@ -132,6 +132,7 @@ const VideoCallUser: React.FC = () => {
         return () => {
           window.removeEventListener("beforeunload", handleBeforeUnload);
           socket?.off("interview:end");
+
           handleLeaveRoom(zp);
         };
       }

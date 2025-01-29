@@ -38,7 +38,7 @@ interface SubscriptionPlan {
 }
 
 interface SubscriptionHistory {
-  _id:string;
+  _id: string;
   user_id: string; // Reference to the User model
   plan_id: string; // Reference to the SubscriptionPlan model
   planName: string; // Name of the subscription plan
@@ -54,8 +54,20 @@ interface SubscriptionHistory {
   createdAt?: Date; // Timestamp when the subscription record was created
 }
 
+interface History {
+  user_id: string; // Reference to the User
+  plan_id: string; // Reference to the Subscription Plan
+  planName: string; // Redundant storage for ease of querying
+  period: "daily" | "weekly" | "monthly" | "yearly";
+  createdType: string;
+  startDate: Date;
+  endDate: Date;
+  price: number;
+  createdAt: Date;
+}
+
 interface CurrentSubscription {
-  _id:"strings";
+  _id: "strings";
   user_id: string; // Reference to the User model
   plan_id: string; // Reference to the SubscriptionPlan model
   planName: string; // Name of the subscription plan
@@ -75,7 +87,7 @@ const Subscriptions: React.FC = () => {
   const socket = useSocket();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   console.log("plans", plans);
-  const [history, setHistory] = useState<SubscriptionHistory[]>([]);
+  const [history, setHistory] = useState<History[]>([]);
   const [currentSubscription, setCurrentSubscription] =
     useState<CurrentSubscription | null>(null);
   const [loadingPlans, setLoadingPlans] = useState(true);
@@ -104,7 +116,7 @@ const Subscriptions: React.FC = () => {
           axiosUser.get(`/subscription-history/${userId}`),
           axiosUser.get(`/current-subscription/${userId}`),
         ]);
-        
+
         setHistory(historyResponse.data.history || []);
         setCurrentSubscription(currentResponse.data.current || null);
         console.log(
@@ -270,7 +282,7 @@ const Subscriptions: React.FC = () => {
             });
 
             if (verifyResponse.data.success) {
-              toast.success("Payment successful! Processing subscription...");
+              toast.success("Subscription successful");
             } else {
               toast.error(
                 "Subscription verification failed. Please try again."
@@ -365,6 +377,17 @@ const Subscriptions: React.FC = () => {
                     <span className="font-medium">
                       {new Date(
                         currentSubscription.startDate
+                      ).toLocaleDateString()}
+                    </span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <p>
+                    Start Date:{" "}
+                    <span className="font-medium">
+                      {new Date(
+                        currentSubscription.endDate
                       ).toLocaleDateString()}
                     </span>
                   </p>
@@ -493,29 +516,25 @@ const Subscriptions: React.FC = () => {
                   <TableRow className="text-white">
                     <TableHead className="text-white">Plan Name</TableHead>
                     <TableHead className="text-white">Start Date</TableHead>
+                    <TableHead className="text-white">End Date</TableHead>
                     <TableHead className="text-white">Period</TableHead>
                     <TableHead className="text-white">Price</TableHead>
-                    <TableHead className="text-white">Status</TableHead>
+                    <TableHead className="text-white">Type</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {history.map((item) => (
-                    <TableRow key={item._id} className="text-white">
+                    <TableRow key={item.user_id} className="text-white">
                       <TableCell>{item.planName}</TableCell>
                       <TableCell>
                         {new Date(item.startDate).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>{item.period}</TableCell>
-                      <TableCell>₹{item.price}</TableCell>
                       <TableCell>
-                        <Badge>
-                          {item.isCurrent === true
-                            ? "active"
-                            : item.isCurrent === false
-                            ? "expired"
-                            : "cancelled"}
-                        </Badge>
+                        {new Date(item.endDate).toLocaleDateString()}
                       </TableCell>
+                      <TableCell>{item.period}</TableCell>
+                      <TableCell>₹{item.price} </TableCell>
+                      <TableCell>{item.createdType} </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

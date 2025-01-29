@@ -100,12 +100,15 @@ export default function JobPosts() {
       const filtered = filteredJobs.filter(
         (job) =>
           (job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          job.requirements.some((req: string) =>
+            req.toLowerCase().includes(searchQuery.toLowerCase())
+          ) ||
             job.company.companyName
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
             job.description
               .toLowerCase()
-              .includes(searchQuery.toLowerCase())) &&
+              .includes(searchQuery.toLowerCase()) ) &&
           job.location.toLowerCase().includes(searchLocation.toLowerCase())
       );
       setFilteredJobs(filtered);
