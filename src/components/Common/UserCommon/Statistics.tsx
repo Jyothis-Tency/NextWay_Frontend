@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Briefcase, Star, Calendar, Award } from "lucide-react";
+import { axiosAdmin, axiosUser } from "@/Utils/axiosUtil";
 
 const Statistics: React.FC = () => {
+  const [allCompanies, setAllCompanies] = useState([]);
+  const [allJobPosts, setAllJobPosts] = useState([]);
+  const [allInterviews, setAllInterviews] = useState([]);
   const stats = [
-    { icon: Briefcase, label: "Active Jobs", value: "2,145" },
-    { icon: Star, label: "Companies", value: "1,384" },
-    { icon: Calendar, label: "Interviews", value: "857" },
-    { icon: Award, label: "Placements", value: "492" },
+    { icon: Briefcase, label: "Active Jobs", value: allJobPosts.length },
+    { icon: Star, label: "Companies", value: allCompanies.length },
+    // { icon: Calendar, label: "Interviews", value: "857" },
+    //  { icon: Award, label: "Placements", value: "492" },
   ];
+
+  useEffect(() => {
+    async function getAllCompanies() {
+      const companies = await axiosAdmin.get("/all-companies");
+      setAllCompanies(companies.data.companyData);
+    }
+    async function getAllJobPosts() {
+      const allJobPosts = await axiosUser.get("/getAllJobPosts");
+
+      setAllJobPosts(allJobPosts.data.jobPosts);
+    }
+    
+    
+    getAllJobPosts();
+    getAllCompanies();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log("allJobPosts in", allJobPosts);
+  //   const interviews = allJobPosts.filter((posts) => posts.interviews);
+  // },[allJobPosts])
 
   return (
     <section className="my-12">

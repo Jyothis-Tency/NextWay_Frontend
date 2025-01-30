@@ -13,6 +13,7 @@ import CompanyProfileEditPage from "@/Pages/CompanyPages/CompanyProfileEditPage"
 import CreateJobPostPage from "@/Pages/CompanyPages/CreateJobPostPage";
 import JobPostDetailsPage from "@/Pages/CompanyPages/JobPostDetailsPage";
 import CompanyProtector from "@/Utils/companyProtector";
+import CompanyPublicOnlyProtector from "@/Utils/companyPublicOnlyRoute";
 import JobApplicationsListPage from "@/Pages/CompanyPages/JobApplicationsListPage";
 import JobApplicationByPostsPage from "@/Pages/CompanyPages/JobApplicationByPostsPage";
 import JobApplicationDetailedPage from "@/Pages/CompanyPages/JobApplicationDetailedPage";
@@ -32,10 +33,38 @@ const CompanyRoutes = () => {
           }
         />
 
-        <Route path="register" element={<RegisterCompanyPage />} />
-        <Route path="otp" element={<OtpVerifyPage />} />
-        <Route path="login" element={<LoginCompanyPage />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="register"
+          element={
+            <CompanyPublicOnlyProtector>
+              <RegisterCompanyPage />
+            </CompanyPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="otp"
+          element={
+            <CompanyPublicOnlyProtector>
+              <OtpVerifyPage />
+            </CompanyPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <CompanyPublicOnlyProtector>
+              <LoginCompanyPage />
+            </CompanyPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="forgot-password"
+          element={
+            <CompanyPublicOnlyProtector>
+              <ForgotPassword />
+            </CompanyPublicOnlyProtector>
+          }
+        />
         <Route
           path="profile"
           element={

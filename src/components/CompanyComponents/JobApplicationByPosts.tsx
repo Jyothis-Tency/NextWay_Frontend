@@ -160,7 +160,7 @@ export function JobApplicationByPosts() {
                       >
                         View Details
                       </Button>
-                      <select
+                      {/* <select
                         value={application.status}
                         onChange={(e) =>
                           handleStatusChange(application._id, e.target.value)
@@ -171,7 +171,7 @@ export function JobApplicationByPosts() {
                         <option value="Shortlisted">Shortlisted</option>
                         <option value="Rejected">Rejected</option>
                         <option value="Hired">Hired</option>
-                      </select>
+                      </select> */}
                     </TableCell>
                   </TableRow>
                 ))}

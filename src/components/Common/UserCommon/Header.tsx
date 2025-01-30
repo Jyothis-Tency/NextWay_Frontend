@@ -46,6 +46,7 @@ interface Notification {
 const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [newChatMessage, setNewChatMessage] = useState(0);
   const videoCallState = useSelector((state: RootState) => state.videoCall);
 
   const navigate = useNavigate();
@@ -115,6 +116,11 @@ const Header: React.FC = () => {
         //   title: newNotification.title,
         //   description: newNotification.message,
         // });
+      });
+      socket.on("receiveMessage", (message) => {
+        console.log(`socket.on("receiveMessage" on header`);
+        setNewChatMessage((prev) => prev + 1);
+        
       });
     }
 
@@ -201,10 +207,15 @@ const Header: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-gray-400 hover:text-white hover:bg-gray-800"
+            className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
             onClick={() => navigate("../chat")}
           >
             <Mail className="w-5 h-5" />
+            {newChatMessage > 0 && (
+              <span className="absolute -mx-2 -top-1 right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] ">
+                {newChatMessage}
+              </span>
+            )}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -17,9 +17,10 @@ const Home: React.FC = () => {
         <WelcomeSection />
         <div className="container mx-auto px-4 max-w-7xl">
           <About />
-          <RecommendedJobs />
-          <Statistics />
           <TopCompanies />
+
+          <Statistics />
+          <RecommendedJobs />
           <FAQ />
         </div>
       </main>

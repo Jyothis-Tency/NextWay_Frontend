@@ -59,22 +59,22 @@ const TopCompanies: React.FC = () => {
     getAllProfileImages();
   }, [topCompanies]);
 
-      const renderCompanyAvatar = (companyId: string, companyName: string) => {
-        const companyProfileImage = allProfileImages.find(
-          (img) => img.company_id === companyId
-        )?.profileImage;
+  const renderCompanyAvatar = (companyId: string, companyName: string) => {
+    const companyProfileImage = allProfileImages.find(
+      (img) => img.company_id === companyId
+    )?.profileImage;
 
-        return (
-          <Avatar className="h-8 w-12 mr-2 mb-3">
-            <AvatarImage
-              src={companyProfileImage || CompanyStatic}
-              alt={companyName}
-              className="w-12 h-12 rounded-full"
-            />
-            <AvatarFallback>{companyName[0]}</AvatarFallback>
-          </Avatar>
-        );
-      };
+    return (
+      <Avatar className="h-8 w-12 mr-2 mb-3">
+        <AvatarImage
+          src={companyProfileImage || CompanyStatic}
+          alt={companyName}
+          className="w-12 h-12 rounded-full"
+        />
+        <AvatarFallback>{companyName[0]}</AvatarFallback>
+      </Avatar>
+    );
+  };
   return (
     <section className="space-y-4">
       <h2 className="text-2xl font-bold">Top Companies</h2>
@@ -92,8 +92,8 @@ const TopCompanies: React.FC = () => {
                 className="bg-[#1a1f2e] p-4 rounded-xl border border-red-500 hover:shadow-[0_0_20px_rgba(255,0,0,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px]"
               >
                 <div className="flex items-start gap-3">
-                  {renderCompanyAvatar(company.company_id,company.name)}
-                  
+                  {renderCompanyAvatar(company.company_id, company.name)}
+
                   <div className="flex-1">
                     <h3 className="font-semibold text-sm text-white">
                       {company.name}

@@ -10,6 +10,7 @@ import UserProfilePage from "@/Pages/UserPages/ProfilePage";
 import ProfileEditPage from "@/Pages/UserPages/ProfileEditPage";
 import SubscriptionsPage from "@/Pages/UserPages/SubscriptionsPage";
 import UserProtector from "@/Utils/userProtector";
+import UserPublicOnlyProtector from "@/Utils/userPublicOnlyRoute";
 import MyJobsPage from "@/Pages/UserPages/MyJobsPage";
 import UserChatPage from "@/Pages/UserPages/UserChatPage";
 import VideoCallUserPage from "@/Pages/UserPages/VideoCallUserPage";
@@ -25,10 +26,38 @@ const UserRoutes = () => {
       <Routes>
         <Route path="home" element={<HomePage />} />
 
-        <Route path="register" element={<RegisterUserPage />} />
-        <Route path="otp" element={<OTPVerifyPage />} />
-        <Route path="login" element={<LoginUserPage />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route
+          path="register"
+          element={
+            <UserPublicOnlyProtector>
+              <RegisterUserPage />
+            </UserPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="otp"
+          element={
+            <UserPublicOnlyProtector>
+              <OTPVerifyPage />
+            </UserPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <UserPublicOnlyProtector>
+              <LoginUserPage />
+            </UserPublicOnlyProtector>
+          }
+        />
+        <Route
+          path="forgot-password"
+          element={
+            <UserPublicOnlyProtector>
+              <ForgotPassword />
+            </UserPublicOnlyProtector>
+          }
+        />
 
         <Route path="job-posts" element={<JobPostsPage />} />
         <Route path="job-post-details/:_id" element={<JobPostDetailedPage />} />

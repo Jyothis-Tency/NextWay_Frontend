@@ -71,6 +71,7 @@ export function UserChatInterface() {
       socket.off("receiveMessage");
 
       socket.on("receiveMessage", (message: IMessage) => {
+        console.log(`socket.on("receiveMessage" on user chat`);
         setChats((prevChats) => {
           const chatIndex = prevChats.findIndex(
             (chat) => chat.company_id === message.company_id

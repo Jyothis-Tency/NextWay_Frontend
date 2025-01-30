@@ -5,23 +5,24 @@ interface UserProtectorProps {
   children: ReactNode;
 }
 
-const UserProtector: React.FC<UserProtectorProps> = ({ children }) => {
+const UserPublicOnlyProtector: React.FC<UserProtectorProps> = ({
+  children,
+}) => {
   const navigate = useNavigate();
   const user = JSON.parse(
     JSON.parse(localStorage.getItem("persist:root") || "{}").user || "{}"
   ).userInfo?.user_id;
 
   useEffect(() => {
-    if (!user) {
-      navigate("../login", {
+    if (user) {
+      navigate("../home", {
         state: { message: "Authorization failed" },
         replace: true,
       });
     }
-
   }, [navigate, user]);
 
-  return user ? <>{children}</> : null;
+  return !user ? <>{children}</> : null;
 };
 
-export default UserProtector;
+export default UserPublicOnlyProtector;

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Calendar,
-  Clock,
-  DollarSign,
-  MapPin,
-  Search,
-  Building,
-} from "lucide-react";
+import { Calendar, Clock, DollarSign, MapPin, Search } from "lucide-react";
 import { fetchJobs, submitJobApplication } from "@/API/userAPI";
 import {
   Dialog,
@@ -32,8 +27,29 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { toast } from "sonner";
+import { axiosCompany } from "@/Utils/axiosUtil";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
+
+// Validation schema using Yup
+const applicationSchema = Yup.object().shape({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string().required("Phone number is required"),
+  location: Yup.string().required("Location is required"),
+  coverLetter: Yup.string().required("Cover letter is required"),
+  resume: Yup.mixed()
+    .required("Resume is required")
+    .test("fileFormat", "Resume must be a PDF", (value) => {
+      if (value && value instanceof File) {
+        return value.type === "application/pdf";
+      }
+      return false;
+    }),
+});
 
 export default function JobPosts() {
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -53,8 +69,15 @@ export default function JobPosts() {
   });
   const [isSkillBasedSorting, setIsSkillBasedSorting] = useState(false);
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
+  const [allProfileImages, setAllProfileImages] = useState<
+    {
+      company_id: string;
+      profileImage: string;
+    }[]
+  >([]);
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  console.log("selectedJobbbbbbbbbbbbbbbbbbb",selectedJob)
 
   useEffect(() => {
     const getJobPosts = async () => {
@@ -70,6 +93,7 @@ export default function JobPosts() {
     };
 
     getJobPosts();
+    getAllProfileImages();
   }, []);
 
   useEffect(() => {
@@ -80,10 +104,37 @@ export default function JobPosts() {
         lastName: userInfo.lastName || "",
         email: userInfo.email || "",
         phone: userInfo.phone || "",
-        location: "",
+        location: userInfo.location || "",
       }));
     }
   }, [userInfo]);
+
+  const getAllProfileImages = async () => {
+    try {
+      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      console.log(response.data);
+      setAllProfileImages(response.data);
+    } catch (error) {
+      console.error("Error fetching profile images:", error);
+    }
+  };
+
+  const renderCompanyAvatar = (companyId: string, companyName: string) => {
+    const companyProfileImage = allProfileImages.find(
+      (img) => img.company_id === companyId
+    )?.profileImage;
+
+    return (
+      <Avatar className="h-8 w-12 mr-2 mb-3">
+        <AvatarImage
+          src={companyProfileImage || CompanyStatic}
+          alt={companyName}
+          className="w-12 h-12 rounded-full"
+        />
+        <AvatarFallback>{companyName[0]}</AvatarFallback>
+      </Avatar>
+    );
+  };
 
   const handleSearch = async () => {
     if (searchQuery.trim() === "" && searchLocation.trim() === "") {
@@ -163,20 +214,8 @@ export default function JobPosts() {
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setApplicationData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setApplicationData((prev) => ({ ...prev, resume: e.target.files![0] }));
-    }
-  };
-
-  const handleNext = () => {
+  const handleNext = (values: typeof applicationData) => {
+    setApplicationData(values);
     setIsApplicationModalOpen(false);
     setIsOverviewModalOpen(true);
   };
@@ -281,6 +320,7 @@ export default function JobPosts() {
                             : "bg-gray-800 hover:bg-gray-700"
                         }`}
                       >
+                        {renderCompanyAvatar(job.company_id, "")} 
                         <h3 className="font-semibold">{job.title}</h3>
                         <p className="text-sm text-black-400">
                           {job.company.companyName}
@@ -309,6 +349,7 @@ export default function JobPosts() {
           {/* Job details */}
           <Card className="w-full lg:w-2/3 bg-gray-800 text-white">
             <CardHeader>
+              {renderCompanyAvatar(selectedJob?.company_id, "")}
               <CardTitle>
                 {filteredJobs.length > 0
                   ? selectedJob
@@ -323,73 +364,78 @@ export default function JobPosts() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              d
               {filteredJobs.length > 0 ? (
                 selectedJob ? (
-                  <ScrollArea className="h-[calc(100vh-400px)]">
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap gap-2">
-                        <Badge
-                          variant="secondary"
-                          className="bg-gray-700 text-white"
-                        >
-                          <MapPin className="mr-1 h-3 w-3" />
-                          {selectedJob.location}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="bg-gray-700 text-white"
-                        >
-                          <DollarSign className="mr-1 h-3 w-3" />
-                          {selectedJob.salaryRange.min} -{" "}
-                          {selectedJob.salaryRange.max}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="bg-gray-700 text-white"
-                        >
-                          <Clock className="mr-1 h-3 w-3" />
-                          {selectedJob.employmentType}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="bg-gray-700 text-white"
-                        >
-                          <Calendar className="mr-1 h-3 w-3" />
-                          Posted {selectedJob.posted}
-                        </Badge>
+                  <div>
+                    <ScrollArea className="h-[calc(100vh-400px)]">
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-2">
+                          <Badge
+                            variant="secondary"
+                            className="bg-gray-700 text-white"
+                          >
+                            <MapPin className="mr-1 h-3 w-3" />
+                            {selectedJob.location}
+                          </Badge>
+                          <Badge
+                            variant="secondary"
+                            className="bg-gray-700 text-white"
+                          >
+                            <DollarSign className="mr-1 h-3 w-3" />
+                            {selectedJob.salaryRange.min} -{" "}
+                            {selectedJob.salaryRange.max}
+                          </Badge>
+                          <Badge
+                            variant="secondary"
+                            className="bg-gray-700 text-white"
+                          >
+                            <Clock className="mr-1 h-3 w-3" />
+                            {selectedJob.employmentType}
+                          </Badge>
+                          <Badge
+                            variant="secondary"
+                            className="bg-gray-700 text-white"
+                          >
+                            <Calendar className="mr-1 h-3 w-3" />
+                            Posted {selectedJob.posted}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-2">
+                            Job Description
+                          </h3>
+                          <p className="text-gray-300">
+                            {selectedJob.description}
+                          </p>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-2">
+                            Responsibilities
+                          </h3>
+                          <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                            {selectedJob.responsibilities.map(
+                              (resp: string, index: number) => (
+                                <li key={index}>{resp}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-2">
+                            Requirements
+                          </h3>
+                          <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                            {selectedJob.requirements.map(
+                              (req: string, index: number) => (
+                                <li key={index}>{req}</li>
+                              )
+                            )}
+                          </ul>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Job Description
-                        </h3>
-                        <p className="text-gray-300">
-                          {selectedJob.description}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Responsibilities
-                        </h3>
-                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                          {selectedJob.responsibilities.map(
-                            (resp: string, index: number) => (
-                              <li key={index}>{resp}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Requirements
-                        </h3>
-                        <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                          {selectedJob.requirements.map(
-                            (req: string, index: number) => (
-                              <li key={index}>{req}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
+                    </ScrollArea>
+                    <div>
                       <div className="flex gap-4">
                         {userInfo && (
                           <Button
@@ -412,7 +458,7 @@ export default function JobPosts() {
                         )}
                       </div>
                     </div>
-                  </ScrollArea>
+                  </div>
                 ) : (
                   <div className="text-center py-4 text-gray-400">
                     No job selected. Please choose a job from the list.
@@ -440,90 +486,129 @@ export default function JobPosts() {
               Please fill out the application form below.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  value={applicationData.firstName}
-                  onChange={handleInputChange}
-                  className="bg-gray-700 text-white"
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  value={applicationData.lastName}
-                  onChange={handleInputChange}
-                  className="bg-gray-700 text-white"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                value={applicationData.email}
-                onChange={handleInputChange}
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={applicationData.phone}
-                onChange={handleInputChange}
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                name="location"
-                value={applicationData.location}
-                onChange={handleInputChange}
-                className="bg-gray-700 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="coverLetter">Cover Letter</Label>
-              <Textarea
-                id="coverLetter"
-                name="coverLetter"
-                value={applicationData.coverLetter}
-                onChange={handleInputChange}
-                className="bg-gray-700 text-white"
-                rows={4}
-              />
-            </div>
-            <div>
-              <Label htmlFor="resume">Resume</Label>
-              <Input
-                id="resume"
-                name="resume"
-                type="file"
-                onChange={handleFileChange}
-                className="bg-gray-700 text-white"
-                accept=".pdf,.doc,.docx"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={handleNext}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Next
-            </Button>
-          </DialogFooter>
+          <Formik
+            initialValues={applicationData}
+            validationSchema={applicationSchema}
+            onSubmit={handleNext}
+          >
+            {({ setFieldValue }) => (
+              <Form className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Field
+                      as={Input}
+                      id="firstName"
+                      name="firstName"
+                      className="bg-gray-700 text-white"
+                    />
+                    <ErrorMessage
+                      name="firstName"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Field
+                      as={Input}
+                      id="lastName"
+                      name="lastName"
+                      className="bg-gray-700 text-white"
+                    />
+                    <ErrorMessage
+                      name="lastName"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Field
+                    as={Input}
+                    id="email"
+                    name="email"
+                    className="bg-gray-700 text-white"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Field
+                    as={Input}
+                    id="phone"
+                    name="phone"
+                    className="bg-gray-700 text-white"
+                  />
+                  <ErrorMessage
+                    name="phone"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Field
+                    as={Input}
+                    id="location"
+                    name="location"
+                    className="bg-gray-700 text-white"
+                  />
+                  <ErrorMessage
+                    name="location"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="coverLetter">Cover Letter</Label>
+                  <Field
+                    as={Textarea}
+                    id="coverLetter"
+                    name="coverLetter"
+                    className="bg-gray-700 text-white"
+                    rows={4}
+                  />
+                  <ErrorMessage
+                    name="coverLetter"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="resume">Resume (PDF only)</Label>
+                  <input
+                    id="resume"
+                    name="resume"
+                    type="file"
+                    onChange={(event) => {
+                      setFieldValue("resume", event.currentTarget.files?.[0]);
+                    }}
+                    className="bg-gray-700 text-white"
+                    accept=".pdf"
+                  />
+                  <ErrorMessage
+                    name="resume"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Next
+                  </Button>
+                </DialogFooter>
+              </Form>
+            )}
+          </Formik>
         </DialogContent>
       </Dialog>
 
