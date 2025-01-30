@@ -103,7 +103,6 @@ export function InterviewModal({
                 <label htmlFor="date">Date</label>
                 <Input
                   id="date"
-                  name="date"
                   type="date"
                   className={`text-gray-900 ${
                     formik.touched.date && formik.errors.date
@@ -122,7 +121,6 @@ export function InterviewModal({
                 <label htmlFor="time">Time</label>
                 <Input
                   id="time"
-                  name="time"
                   type="time"
                   className={`text-gray-900 ${
                     formik.touched.time && formik.errors.time
@@ -143,7 +141,6 @@ export function InterviewModal({
             <label htmlFor="message">Message</label>
             <Textarea
               id="message"
-              name="message"
               className={`text-gray-900 ${
                 formik.touched.message && formik.errors.message
                   ? "border-red-500"
