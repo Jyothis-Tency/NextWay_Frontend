@@ -320,7 +320,7 @@ export default function JobPosts() {
                             : "bg-gray-800 hover:bg-gray-700"
                         }`}
                       >
-                        {renderCompanyAvatar(job.company_id, "")} 
+                        {renderCompanyAvatar(job.company_id, "")}
                         <h3 className="font-semibold">{job.title}</h3>
                         <p className="text-sm text-black-400">
                           {job.company.companyName}
@@ -364,7 +364,6 @@ export default function JobPosts() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              d
               {filteredJobs.length > 0 ? (
                 selectedJob ? (
                   <div>
@@ -382,8 +381,7 @@ export default function JobPosts() {
                             variant="secondary"
                             className="bg-gray-700 text-white"
                           >
-                            <DollarSign className="mr-1 h-3 w-3" />
-                            {selectedJob.salaryRange.min} -{" "}
+                            ₹ {selectedJob.salaryRange.min} -{" "}
                             {selectedJob.salaryRange.max}
                           </Badge>
                           <Badge
