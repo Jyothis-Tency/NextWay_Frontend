@@ -1,5 +1,6 @@
 import type React from "react";
-import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   Dialog,
   DialogContent,
@@ -17,22 +18,72 @@ interface InterviewModalProps {
   type: "schedule" | "postpone" | "cancel" | "reopen";
 }
 
+interface FormValues {
+  date: string;
+  time: string;
+  message: string;
+}
+
 export function InterviewModal({
   isOpen,
   onClose,
   onSubmit,
   type,
 }: InterviewModalProps) {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [message, setMessage] = useState("");
-  console.log("date", date);
-  console.log("time", time);
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const dateTime = type === "cancel" ? "" : `${date}T${time}`;
-    onSubmit(dateTime, message);
+  // Helper function to check if time is within business hours
+  const isBusinessHours = (time: string) => {
+    const [hours] = time.split(":").map(Number);
+    return hours >= 9 && hours < 18;
   };
+
+  // Initial form values
+  const initialValues: FormValues = {
+    date: "",
+    time: "",
+    message: "",
+  };
+
+  // Validation schema
+  const validationSchema = Yup.object().shape({
+    date:
+      type !== "cancel"
+        ? Yup.string()
+            .required("Date is required")
+            .test("future", "Date must be in the future", (value) => {
+              if (!value) return false;
+              const selectedDate = new Date(value);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return selectedDate >= today;
+            })
+        : Yup.string(),
+    time:
+      type !== "cancel"
+        ? Yup.string()
+            .required("Time is required")
+            .test(
+              "business-hours",
+              "Time must be between 9 AM and 6 PM",
+              (value) => {
+                if (!value) return false;
+                return isBusinessHours(value);
+              }
+            )
+        : Yup.string(),
+    message: Yup.string()
+      .required("Message is required")
+      .min(10, "Message must be at least 10 characters")
+      .max(500, "Message must not exceed 500 characters"),
+  });
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      const dateTime = type === "cancel" ? "" : `${values.date}T${values.time}`;
+      onSubmit(dateTime, values.message);
+    },
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -45,30 +96,46 @@ export function InterviewModal({
             {type === "reopen" && "Reopen Interview"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={formik.handleSubmit} className="space-y-4">
           {type !== "cancel" && (
             <>
               <div>
                 <label htmlFor="date">Date</label>
                 <Input
                   id="date"
+                  name="date"
                   type="date"
-                  className="text-gray-900"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
+                  className={`text-gray-900 ${
+                    formik.touched.date && formik.errors.date
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                  {...formik.getFieldProps("date")}
                 />
+                {formik.touched.date && formik.errors.date && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.date}
+                  </div>
+                )}
               </div>
               <div>
                 <label htmlFor="time">Time</label>
                 <Input
                   id="time"
+                  name="time"
                   type="time"
-                  className="text-gray-900"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
+                  className={`text-gray-900 ${
+                    formik.touched.time && formik.errors.time
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                  {...formik.getFieldProps("time")}
                 />
+                {formik.touched.time && formik.errors.time && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.time}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -76,18 +143,31 @@ export function InterviewModal({
             <label htmlFor="message">Message</label>
             <Textarea
               id="message"
-              className="text-gray-900"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              required
+              name="message"
+              className={`text-gray-900 ${
+                formik.touched.message && formik.errors.message
+                  ? "border-red-500"
+                  : ""
+              }`}
+              {...formik.getFieldProps("message")}
             />
+            {formik.touched.message && formik.errors.message && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.message}
+              </div>
+            )}
           </div>
-          <Button type="submit">
-            {type === "schedule" && "Schedule"}
-            {type === "postpone" && "Postpone"}
-            {type === "cancel" && "Cancel"}
-            {type === "reopen" && "Reopen"}
-          </Button>
+          <div className="text-right">
+            <Button
+              type="submit"
+              disabled={!formik.isValid || formik.isSubmitting}
+            >
+              {type === "schedule" && "Schedule"}
+              {type === "postpone" && "Postpone"}
+              {type === "cancel" && "Cancel"}
+              {type === "reopen" && "Reopen"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

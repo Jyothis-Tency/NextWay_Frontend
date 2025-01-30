@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 
 interface IUser {
@@ -232,16 +231,24 @@ export function JobApplicationDetailed() {
   };
 
   if (loading) {
-    return <div className="text-center text-white">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-white">
+        Loading...
+      </div>
+    );
   }
 
   if (!application || !userDetails) {
-    return <div className="text-center text-white">Application not found.</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-white">
+        Application not found.
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6 p-6 ml-64">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-white">Application Details</h1>
         <Button
           onClick={() => navigate(-1)}
@@ -252,231 +259,242 @@ export function JobApplicationDetailed() {
         </Button>
       </div>
 
-      <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Job Application Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p>
-                <strong>Job Title:</strong> {application.jobTitle}
-              </p>
-              <p>
-                <strong>Company:</strong> {application.companyName}
-              </p>
-              <p>
-                <strong>Applied On:</strong>{" "}
-                {new Date(application.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p>
-                <strong>Status:</strong>
-                <Badge
-                  className={`ml-2 ${
-                    application.status === "Pending"
-                      ? "bg-yellow-500"
-                      : application.status === "Shortlisted"
-                      ? "bg-blue-500"
-                      : application.status === "Rejected"
-                      ? "bg-red-500"
-                      : "bg-green-500"
-                  }`}
-                >
-                  {application.status}
-                </Badge>
-              </p>
-              <select
-                value={application.status}
-                onChange={(e) =>
-                  openStatusModal(e.target.value as IJobApplication["status"])
-                }
-                className="mt-2 bg-gray-700 text-white rounded p-2"
-              >
-                <option value="Pending">Pending</option>
-                <option value="Shortlisted">Shortlisted</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Hired">Hired</option>
-              </select>
-            </div>
-            <p>
-              <b>Status message for user: </b>
-              {application.statusMessage}
-            </p>
-          </div>
-          {application.coverLetter && (
-            <div className="mt-4">
-              <h3 className="text-xl font-semibold mb-2">Cover Letter</h3>
-              <p>{application.coverLetter}</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Interview Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {application.interview &&
-          (application.interview.interviewStatus === "conducted" ||
-            application.interview.interviewStatus) ? (
-            <>
-              <p>Status: {application.interview.interviewStatus}</p>
-              {application.interview.dateTime && (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-gray-800 text-white">
+          <CardHeader>
+            <CardTitle>Job Application Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
                 <p>
-                  Scheduled for:{" "}
-                  {new Date(application.interview.dateTime).toLocaleString()}
+                  <strong>Job Title:</strong> {application.jobTitle}
                 </p>
+                <p>
+                  <strong>Company:</strong> {application.companyName}
+                </p>
+                <p>
+                  <strong>Applied On:</strong>{" "}
+                  {new Date(application.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div>
+                <p>
+                  <strong>Status:</strong>
+                  <Badge
+                    className={`ml-2 ${
+                      application.status === "Pending"
+                        ? "bg-yellow-500"
+                        : application.status === "Shortlisted"
+                        ? "bg-blue-500"
+                        : application.status === "Rejected"
+                        ? "bg-red-500"
+                        : "bg-green-500"
+                    }`}
+                  >
+                    {application.status}
+                  </Badge>
+                </p>
+                <select
+                  value={application.status}
+                  onChange={(e) =>
+                    openStatusModal(e.target.value as IJobApplication["status"])
+                  }
+                  className="mt-2 bg-gray-700 text-white rounded p-2 w-full"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Shortlisted">Shortlisted</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Hired">Hired</option>
+                </select>
+              </div>
+              <p>
+                <strong>Status message for user:</strong>{" "}
+                {application.statusMessage}
+              </p>
+              {application.coverLetter && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Cover Letter</h3>
+                  <p className="text-sm">{application.coverLetter}</p>
+                </div>
               )}
-              {application.interview.interviewStatus === "scheduled" && (
-                <>
-                  <Button onClick={() => handleInterviewAction("postpone")}>
-                    Postpone
-                  </Button>
-                  <Button onClick={() => handleInterviewAction("cancel")}>
-                    Cancel
-                  </Button>
-                  <Button onClick={() => startInterview()}>
-                    Start Interview
-                  </Button>
-                </>
-              )}
-              {application.interview.interviewStatus === "conducted" && (
-                <Button onClick={() => handleInterviewAction("schedule")}>
-                  Schedule Interview
-                </Button>
-              )}
-              {application.interview.interviewStatus === "canceled" && (
-                <Button onClick={() => handleInterviewAction("reopen")}>
-                  Reopen Interview
-                </Button>
-              )}
-            </>
-          ) : (
-            <Button onClick={() => handleInterviewAction("schedule")}>
-              Schedule Interview
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800 text-white">
+          <CardHeader>
+            <CardTitle>Interview Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {application.interview &&
+            (application.interview.interviewStatus === "conducted" ||
+              application.interview.interviewStatus) ? (
+              <div className="space-y-4">
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {application.interview.interviewStatus}
+                </p>
+                {application.interview.dateTime && (
+                  <p>
+                    <strong>Scheduled for:</strong>{" "}
+                    {new Date(application.interview.dateTime).toLocaleString()}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {application.interview.interviewStatus === "scheduled" && (
+                    <>
+                      <Button onClick={() => handleInterviewAction("postpone")}>
+                        Postpone
+                      </Button>
+                      <Button onClick={() => handleInterviewAction("cancel")}>
+                        Cancel
+                      </Button>
+                      <Button onClick={() => startInterview()}>
+                        Start Interview
+                      </Button>
+                    </>
+                  )}
+                  {application.interview.interviewStatus === "conducted" && (
+                    <Button onClick={() => handleInterviewAction("schedule")}>
+                      Schedule Interview
+                    </Button>
+                  )}
+                  {application.interview.interviewStatus === "canceled" && (
+                    <Button onClick={() => handleInterviewAction("reopen")}>
+                      Reopen Interview
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <Button onClick={() => handleInterviewAction("schedule")}>
+                Schedule Interview
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <Card className="bg-gray-800 text-white">
         <CardHeader>
           <CardTitle>Applicant Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center mb-6">
-            {userDetails.profileImage && (
-              <img
-                src={userDetails.profileImage || "/placeholder.svg"}
-                alt="Profile"
-                className="w-40 h-40 rounded-full object-cover border-4 border-blue-500 shadow-lg mb-4"
-              />
-            )}
-            <h2 className="text-2xl font-bold">
-              {userDetails.firstName} {userDetails.lastName}
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">
-                Contact Information
-              </h3>
-              <p>
-                <strong>Email:</strong> {userDetails.email}
-              </p>
-              <p>
-                <strong>Phone:</strong> {userDetails.phone}
-              </p>
-              <p>
-                <strong>Location:</strong> {userDetails.location}
-              </p>
+          <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-8">
+            <div className="flex flex-col items-center">
+              {userDetails.profileImage && (
+                <img
+                  src={userDetails.profileImage || "/placeholder.svg"}
+                  alt="Profile"
+                  className="w-40 h-40 rounded-full object-cover border-4 border-blue-500 shadow-lg mb-4"
+                />
+              )}
+              <h2 className="text-2xl font-bold text-center">
+                {userDetails.firstName} {userDetails.lastName}
+              </h2>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Job Preferences</h3>
-              <p>
-                <strong>Preferred Location:</strong>{" "}
-                {userDetails.preferredLocation}
-              </p>
-              <p>
-                <strong>Salary Expectation:</strong> $
-                {userDetails.salaryExpectation}
-              </p>
-              <p>
-                <strong>Remote Work:</strong>{" "}
-                {userDetails.remoteWork ? "Yes" : "No"}
-              </p>
-              <p>
-                <strong>Willing to Relocate:</strong>{" "}
-                {userDetails.willingToRelocate ? "Yes" : "No"}
-              </p>
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Contact Information
+                </h3>
+                <p>
+                  <strong>Email:</strong> {userDetails.email}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {userDetails.phone}
+                </p>
+                <p>
+                  <strong>Location:</strong> {userDetails.location}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Job Preferences</h3>
+                <p>
+                  <strong>Preferred Location:</strong>{" "}
+                  {userDetails.preferredLocation}
+                </p>
+                <p>
+                  <strong>Salary Expectation:</strong> $
+                  {userDetails.salaryExpectation}
+                </p>
+                <p>
+                  <strong>Remote Work:</strong>{" "}
+                  {userDetails.remoteWork ? "Yes" : "No"}
+                </p>
+                <p>
+                  <strong>Willing to Relocate:</strong>{" "}
+                  {userDetails.willingToRelocate ? "Yes" : "No"}
+                </p>
+              </div>
             </div>
           </div>
           {userDetails.bio && (
             <div className="mt-6">
               <h3 className="text-xl font-semibold mb-2">Bio</h3>
-              <p>{userDetails.bio}</p>
+              <p className="text-sm">{userDetails.bio}</p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Skills and Proficiency</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Skills</h3>
-              <ul className="list-disc list-inside">
-                {userDetails.skills.map((skill, index) => (
-                  <li key={index}>{skill}</li>
-                ))}
-              </ul>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-gray-800 text-white">
+          <CardHeader>
+            <CardTitle>Skills and Proficiency</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Skills</h3>
+                <ul className="list-disc list-inside">
+                  {userDetails.skills.map((skill, index) => (
+                    <li key={index}>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Proficiency</h3>
+                <ul className="list-disc list-inside">
+                  {userDetails.proficiency.map((prof, index) => (
+                    <li key={index}>
+                      {prof.skill}: {prof.level}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Proficiency</h3>
-              <ul className="list-disc list-inside">
-                {userDetails.proficiency.map((prof, index) => (
-                  <li key={index}>
-                    {prof.skill}: {prof.level}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card className="bg-gray-800 text-white">
-        <CardHeader>
-          <CardTitle>Experience</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {userDetails.experience.map((exp, index) => (
-            <div key={index} className="mb-4">
-              <h3 className="text-lg font-semibold">
-                {exp.jobTitle} at {exp.company}
-              </h3>
-              <p>{exp.location}</p>
-              <p>
-                {new Date(exp.startDate).toLocaleDateString()} -{" "}
-                {exp.endDate
-                  ? new Date(exp.endDate).toLocaleDateString()
-                  : "Present"}
-              </p>
-              <ul className="list-disc list-inside mt-2">
-                {exp.responsibilities.map((resp, respIndex) => (
-                  <li key={respIndex}>{resp}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+        <Card className="bg-gray-800 text-white">
+          <CardHeader>
+            <CardTitle>Experience</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {userDetails.experience.map((exp, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="text-lg font-semibold">
+                  {exp.jobTitle} at {exp.company}
+                </h3>
+                <p className="text-sm">{exp.location}</p>
+                <p className="text-sm">
+                  {new Date(exp.startDate).toLocaleDateString()} -{" "}
+                  {exp.endDate
+                    ? new Date(exp.endDate).toLocaleDateString()
+                    : "Present"}
+                </p>
+                <ul className="list-disc list-inside mt-2 text-sm">
+                  {exp.responsibilities.map((resp, respIndex) => (
+                    <li key={respIndex}>{resp}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
 
       <Card className="bg-gray-800 text-white">
         <CardHeader>
@@ -488,8 +506,8 @@ export function JobApplicationDetailed() {
               <h3 className="text-lg font-semibold">
                 {edu.degree} in {edu.fieldOfStudy}
               </h3>
-              <p>{edu.institution}</p>
-              <p>
+              <p className="text-sm">{edu.institution}</p>
+              <p className="text-sm">
                 {new Date(edu.startDate).toLocaleDateString()} -{" "}
                 {new Date(edu.endDate).toLocaleDateString()}
               </p>
