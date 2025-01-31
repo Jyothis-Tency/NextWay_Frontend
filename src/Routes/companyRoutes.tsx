@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import DashboardPage from "@/Pages/CompanyPages/DashboardPage";
+import CompanyDashboard from "@/Pages/CompanyPages/DashboardPage";
 import JobPostListPage from "@/Pages/CompanyPages/JobPostListPage";
 import NewJobPostFormPage from "@/Pages/CompanyPages/NewJobFormPage";
 import CompanyFormPage from "@/Pages/CompanyPages/CompanyProfileEditPage";
@@ -28,7 +28,7 @@ const CompanyRoutes = () => {
           path="dashboard"
           element={
             <CompanyProtector>
-              <DashboardPage />
+              <CompanyDashboard />
             </CompanyProtector>
           }
         />
