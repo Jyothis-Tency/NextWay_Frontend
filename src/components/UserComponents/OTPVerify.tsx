@@ -146,7 +146,7 @@ function OtpVerify() {
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Gig</span>
+            <span className="text-3xl font-bold text-red-600">Way</span>
             <span className="text-3sm font-bold text-red-600">Seeker</span>
           </div>
         </div>

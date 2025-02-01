@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import type React from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -10,8 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Icons } from "@/components/ui/icons";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { axiosCompany } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
-import { Pencil } from "lucide-react";
+import { Pencil, MapPin, Mail, Phone, Link } from "lucide-react";
 
 interface ICompany {
   company_id: string;
@@ -132,16 +131,16 @@ export function CompanyProfile() {
   };
 
   if (loading) {
-    return <div className="text-white text-center mt-8">Loading...</div>;
+    return <div className="text-[#FFFFFF] text-center mt-8">Loading...</div>;
   }
 
   if (!company) {
     return (
-      <div className="text-white text-center mt-8">
+      <div className="text-[#FFFFFF] text-center mt-8">
         <p>No company details found.</p>
         <Button
           onClick={() => (window.location.href = "/recruiter/company-form")}
-          className="mt-4 bg-blue-500 hover:bg-blue-600"
+          className="mt-4 bg-[#4F46E5] hover:bg-[#4338CA]"
         >
           Add Company Details
         </Button>
@@ -150,22 +149,24 @@ export function CompanyProfile() {
   }
 
   return (
-    <div className="space-y-6 p-6 ml-64">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Company Profile</h1>
+    <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
+          Company Profile
+        </h1>
         <Button
           onClick={() => (window.location.href = "/company/profile-edit")}
-          className="bg-blue-500 hover:bg-blue-600"
+          className="bg-[#4F46E5] hover:bg-[#4338CA] w-full md:w-auto"
         >
-          <Icons.Pencil className="w-4 h-4 mr-2" />
+          <Pencil className="w-4 h-4 mr-2" />
           Edit Company Profile
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1 bg-gray-800 text-white">
+        <Card className="md:col-span-1 bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
+            <div className="flex flex-col md:flex-row items-center md:space-x-4">
+              <div className="relative mb-4 md:mb-0">
                 <Avatar className="w-20 h-20">
                   <AvatarImage
                     src={profileImage || "/placeholder.svg?height=80&width=80"}
@@ -174,7 +175,7 @@ export function CompanyProfile() {
                   <AvatarFallback>{company.name[0]}</AvatarFallback>
                 </Avatar>
                 <Button
-                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 bg-blue-500 hover:bg-blue-600 flex items-center justify-center"
+                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 bg-[#4F46E5] hover:bg-[#4338CA] flex items-center justify-center"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Pencil className="h-4 w-4" />
@@ -187,9 +188,11 @@ export function CompanyProfile() {
                   accept="image/*"
                 />
               </div>
-              <div>
-                <CardTitle className="text-2xl">{company.name}</CardTitle>
-                <CardDescription className="text-gray-400">
+              <div className="text-center md:text-left">
+                <CardTitle className="text-xl md:text-2xl">
+                  {company.name}
+                </CardTitle>
+                <CardDescription className="text-[#A0A0A0]">
                   {company.industry || "Industry not specified"}
                 </CardDescription>
               </div>
@@ -198,23 +201,23 @@ export function CompanyProfile() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <Icons.MapPin className="h-4 w-4 text-gray-400" />
+                <MapPin className="h-4 w-4 text-[#A0A0A0]" />
                 <span>{company.location || "Location not specified"}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Icons.Mail className="h-4 w-4 text-gray-400" />
+                <Mail className="h-4 w-4 text-[#A0A0A0]" />
                 <span>{company.email}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Icons.Phone className="h-4 w-4 text-gray-400" />
+                <Phone className="h-4 w-4 text-[#A0A0A0]" />
                 <span>{company.phone}</span>
               </div>
               {company.website && (
                 <div className="flex items-center space-x-2">
-                  <Icons.Link className="h-4 w-4 text-gray-400" />
+                  <Link className="h-4 w-4 text-[#A0A0A0]" />
                   <a
                     href={company.website}
-                    className="text-blue-400 hover:underline"
+                    className="text-[#60A5FA] hover:underline"
                   >
                     Website
                   </a>
@@ -223,7 +226,7 @@ export function CompanyProfile() {
             </div>
           </CardContent>
         </Card>
-        <Card className="md:col-span-2 bg-gray-800 text-white">
+        <Card className="md:col-span-2 bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>About Us</CardTitle>
           </CardHeader>
@@ -233,7 +236,7 @@ export function CompanyProfile() {
         </Card>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-gray-800 text-white">
+        <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>Company Size</CardTitle>
           </CardHeader>
@@ -243,18 +246,18 @@ export function CompanyProfile() {
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-gray-800 text-white">
+        <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4">
               {company.socialLinks?.linkedin && (
                 <a
                   href={company.socialLinks.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-[#60A5FA] hover:underline"
                 >
                   LinkedIn
                 </a>
@@ -264,7 +267,7 @@ export function CompanyProfile() {
                   href={company.socialLinks.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-[#60A5FA] hover:underline"
                 >
                   Twitter
                 </a>
@@ -274,7 +277,7 @@ export function CompanyProfile() {
                   href={company.socialLinks.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-[#60A5FA] hover:underline"
                 >
                   Facebook
                 </a>
@@ -284,19 +287,28 @@ export function CompanyProfile() {
         </Card>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
           <DialogHeader>
             <DialogTitle>Confirm Company Profile Picture Upload</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#A0A0A0]">
               Are you sure you want to upload this image as your new company
               profile picture?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancelUpload}>
+            <Button
+              variant="outline"
+              onClick={handleCancelUpload}
+              className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] hover:bg-[#4B5563]"
+            >
               Cancel
             </Button>
-            <Button onClick={handleConfirmUpload}>Confirm Upload</Button>
+            <Button
+              onClick={handleConfirmUpload}
+              className="bg-[#4F46E5] hover:bg-[#4338CA]"
+            >
+              Confirm Upload
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

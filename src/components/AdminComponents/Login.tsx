@@ -64,7 +64,7 @@ export default function AdminLogin() {
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-blue-500">Gig</span>
+            <span className="text-3xl font-bold text-blue-500">Way</span>
             <span className="text-xl font-bold text-blue-500">Admin</span>
           </div>
         </div>

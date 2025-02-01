@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Header } from "@/components/Common/CompanyCommon/Header";
 import { Footer } from "@/components/Common/CompanyCommon/Footer";
 import { Sidebar } from "@/components/Common/CompanyCommon/Sidebar";
-import { JobApplicationDetailed } from "@/components/CompanyComponents/JobApplicationDetailed2";
+import { JobApplicationDetailed } from "@/components/CompanyComponents/JobApplicationDetailed";
 
 const JobApplicationDetailedPage = () => {
   const [currentPage, setCurrentPage] = useState("Job Posts");

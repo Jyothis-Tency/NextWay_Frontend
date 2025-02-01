@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { Bell, Mail, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,12 +22,11 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
-import { log } from "console";
 
 interface Notification {
   id: number;
@@ -150,13 +150,13 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
+    <header className="bg-[#121212] text-[#FFFFFF] px-4 md:px-6 py-2 md:py-4 flex items-center justify-between border-b border-[#4B5563] h-16 fixed top-0 left-0 right-0 z-50">
       <div
-        className="flex items-center space-x-2 cursor-pointer"
+        className="flex items-center space-x-2 md:space-x-6 cursor-pointer"
         onClick={() => navigate("../dashboard")}
       >
         <span className="text-2xl font-bold text-white">Next</span>
-        <span className="text-2xl font-bold text-red-600">Gig</span>
+        <span className="text-2xl font-bold text-red-600">Way</span>
         <span className="text-sm font-semibold text-gray-400 ml-2">
           Company
         </span>
@@ -165,7 +165,7 @@ export const Header: React.FC = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
+          className="text-[#E0E0E0] hover:text-[#FFFFFF] hover:bg-[#2D2D2D] relative"
           onClick={() => navigate("../chat")}
         >
           <Mail className="w-5 h-5" />
@@ -180,7 +180,7 @@ export const Header: React.FC = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
+              className="text-[#E0E0E0] hover:text-[#FFFFFF] hover:bg-[#2D2D2D] relative"
             >
               <Bell className="w-5 h-5" />
               {notifications.length > 0 && (
@@ -190,7 +190,7 @@ export const Header: React.FC = () => {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-80 bg-gray-800 text-gray-300 border-gray-700">
+          <DropdownMenuContent className="w-80 bg-[#1E1E1E] text-[#E0E0E0] border-[#4B5563]">
             <div className="flex justify-between items-center px-2">
               <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               {notifications.length > 0 && (
@@ -238,7 +238,7 @@ export const Header: React.FC = () => {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800"
+              className="flex items-center space-x-2 text-[#E0E0E0] hover:text-[#FFFFFF] hover:bg-[#2D2D2D]"
             >
               {companyData?.profileImage ? (
                 <Avatar className="w-7 h-7">
@@ -252,7 +252,7 @@ export const Header: React.FC = () => {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
+          <DropdownMenuContent className="w-56 bg-[#1E1E1E] text-[#E0E0E0] border-[#4B5563]">
             <DropdownMenuLabel>{companyData?.name}</DropdownMenuLabel>
             <DropdownMenuLabel className="text-xs text-gray-500">
               Recruiter
@@ -270,7 +270,7 @@ export const Header: React.FC = () => {
       </div>
 
       <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-[#FFFFFF]">
           <DialogHeader>
             <DialogTitle>Confirm Logout</DialogTitle>
             <DialogDescription className="text-gray-400">

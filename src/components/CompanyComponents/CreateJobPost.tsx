@@ -1,9 +1,8 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
-import { AppDispatch, RootState } from "@/redux/store";
+import type { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosCompany } from "@/Utils/axiosUtil";
 import { createOrUpdateJobPost } from "@/API/companyAPI";
 
 interface IJobPost {
@@ -106,9 +104,11 @@ export function CreateJobPost() {
   };
 
   return (
-    <div className="space-y-6 p-6 ml-64">
+    <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Create New Job Post</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
+          Create New Job Post
+        </h1>
       </div>
       <Formik
         initialValues={initialValues}
@@ -117,7 +117,7 @@ export function CreateJobPost() {
       >
         {({ values, errors, touched }) => (
           <Form className="space-y-6">
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Job Details</CardTitle>
               </CardHeader>
@@ -125,7 +125,7 @@ export function CreateJobPost() {
                 <div>
                   <label
                     htmlFor="title"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Job Title
                   </label>
@@ -133,18 +133,18 @@ export function CreateJobPost() {
                     as={Input}
                     id="title"
                     name="title"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="title"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Job Description
                   </label>
@@ -152,19 +152,19 @@ export function CreateJobPost() {
                     as={Textarea}
                     id="description"
                     name="description"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                     rows={4}
                   />
                   <ErrorMessage
                     name="description"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="location"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Location
                   </label>
@@ -172,18 +172,18 @@ export function CreateJobPost() {
                     as={Input}
                     id="location"
                     name="location"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="location"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="employmentType"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Employment Type
                   </label>
@@ -193,7 +193,7 @@ export function CreateJobPost() {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <SelectTrigger className="mt-1 bg-gray-700 text-white">
+                        <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
                           <SelectValue placeholder="Select employment type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -208,13 +208,13 @@ export function CreateJobPost() {
                   <ErrorMessage
                     name="employmentType"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Salary Range</CardTitle>
               </CardHeader>
@@ -222,7 +222,7 @@ export function CreateJobPost() {
                 <div>
                   <label
                     htmlFor="salaryRange.min"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Minimum Salary
                   </label>
@@ -231,18 +231,18 @@ export function CreateJobPost() {
                     id="salaryRange.min"
                     name="salaryRange.min"
                     type="number"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="salaryRange.min"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="salaryRange.max"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Maximum Salary
                   </label>
@@ -251,18 +251,18 @@ export function CreateJobPost() {
                     id="salaryRange.max"
                     name="salaryRange.max"
                     type="number"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="salaryRange.max"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Requirements, Responsibilities, and Perks</CardTitle>
               </CardHeader>
@@ -270,23 +270,24 @@ export function CreateJobPost() {
                 <FieldArray name="requirements">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Requirements
                       </label>
                       {values.requirements.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`requirements.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -294,7 +295,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
-                        className="bg-blue-500 hover:bg-blue-600"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -306,29 +307,30 @@ export function CreateJobPost() {
                 <ErrorMessage
                   name="requirements"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
 
                 <FieldArray name="responsibilities">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Responsibilities
                       </label>
                       {values.responsibilities.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`responsibilities.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -336,7 +338,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
-                        className="bg-blue-500 hover:bg-blue-600"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -348,29 +350,30 @@ export function CreateJobPost() {
                 <ErrorMessage
                   name="responsibilities"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
 
                 <FieldArray name="perks">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Perks
                       </label>
                       {values.perks.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`perks.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -378,7 +381,7 @@ export function CreateJobPost() {
                       ))}
                       <Button
                         type="button"
-                        className="bg-blue-500 hover:bg-blue-600"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -390,7 +393,7 @@ export function CreateJobPost() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Job Status</CardTitle>
               </CardHeader>
@@ -401,7 +404,7 @@ export function CreateJobPost() {
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger className="bg-gray-700 text-white">
+                      <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
                         <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -415,21 +418,24 @@ export function CreateJobPost() {
                 <ErrorMessage
                   name="status"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
               </CardContent>
             </Card>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col md:flex-row justify-end space-y-4 md:space-y-0 md:space-x-4">
               <Button
                 type="button"
-                className="bg-red-500 hover:bg-red-600"
+                className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF]"
                 variant="outline"
                 onClick={() => navigate("../job-post-list")}
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+              <Button
+                type="submit"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
+              >
                 Create Job Post
               </Button>
             </div>

@@ -36,7 +36,7 @@ const Statistics: React.FC = () => {
 
   return (
     <section className="my-12">
-      <h2 className="text-2xl font-bold mb-6">NextGig by the Numbers</h2>
+      <h2 className="text-2xl font-bold mb-6">NextWay by the Numbers</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <div

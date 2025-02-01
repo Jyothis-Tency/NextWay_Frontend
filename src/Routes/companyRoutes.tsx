@@ -1,9 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import CompanyDashboard from "@/Pages/CompanyPages/DashboardPage";
 import JobPostListPage from "@/Pages/CompanyPages/JobPostListPage";
-import NewJobPostFormPage from "@/Pages/CompanyPages/NewJobFormPage";
-import CompanyFormPage from "@/Pages/CompanyPages/CompanyProfileEditPage";
-import CompanyDetailsPage from "@/Pages/CompanyPages/CompanyProfilePage";
 import RegisterCompanyPage from "@/Pages/CompanyPages/RegisterCompanyPage";
 import OtpVerifyPage from "@/Pages/CompanyPages/OTPVerifyPage";
 import LoginCompanyPage from "@/Pages/CompanyPages/LoginCompanyPage";

@@ -2,14 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search } from "lucide-react";
-
+import { Menu, Search } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { axiosChat, axiosCompany } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
+import CompanyStatic from "/Comany-Static-Logo.svg";
 
 interface IMessage {
   _id: string;
@@ -46,6 +46,7 @@ export function UserChatInterface() {
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CompanySearchResult[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false);
   const [displayChats, setDisplayChats] = useState<IChat[]>([]);
   const [allProfileImages, setAllProfileImages] = useState<
@@ -282,134 +283,110 @@ export function UserChatInterface() {
     );
   };
 
-  return (
-    <div className="flex h-full bg-[#0a0c10]">
-      <div className="w-80 bg-[#0d1117] border-r border-gray-800">
-        <div className="p-4 h-full flex flex-col">
-          <h2 className="text-xl font-semibold text-white mb-4">Chats</h2>
-          <div className="flex mb-4">
-            <Input
-              type="text"
-              placeholder="Search for companies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="flex-grow"
-            />
-            <Button
-              onClick={handleSearch}
-              className="ml-2 bg-[#1c2128] hover:bg-[#2c3138]"
-              disabled={isSearching}
+  const SidebarContent = () => (
+    <div className="h-full flex flex-col">
+      <h2 className="text-xl font-semibold text-white mb-4">Chats</h2>
+      <div className="flex mb-4">
+        <Input
+          type="text"
+          placeholder="Search for companies..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          className="flex-grow"
+        />
+        <Button
+          onClick={handleSearch}
+          className="ml-2 bg-[#1c2128] hover:bg-[#2c3138]"
+          disabled={isSearching}
+        >
+          <Search className="h-4 w-4" />
+        </Button>
+      </div>
+      <ScrollArea className="flex-1">
+        {displayChats.length > 0 ? (
+          displayChats.map((chat) => (
+            <div
+              key={chat._id}
+              onClick={() => {
+                chat._id.startsWith("new_")
+                  ? handleSelectNewCompany({
+                      _id: chat._id,
+                      company_id: chat.company_id,
+                      name: chat.companyName,
+                      industry: "",
+                      profileImage: chat.companyAvatar,
+                    })
+                  : handleSelectChat(chat);
+                setIsSidebarOpen(false);
+              }}
+              className={`p-2 hover:bg-[#1c2128] cursor-pointer ${
+                currentChat?._id === chat._id ? "bg-[#1c2128]" : ""
+              }`}
             >
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
-          <ScrollArea className="flex-1">
-            {displayChats.length > 0 ? (
-              displayChats.map((chat) => (
-                <div
-                  key={chat._id}
-                  onClick={() =>
-                    chat._id.startsWith("new_")
-                      ? handleSelectNewCompany({
-                          _id: chat._id,
-                          company_id: chat.company_id,
-                          name: chat.companyName,
-                          industry: "",
-                          profileImage: chat.companyAvatar,
-                        })
-                      : handleSelectChat(chat)
-                  }
-                  className={`p-2 hover:bg-[#1c2128] cursor-pointer ${
-                    currentChat?._id === chat._id ? "bg-[#1c2128]" : ""
-                  }`}
-                >
-                  <div className="flex items-center">
-                    {renderUserAvatar(chat.company_id, chat.companyName)}
-                    {/* {allProfileImages
-                      ? allProfileImages
-                          .filter((img) => chat.company_id === img.company_id)
-                          .map(
-                            (img, index) => (
-                              console.log("img img img", img),
-                              (
-                                <Avatar className="h-8 w-12 mr-2 mb-4">
-                                  <AvatarImage
-                                    key={index}
-                                    src={img.profileImage}
-                                    alt="Company Logo"
-                                    className="w-12 h-12 rounded-full"
-                                  />
-                                </Avatar>
-                                
-                              )
-                            )
-                          )
-                      : null} */}
-                    {/* <Avatar className="h-8 w-8 mr-2">
-                      {chat.companyAvatar ? (
-                        <AvatarImage
-                          src={chat.companyAvatar}
-                          alt={chat.companyName}
-                        />
-                      ) : (
-                        <AvatarFallback>{chat.companyName?.[0]}</AvatarFallback>
-                      )}
-                    </Avatar> */}
-                    <div className="flex-1">
-                      <div className="font-semibold text-white">
-                        {chat.companyName}
-                      </div>
-                      {chat.lastMessage && (
-                        <div className="text-sm text-gray-400 truncate">
-                          {chat.lastMessage}
-                        </div>
-                      )}
-                    </div>
-                    {chat.lastMessageTime && (
-                      <div className="text-xs text-gray-500">
-                        {new Date(chat.lastMessageTime).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
-                    )}
+              <div className="flex items-center">
+                {renderUserAvatar(chat.company_id, chat.companyName)}
+                <div className="flex-1">
+                  <div className="font-semibold text-white">
+                    {chat.companyName}
                   </div>
+                  {chat.lastMessage && (
+                    <div className="text-sm text-gray-400 truncate">
+                      {chat.lastMessage}
+                    </div>
+                  )}
                 </div>
-              ))
-            ) : (
-              <div className="text-center text-gray-400 mt-4">
-                {searchQuery
-                  ? "No companies found"
-                  : "No chats yet. Search for a company to start messaging."}
+                {chat.lastMessageTime && (
+                  <div className="text-xs text-gray-500">
+                    {new Date(chat.lastMessageTime).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-          </ScrollArea>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-400 mt-4">
+            {searchQuery
+              ? "No companies found"
+              : "No chats yet. Search for a company to start messaging."}
+          </div>
+        )}
+      </ScrollArea>
+    </div>
+  );
+
+return (
+    <div className="flex h-full bg-[#0a0c10]">
+      {/* Mobile Sidebar Trigger */}
+      <div className="md:hidden mt-20 fixed left-4 z-50">
+        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="bg-[#1c2128] hover:bg-[#2c3138]">
+              <Menu className="h-5 w-5 text-white" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80 p-4 bg-[#0d1117] border-r border-gray-800">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block w-80 bg-[#0d1117] border-r border-gray-800">
+        <div className="p-4 h-full">
+          <SidebarContent />
         </div>
       </div>
+
       <div className="flex-1 flex flex-col bg-[#0d1117]">
         {currentChat ? (
           <>
             <div className="px-4 py-3 border-b border-gray-800 flex items-center">
-              {renderUserAvatar(
-                currentChat.company_id,
-                currentChat.companyName
-              )}
-              {/* <Avatar className="h-8 w-8 mr-3">
-                {currentChat.companyAvatar ? (
-                  <AvatarImage
-                    src={currentChat.companyAvatar}
-                    alt={currentChat.companyName}
-                  />
-                ) : (
-                  <AvatarFallback className="bg-gray-700">
-                    {currentChat.companyName.charAt(0)}
-                  </AvatarFallback>
-                )}
-              </Avatar> */}
-              <h2 className="text-lg font-medium text-white">
-                {currentChat.companyName}
-              </h2>
+              {renderUserAvatar(currentChat.company_id, currentChat.companyName)}
+              <h2 className="text-lg font-medium text-white ml-3">{currentChat.companyName}</h2>
             </div>
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
@@ -417,9 +394,7 @@ export function UserChatInterface() {
                   <div
                     key={message._id || `message-${index}`}
                     className={`flex ${
-                      message.sender === user?.user_id
-                        ? "justify-end"
-                        : "justify-start"
+                      message.sender === user?.user_id ? "justify-end" : "justify-start"
                     } items-start gap-2`}
                   >
                     {message.sender === user?.user_id ? (
@@ -427,54 +402,34 @@ export function UserChatInterface() {
                         <div className="max-w-[80%] bg-[#0066FF] text-white rounded-t-2xl rounded-bl-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">
-                            {new Date(message.timestamp).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
+                            {new Date(message.timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </p>
                         </div>
-                        <Avatar className="h-8 w-12 rounded-sm">
+                        <Avatar className="h-10 w-10 rounded-full">
                           {user.profileImage ? (
                             <AvatarImage
                               src={user.profileImage}
                               alt="User"
-                              className="w-12 h-12 rounded-full"
+                              className="rounded-full object-cover"
                             />
                           ) : (
-                            <AvatarFallback>
-                              {user.firstName?.[0]}
-                            </AvatarFallback>
+                            <AvatarFallback className="rounded-full">{user.firstName?.[0]}</AvatarFallback>
                           )}
                         </Avatar>
                       </>
                     ) : (
                       <>
-                        {/* <Avatar className="h-8 w-8">
-                          {currentChat.companyAvatar ? (
-                            <AvatarImage
-                              src={currentChat.companyAvatar}
-                              alt={currentChat.companyName}
-                            />
-                          ) : (
-                            <AvatarFallback>
-                              {currentChat.companyName?.[0]}
-                            </AvatarFallback>
-                          )}
-                        </Avatar> */}
                         {renderUserAvatar(currentChat.company_id, currentChat.companyName)}
                         <div className="max-w-[80%] bg-[#1c2128] text-white rounded-t-2xl rounded-br-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">
-                            {new Date(message.timestamp).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
+                            {new Date(message.timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </p>
                         </div>
                       </>
@@ -494,10 +449,7 @@ export function UserChatInterface() {
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   className="flex-1 bg-[#1c2128] border-0 text-white placeholder-gray-400 focus-visible:ring-1 focus-visible:ring-gray-600"
                 />
-                <Button
-                  onClick={handleSendMessage}
-                  className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4"
-                >
+                <Button onClick={handleSendMessage} className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4">
                   Send
                 </Button>
               </div>
@@ -510,5 +462,7 @@ export function UserChatInterface() {
         )}
       </div>
     </div>
-  );
+  )
 }
+
+

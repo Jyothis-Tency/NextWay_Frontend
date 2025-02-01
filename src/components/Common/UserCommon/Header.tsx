@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 
 import { Bell, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -24,9 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSocket } from "@/Context/SocketContext";
-import { useToast } from "@/components/ui/use-toast";
-import { toast } from "sonner";
-import { set } from "react-hook-form";
+// import { set } from "react-hook-form";
 
 interface Notification {
   id: number;
@@ -120,14 +119,13 @@ const Header: React.FC = () => {
       socket.on("receiveMessage", (message) => {
         console.log(`socket.on("receiveMessage" on header`);
         setNewChatMessage((prev) => prev + 1);
-        
       });
     }
 
     return () => {
       if (socket) {
         socket.off("notification:newJob");
-        socket.off("notification:applicationStatus");
+        socket.off("notification:applicationStatusUpdate");
       }
     };
   }, [socket]);
@@ -178,25 +176,25 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
+    <header className="bg-[#1E1E1E] text-white px-6 py-4 flex items-center justify-between border-b border-[#2D2D2D] h-16 ">
       <div
         className="flex items-center space-x-2 cursor-pointer"
         onClick={() => navigate("../home")}
       >
         <span className="text-2xl font-bold text-white">Next</span>
-        <span className="text-2xl font-bold text-red-600">Gig</span>
+        <span className="text-2xl font-bold text-[#4F46E5]">Way</span>
       </div>
 
       <nav className="hidden md:flex space-x-6">
         <a
           onClick={() => navigate("../home")}
-          className="text-gray-300 hover:text-white cursor-pointer"
+          className="text-[#E0E0E0] hover:text-white cursor-pointer"
         >
           Home
         </a>
         <a
           onClick={() => navigate("../job-posts")}
-          className="text-gray-300 hover:text-white cursor-pointer"
+          className="text-[#E0E0E0] hover:text-white cursor-pointer"
         >
           Jobs
         </a>
@@ -207,12 +205,12 @@ const Header: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
+            className="text-[#A0A0A0] hover:text-white hover:bg-[#2D2D2D] relative"
             onClick={() => navigate("../chat")}
           >
             <Mail className="w-5 h-5" />
             {newChatMessage > 0 && (
-              <span className="absolute -mx-2 -top-1 right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] ">
+              <span className="absolute -mx-2 -top-1 right-1 bg-[#EF4444] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px] ">
                 {newChatMessage}
               </span>
             )}
@@ -222,24 +220,24 @@ const Header: React.FC = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-400 hover:text-white hover:bg-gray-800 relative"
+                className="text-[#A0A0A0] hover:text-white hover:bg-[#2D2D2D] relative"
               >
                 <Bell className="w-5 h-5" />
                 {notifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#EF4444] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {notifications.length}
                   </span>
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 bg-gray-800 text-gray-300 border-gray-700">
+            <DropdownMenuContent className="w-80 bg-[#1E1E1E] text-[#E0E0E0] border-[#2D2D2D]">
               <div className="flex justify-between items-center px-2">
                 <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                 {notifications.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-xs text-red-400 hover:text-red-300"
+                    className="text-xs text-[#6366F1] hover:text-[#4F46E5]"
                     onClick={clearAllNotifications}
                   >
                     Clear All
@@ -251,19 +249,19 @@ const Header: React.FC = () => {
                 notifications.map((notification) => (
                   <DropdownMenuItem
                     key={notification.id}
-                    className="flex flex-col items-start py-2 cursor-pointer hover:bg-gray-700"
+                    className="flex flex-col items-start py-2 cursor-pointer hover:bg-[#2D2D2D]"
                     onClick={() => handleNotificationClick(notification)}
                   >
                     <span className="font-bold">{notification.title}</span>
                     <span className="text-sm">{notification.message}</span>
                     <div className="flex justify-between items-center w-full mt-1">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-[#A0A0A0]">
                         {notification.time}
                       </span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-red-400 hover:text-red-300"
+                        className="text-xs text-[#6366F1] hover:text-[#4F46E5]"
                         onClick={(e) => clearNotification(e, notification.id)}
                       >
                         Clear
@@ -282,7 +280,7 @@ const Header: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 text-gray-400 hover:text-white hover:bg-gray-800"
+                className="flex items-center space-x-2 text-[#A0A0A0] hover:text-white hover:bg-[#2D2D2D]"
               >
                 {userData?.profileImage ? (
                   <Avatar className="w-7 h-7">
@@ -296,11 +294,11 @@ const Header: React.FC = () => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
+            <DropdownMenuContent className="w-56 bg-[#1E1E1E] text-[#E0E0E0] border-[#2D2D2D]">
               <DropdownMenuLabel>
                 {firstName} {lastName}
               </DropdownMenuLabel>
-              <DropdownMenuLabel className="text-xs text-gray-500">
+              <DropdownMenuLabel className="text-xs text-[#A0A0A0]">
                 Job User
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -330,14 +328,14 @@ const Header: React.FC = () => {
       ) : (
         <div className="flex items-center space-x-6">
           <a
-            className="text-gray-300 hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
+            className="text-[#E0E0E0] hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
             onClick={() => navigate("../login")}
           >
             Login as User
           </a>
-          <span className="text-gray-500">|</span>
+          <span className="text-[#A0A0A0]">|</span>
           <a
-            className="text-gray-300 hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
+            className="text-[#E0E0E0] hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
             onClick={() => window.open("/company/login", "_blank")}
           >
             Login as Company
@@ -346,22 +344,26 @@ const Header: React.FC = () => {
       )}
 
       <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-white">
           <DialogHeader>
             <DialogTitle>Confirm Logout</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#A0A0A0]">
               Are you sure you want to log out?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               variant="outline"
-              className="text-black"
+              className="text-[#E0E0E0] border-[#2D2D2D] hover:bg-[#2D2D2D]"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmLogout}>
+            <Button
+              variant="destructive"
+              className="bg-[#EF4444] hover:bg-[#DC2626]"
+              onClick={confirmLogout}
+            >
               Logout
             </Button>
           </DialogFooter>

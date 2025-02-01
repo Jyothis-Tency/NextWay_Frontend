@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
@@ -13,8 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Icons } from "@/components/ui/icons";
 import { axiosCompany } from "@/Utils/axiosUtil";
 import { createOrUpdateJobPost, deleteJobPost } from "@/API/companyAPI";
 import { toast } from "sonner";
@@ -70,21 +68,16 @@ export function JobPostDetails() {
   const [job, setJob] = useState<IJobPost | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  console.log(jobId);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        const job_id = jobId;
-        console.log(job_id);
-
-        const response = await axiosCompany.get(`get-job-post/${job_id}`);
-        console.log(response);
-
+        const response = await axiosCompany.get(`get-job-post/${jobId}`);
         setJob(response.data.jobPost);
       } catch (error) {
         console.error("Error fetching job details:", error);
+        toast.error("Failed to fetch job details. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -95,24 +88,19 @@ export function JobPostDetails() {
 
   const handleSubmit = async (values: IJobPost) => {
     try {
-      const _id = jobId;
-      const jobData = { ...values, _id };
+      const jobData = { ...values, _id: jobId };
       const response = await createOrUpdateJobPost(jobData);
       if (response?.success) {
-        console.log("Job post updated successfully:", response?.message);
-        toast.success("Job post updated successfully:");
+        toast.success("Job post updated successfully");
         setTimeout(() => {
           navigate("../job-post-list");
         }, 1500);
       }
-      //   await axiosCompany.put(`update-job/${jobId}`, values);
-      //   navigate("/job-list");
     } catch (error: any) {
-      console.error("Error updating job:", error);
       toast.error(
         error.message || "An unexpected error occurred. Please try again."
       );
-      console.error("Error creating job post:", error);
+      console.error("Error updating job post:", error);
     }
   };
 
@@ -121,7 +109,6 @@ export function JobPostDetails() {
       try {
         const response = await deleteJobPost(jobId);
         if (response?.success) {
-          console.log("Job post updated successfully:", response?.message);
           toast.success(response?.message);
           setTimeout(() => {
             navigate("../job-post-list");
@@ -137,26 +124,32 @@ export function JobPostDetails() {
   };
 
   if (loading) {
-    return <div className="text-white text-center mt-8">Loading...</div>;
+    return <div className="text-[#FFFFFF] text-center mt-8">Loading...</div>;
   }
 
   if (!job) {
-    return <div className="text-white text-center mt-8">Job not found</div>;
+    return <div className="text-[#FFFFFF] text-center mt-8">Job not found</div>;
   }
 
   return (
-    <div className="space-y-6 p-6 ml-64">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Job Details</h1>
-        <div className="space-x-4">
+    <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
+          Job Details
+        </h1>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4 w-full md:w-auto">
           <Button
-            className="text-black"
+            className="bg-[#2D2D2D] text-[#FFFFFF] hover:bg-[#3D3D3D] w-full md:w-auto"
             onClick={() => navigate("../job-post-list")}
             variant="outline"
           >
             Back to Job List
           </Button>
-          <Button onClick={handleDelete} variant="destructive">
+          <Button
+            onClick={handleDelete}
+            variant="destructive"
+            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF] w-full md:w-auto"
+          >
             Delete Job
           </Button>
         </div>
@@ -168,7 +161,7 @@ export function JobPostDetails() {
       >
         {({ values, errors, touched, setFieldValue }) => (
           <Form className="space-y-6">
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Job Details</CardTitle>
               </CardHeader>
@@ -176,7 +169,7 @@ export function JobPostDetails() {
                 <div>
                   <label
                     htmlFor="title"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Job Title
                   </label>
@@ -184,18 +177,18 @@ export function JobPostDetails() {
                     as={Input}
                     id="title"
                     name="title"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="title"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Job Description
                   </label>
@@ -203,19 +196,19 @@ export function JobPostDetails() {
                     as={Textarea}
                     id="description"
                     name="description"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                     rows={4}
                   />
                   <ErrorMessage
                     name="description"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="location"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Location
                   </label>
@@ -223,18 +216,18 @@ export function JobPostDetails() {
                     as={Input}
                     id="location"
                     name="location"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="location"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="employmentType"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Employment Type
                   </label>
@@ -246,7 +239,7 @@ export function JobPostDetails() {
                         }
                         defaultValue={field.value}
                       >
-                        <SelectTrigger className="mt-1 bg-gray-700 text-white">
+                        <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
                           <SelectValue placeholder="Select employment type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -261,13 +254,13 @@ export function JobPostDetails() {
                   <ErrorMessage
                     name="employmentType"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Salary Range</CardTitle>
               </CardHeader>
@@ -275,7 +268,7 @@ export function JobPostDetails() {
                 <div>
                   <label
                     htmlFor="salaryRange.min"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Minimum Salary
                   </label>
@@ -284,18 +277,18 @@ export function JobPostDetails() {
                     id="salaryRange.min"
                     name="salaryRange.min"
                     type="number"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="salaryRange.min"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="salaryRange.max"
-                    className="block text-sm font-medium text-gray-400"
+                    className="block text-sm font-medium text-[#A0A0A0]"
                   >
                     Maximum Salary
                   </label>
@@ -304,18 +297,18 @@ export function JobPostDetails() {
                     id="salaryRange.max"
                     name="salaryRange.max"
                     type="number"
-                    className="mt-1 bg-gray-700 text-white"
+                    className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                   />
                   <ErrorMessage
                     name="salaryRange.max"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-[#EF4444] text-sm mt-1"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Requirements, Responsibilities, and Perks</CardTitle>
               </CardHeader>
@@ -323,24 +316,24 @@ export function JobPostDetails() {
                 <FieldArray name="requirements">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Requirements
                       </label>
                       {values.requirements.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`requirements.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
-                            className=""
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF] mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -348,7 +341,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
-                        className="text-black"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -360,29 +353,30 @@ export function JobPostDetails() {
                 <ErrorMessage
                   name="requirements"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
 
                 <FieldArray name="responsibilities">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Responsibilities
                       </label>
                       {values.responsibilities.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`responsibilities.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF] mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -390,7 +384,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
-                        className="text-black"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -402,29 +396,30 @@ export function JobPostDetails() {
                 <ErrorMessage
                   name="responsibilities"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
 
                 <FieldArray name="perks">
                   {({ push, remove }) => (
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Perks
                       </label>
                       {values.perks.map((_, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2 mb-2"
+                          className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
                             name={`perks.${index}`}
-                            className="bg-gray-700 text-white"
+                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
+                            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF] mt-2 md:mt-0"
                           >
                             Remove
                           </Button>
@@ -432,7 +427,7 @@ export function JobPostDetails() {
                       ))}
                       <Button
                         type="button"
-                        className="text-black"
+                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
                         onClick={() => push("")}
                         variant="outline"
                       >
@@ -444,7 +439,7 @@ export function JobPostDetails() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 text-white">
+            <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
                 <CardTitle>Job Status</CardTitle>
               </CardHeader>
@@ -455,7 +450,7 @@ export function JobPostDetails() {
                       onValueChange={(value) => setFieldValue("status", value)}
                       defaultValue={field.value}
                     >
-                      <SelectTrigger className="bg-gray-700 text-white">
+                      <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
                         <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -469,20 +464,24 @@ export function JobPostDetails() {
                 <ErrorMessage
                   name="status"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-[#EF4444] text-sm mt-1"
                 />
               </CardContent>
             </Card>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col md:flex-row justify-end space-y-4 md:space-y-0 md:space-x-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/job-list")}
+                onClick={() => navigate("../job-post-list")}
+                className="bg-[#2D2D2D] text-[#FFFFFF] hover:bg-[#3D3D3D] w-full md:w-auto"
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-500 hover:bg-blue-600">
+              <Button
+                type="submit"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] w-full md:w-auto"
+              >
                 Save Changes
               </Button>
             </div>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,7 +10,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { axiosCompany } from "@/Utils/axiosUtil";
 import { useNavigate } from "react-router-dom";
 
@@ -74,24 +75,24 @@ const CompanyDashboard: React.FC = () => {
   }, [companyData?.company_id]);
 
   return (
-    <div className="space-y-6 p-6 ml-64">
+    <div className="space-y-6 p-6 ml-0 md:ml-64 bg-[#121212]">
       <section
-        className="relative w-full h-[400px] flex items-center justify-center bg-cover bg-center"
+        className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-cover bg-center"
         style={{
           backgroundImage:
             "url('https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg')",
         }}
       >
-        <div className="absolute inset-0 bg-black opacity-90"></div>
-        <div className="relative z-10 text-center space-y-6 px-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">
+        <div className="absolute inset-0 bg-[#121212] opacity-90"></div>
+        <div className="relative z-10 text-center space-y-4 md:space-y-6 px-4 max-w-4xl mx-auto">
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-[#FFFFFF]">
             Welcome {companyData?.name}!
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-lg md:text-xl text-[#E0E0E0]">
             Ready to find top talent for your company?
           </p>
           <Button
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full text-lg"
+            className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-lg"
             onClick={() => navigate("../create-job-post")}
           >
             Post a New Job
@@ -99,11 +100,11 @@ const CompanyDashboard: React.FC = () => {
         </div>
       </section>
 
-      <h1 className="text-3xl font-bold text-white mt-8">
+      <h1 className="text-3xl font-bold text-[#FFFFFF] mt-8">
         Recruiter Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
           {
             title: "Total Job Posts",
@@ -123,16 +124,16 @@ const CompanyDashboard: React.FC = () => {
         ].map((item, index) => (
           <Card
             key={index}
-            className="bg-[#0f1117] border border-red-500 hover:border-red-400 transition-colors"
+            className="bg-[#1E1E1E] border border-[#4B5563] hover:border-[#6366F1] transition-colors"
           >
             <CardHeader>
-              <CardTitle className="text-white">{item.title}</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardTitle className="text-[#FFFFFF]">{item.title}</CardTitle>
+              <CardDescription className="text-[#A0A0A0]">
                 {item.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-white">{item.value}</p>
+              <p className="text-4xl font-bold text-[#FFFFFF]">{item.value}</p>
             </CardContent>
           </Card>
         ))}

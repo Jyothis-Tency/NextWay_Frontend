@@ -44,7 +44,7 @@ export const Header: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
       <div className="flex items-center space-x-2">
         <span className="text-2xl font-bold text-white">Next</span>
-        <span className="text-2xl font-bold text-red-600">Gig</span>
+        <span className="text-2xl font-bold text-red-600">Way</span>
         <span className="text-sm font-semibold text-gray-400 ml-2">Admin</span>
       </div>
       <div className="flex items-center space-x-6">

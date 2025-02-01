@@ -265,7 +265,7 @@ const Subscriptions: React.FC = () => {
         key: RAZORPAY_KEY_ID,
         amount: data.amount.toString(),
         currency: data.currency,
-        name: "Next Gig",
+        name: "NextWay",
         description: `Subscription to ${selectedPlan.name}`,
         image: "/logo.png",
         order_id: data.orderId,

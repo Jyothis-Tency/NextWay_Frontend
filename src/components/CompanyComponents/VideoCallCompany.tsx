@@ -228,7 +228,7 @@ const VideoCallCompany: React.FC = () => {
           onClick={() => navigate("../home")}
         >
           <span className="text-2xl font-bold text-white">Next</span>
-          <span className="text-2xl font-bold text-red-600">Gig</span>
+          <span className="text-2xl font-bold text-red-600">Way</span>
           <span className="text-sm font-semibold text-gray-400 ml-2">
             Company
           </span>

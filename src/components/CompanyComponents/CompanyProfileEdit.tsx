@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,10 +63,6 @@ const CompanyProfileEdit = () => {
         const response = await dispatch(
           updateCompanyProfile(company_id, values)
         );
-        // const response = await axiosCompany.put(
-        //   `update-company/${company_id}`,
-        //   values
-        // );
         console.log("Company updated successfully:", response);
         if (response.success === true) {
           toast.success("Company profile updated successfully");
@@ -74,7 +70,7 @@ const CompanyProfileEdit = () => {
             navigate("../profile");
           }, 1500);
         } else {
-          toast.error("Error occurred while updating company")
+          toast.error("Error occurred while updating company");
         }
       } catch (error: any) {
         toast.error(
@@ -94,7 +90,7 @@ const CompanyProfileEdit = () => {
         setLoading(true);
         const response = await axiosCompany.get(`get-company/${company_id}`);
         console.log(response.data);
-        
+
         const companyData = response.data.companyProfile;
         formik.setValues({
           ...initialValues,
@@ -116,19 +112,21 @@ const CompanyProfileEdit = () => {
     };
 
     fetchCompanyData();
-  }, [company_id]);
+  }, [company_id, formik.setValues]); // Added formik.setValues to dependencies
 
   if (loading) {
-    return <div className="text-white text-center mt-8">Loading...</div>;
+    return <div className="text-[#FFFFFF] text-center mt-8">Loading...</div>;
   }
 
   return (
-    <div className="space-y-6 p-6 ml-64">
+    <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Edit Company Profile</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
+          Edit Company Profile
+        </h1>
       </div>
       <form onSubmit={formik.handleSubmit} className="space-y-6">
-        <Card className="bg-gray-800 text-white">
+        <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
           </CardHeader>
@@ -136,20 +134,20 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Company Name
               </label>
               <Input
                 id="name"
                 name="name"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.name && formik.errors.name ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.name}
                 </div>
               ) : null}
@@ -157,7 +155,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Email
               </label>
@@ -165,13 +163,13 @@ const CompanyProfileEdit = () => {
                 id="email"
                 name="email"
                 type="email"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.email}
                 </div>
               ) : null}
@@ -179,7 +177,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="phone"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Phone Number
               </label>
@@ -187,13 +185,13 @@ const CompanyProfileEdit = () => {
                 id="phone"
                 name="phone"
                 type="tel"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.phone}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.phone && formik.errors.phone ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.phone}
                 </div>
               ) : null}
@@ -201,7 +199,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="website"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Website
               </label>
@@ -209,13 +207,13 @@ const CompanyProfileEdit = () => {
                 id="website"
                 name="website"
                 type="url"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.website}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.website && formik.errors.website ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.website}
                 </div>
               ) : null}
@@ -223,7 +221,7 @@ const CompanyProfileEdit = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 text-white">
+        <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>Company Details</CardTitle>
           </CardHeader>
@@ -231,20 +229,20 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Description
               </label>
               <Textarea
                 id="description"
                 name="description"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.description && formik.errors.description ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.description}
                 </div>
               ) : null}
@@ -252,20 +250,20 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="industry"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Industry
               </label>
               <Input
                 id="industry"
                 name="industry"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.industry}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.industry && formik.errors.industry ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.industry}
                 </div>
               ) : null}
@@ -273,7 +271,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="companySize"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Company Size
               </label>
@@ -281,13 +279,13 @@ const CompanyProfileEdit = () => {
                 id="companySize"
                 name="companySize"
                 type="number"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.companySize}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.companySize && formik.errors.companySize ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.companySize}
                 </div>
               ) : null}
@@ -295,20 +293,20 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="location"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Location
               </label>
               <Input
                 id="location"
                 name="location"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.location}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.location && formik.errors.location ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.location}
                 </div>
               ) : null}
@@ -316,7 +314,7 @@ const CompanyProfileEdit = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 text-white">
+        <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
             <CardTitle>Social Links</CardTitle>
           </CardHeader>
@@ -324,7 +322,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="socialLinks.linkedin"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 LinkedIn
               </label>
@@ -332,14 +330,14 @@ const CompanyProfileEdit = () => {
                 id="socialLinks.linkedin"
                 name="socialLinks.linkedin"
                 type="url"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.socialLinks.linkedin}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.socialLinks?.linkedin &&
               formik.errors.socialLinks?.linkedin ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.socialLinks.linkedin}
                 </div>
               ) : null}
@@ -347,7 +345,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="socialLinks.twitter"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Twitter
               </label>
@@ -355,14 +353,14 @@ const CompanyProfileEdit = () => {
                 id="socialLinks.twitter"
                 name="socialLinks.twitter"
                 type="url"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.socialLinks.twitter}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.socialLinks?.twitter &&
               formik.errors.socialLinks?.twitter ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.socialLinks.twitter}
                 </div>
               ) : null}
@@ -370,7 +368,7 @@ const CompanyProfileEdit = () => {
             <div>
               <label
                 htmlFor="socialLinks.facebook"
-                className="block text-sm font-medium text-gray-400"
+                className="block text-sm font-medium text-[#A0A0A0]"
               >
                 Facebook
               </label>
@@ -378,14 +376,14 @@ const CompanyProfileEdit = () => {
                 id="socialLinks.facebook"
                 name="socialLinks.facebook"
                 type="url"
-                className="mt-1 bg-gray-700 text-white"
+                className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
                 value={formik.values.socialLinks.facebook}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.socialLinks?.facebook &&
               formik.errors.socialLinks?.facebook ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.socialLinks.facebook}
                 </div>
               ) : null}
@@ -393,9 +391,9 @@ const CompanyProfileEdit = () => {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex flex-col md:flex-row justify-end space-y-4 md:space-y-0 md:space-x-4">
           <Button
-            className="bg-red-500 hover:bg-yellow-600"
+            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF]"
             type="button"
             variant="outline"
             onClick={() => navigate("../profile")}
@@ -404,7 +402,7 @@ const CompanyProfileEdit = () => {
           </Button>
           <Button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600"
+            className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
             disabled={formik.isSubmitting}
           >
             {formik.isSubmitting ? "Saving..." : "Save Changes"}

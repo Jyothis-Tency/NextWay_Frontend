@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <span className="text-2xl font-bold text-white">Next</span>
-              <span className="text-2xl font-bold text-red-600">Gig</span>
+              <span className="text-2xl font-bold text-red-600">Way</span>
             </div>
           </div>
 
@@ -137,7 +137,7 @@ const Footer: React.FC = () => {
               <Twitter className="w-6 h-6" />
             </a>
           </div>
-          <div className="text-gray-400 text-sm">Next Gig Copyright © 2024</div>
+          <div className="text-gray-400 text-sm">NextWay Copyright © 2024</div>
         </div>
       </div>
     </footer>

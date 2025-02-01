@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -31,11 +30,9 @@ interface IJobApplication {
 export function JobApplicationByPosts() {
   const [applications, setApplications] = useState<IJobApplication[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [jobTitle, setJobTitle] = useState("");
   const location = useLocation();
   const jobTitle = location.state?.jobTitle;
   const { jobId } = useParams<{ jobId: string }>();
-  console.log("jobId", jobId);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,9 +42,7 @@ export function JobApplicationByPosts() {
         const response = await axiosCompany.get(
           `job-applications-post/${jobId}`
         );
-        console.log("response", response.data);
         setApplications(response.data.jobApplications);
-        // setJobTitle(response.data.jobTitle);
       } catch (error) {
         console.error("Error fetching job applications:", error);
       } finally {
@@ -61,15 +56,15 @@ export function JobApplicationByPosts() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return "bg-yellow-500";
+        return "bg-[#F59E0B] text-[#FFFFFF]";
       case "Shortlisted":
-        return "bg-blue-500";
+        return "bg-[#3B82F6] text-[#FFFFFF]";
       case "Rejected":
-        return "bg-red-500";
+        return "bg-[#EF4444] text-[#FFFFFF]";
       case "Hired":
-        return "bg-green-500";
+        return "bg-[#10B981] text-[#FFFFFF]";
       default:
-        return "bg-gray-500";
+        return "bg-[#6B7280] text-[#FFFFFF]";
     }
   };
 
@@ -94,20 +89,20 @@ export function JobApplicationByPosts() {
   };
 
   return (
-    <div className="space-y-6 p-6 ml-64">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">
+    <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
           Job Applications for {jobTitle}
         </h1>
         <Button
           onClick={() => navigate(-1)}
-          className="bg-blue-500 hover:bg-blue-600"
+          className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] w-full md:w-auto"
         >
           <Icons.ArrowLeft className="w-4 h-4 mr-2" />
           Back to Job Listings
         </Button>
       </div>
-      <Card className="bg-gray-800 text-white">
+      <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
         <CardHeader>
           <CardTitle>Applications</CardTitle>
         </CardHeader>
@@ -119,64 +114,64 @@ export function JobApplicationByPosts() {
               No applications found for this job.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-white">Name</TableHead>
-                  <TableHead className="text-white">Email</TableHead>
-                  <TableHead className="text-white">Location</TableHead>
-                  <TableHead className="text-white">Phone</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white">Applied Date</TableHead>
-                  <TableHead className="text-white">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {applications.map((application) => (
-                  <TableRow
-                    key={application._id}
-                    className="hover:bg-gray-700 transition-colors"
-                  >
-                    <TableCell className="font-medium">{`${application.firstName} ${application.lastName}`}</TableCell>
-                    <TableCell>{application.email}</TableCell>
-                    <TableCell>{application.location}</TableCell>
-                    <TableCell>{application.phone}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(application.status)}>
-                        {application.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(application.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() =>
-                          navigate(
-                            `../job-application-detailed/${application._id}`
-                          )
-                        }
-                        className="bg-blue-500 hover:bg-blue-600 mr-2"
-                      >
-                        View Details
-                      </Button>
-                      {/* <select
-                        value={application.status}
-                        onChange={(e) =>
-                          handleStatusChange(application._id, e.target.value)
-                        }
-                        className="bg-gray-700 text-white rounded p-1"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Shortlisted">Shortlisted</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Hired">Hired</option>
-                      </select> */}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-[#A0A0A0]">Name</TableHead>
+                    <TableHead className="text-[#A0A0A0]">Email</TableHead>
+                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
+                      Location
+                    </TableHead>
+                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
+                      Phone
+                    </TableHead>
+                    <TableHead className="text-[#A0A0A0]">Status</TableHead>
+                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
+                      Applied Date
+                    </TableHead>
+                    <TableHead className="text-[#A0A0A0]">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {applications.map((application) => (
+                    <TableRow
+                      key={application._id}
+                      className="hover:bg-[#2D2D2D] transition-colors"
+                    >
+                      <TableCell className="font-medium">{`${application.firstName} ${application.lastName}`}</TableCell>
+                      <TableCell>{application.email}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {application.location}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {application.phone}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(application.status)}>
+                          {application.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {new Date(application.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() =>
+                            navigate(
+                              `../job-application-detailed/${application._id}`
+                            )
+                          }
+                          className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
+                        >
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

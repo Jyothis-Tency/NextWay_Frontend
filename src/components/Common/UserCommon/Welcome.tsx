@@ -27,7 +27,7 @@ const WelcomeSection: React.FC = () => {
               Welcome back, {userName}!
             </h1>
             <p className="text-xl text-gray-300">
-              Ready to find your next gig?
+              Ready to find your next way?
             </p>
             <Button
               onClick={() => navigate("../job-posts")}
