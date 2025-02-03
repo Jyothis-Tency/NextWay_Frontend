@@ -77,7 +77,6 @@ export default function JobPosts() {
   >([]);
   const navigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  console.log("selectedJobbbbbbbbbbbbbbbbbbb",selectedJob)
 
   useEffect(() => {
     const getJobPosts = async () => {
@@ -112,7 +111,6 @@ export default function JobPosts() {
   const getAllProfileImages = async () => {
     try {
       const response = await axiosCompany.get("/getAllCompanyProfileImages");
-      console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -151,7 +149,7 @@ export default function JobPosts() {
       const filtered = filteredJobs.filter(
         (job) =>
           (job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            job.requirements.some((req: string) =>
+            job.skills.some((req: string) =>
               req.toLowerCase().includes(searchQuery.toLowerCase())
             ) ||
             job.company.companyName
@@ -173,8 +171,8 @@ export default function JobPosts() {
     setIsSkillBasedSorting(!isSkillBasedSorting);
     if (!isSkillBasedSorting) {
       const sortedJobs = [...filteredJobs].sort((a, b) => {
-        const aMatchCount = countSkillMatches(a.requirements);
-        const bMatchCount = countSkillMatches(b.requirements);
+        const aMatchCount = countSkillMatches(a.skills);
+        const bMatchCount = countSkillMatches(b.skills);
         return bMatchCount - aMatchCount;
       });
       setFilteredJobs(sortedJobs);
@@ -186,9 +184,9 @@ export default function JobPosts() {
     }
   };
 
-  const countSkillMatches = (requirements: string[]) => {
+  const countSkillMatches = (skills: string[]) => {
     if (!userInfo || !userInfo.skills) return 0;
-    return requirements.filter((req) =>
+    return skills.filter((req) =>
       userInfo.skills.some((skill) =>
         req.toLowerCase().includes(skill.toLowerCase())
       )
@@ -205,12 +203,6 @@ export default function JobPosts() {
   const handleApply = () => {
     if (!hasUserApplied(selectedJob)) {
       setIsApplicationModalOpen(true);
-    }
-  };
-
-  const handleViewCompany = () => {
-    if (selectedJob) {
-      navigate(`/company/${selectedJob.company._id}`);
     }
   };
 
@@ -250,31 +242,31 @@ export default function JobPosts() {
   };
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-[#000000] text-white min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-center mb-4">Job Listings</h1>
         <section className="max-w-3xl mx-auto mb-8 relative z-20">
           <div className="relative">
-            <div className="flex flex-col sm:flex-row gap-2 p-2 bg-gray-900 rounded-lg border border-red-500 shadow-[0_0_15px_rgba(255,0,0,0.3)] hover:shadow-[0_0_20px_rgba(255,0,0,0.4)] transition-shadow">
+            <div className="flex flex-col sm:flex-row gap-2 p-2 bg-[#2D2D2D] rounded-lg border border-[#4F46E5] shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-shadow">
               <Input
                 type="text"
                 placeholder="Job title, skills, or company"
-                className="flex-1 bg-transparent border-none focus:ring-1 focus:ring-red-500 text-white"
+                className="flex-1 bg-transparent border-none focus:ring-1 focus:ring-[#4F46E5] text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <div className="flex items-center gap-2 sm:px-4 sm:border-l border-gray-700">
-                <MapPin className="w-5 h-5 text-gray-400" />
+              <div className="flex items-center gap-2 sm:px-4 sm:border-l border-[#4F46E5]">
+                <MapPin className="w-5 h-5 text-[#A0A0A0]" />
                 <Input
                   type="text"
                   placeholder="Location"
-                  className="bg-transparent border-none focus:ring-1 focus:ring-red-500 text-white"
+                  className="bg-transparent border-none focus:ring-1 focus:ring-[#4F46E5] text-white"
                   value={searchLocation}
                   onChange={(e) => setSearchLocation(e.target.value)}
                 />
               </div>
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_10px_rgba(0,0,255,0.3)]"
+                className="bg-[#4F46E5] hover:bg-[#6366F1] text-white shadow-[0_0_10px_rgba(79,70,229,0.3)]"
                 onClick={handleSearch}
               >
                 <Search className="w-5 h-5 mr-2" />
@@ -289,8 +281,8 @@ export default function JobPosts() {
               onClick={handleSkillBasedSort}
               className={`${
                 isSkillBasedSorting
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  ? "bg-[#22C55E] hover:bg-[#16A34A]"
+                  : "bg-[#4F46E5] hover:bg-[#6366F1]"
               } text-white`}
             >
               {isSkillBasedSorting ? "Reset Sorting" : "Sort by Skills"}
@@ -298,11 +290,10 @@ export default function JobPosts() {
           )}
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Job list */}
-          <Card className="w-full lg:w-1/3 bg-gray-800 text-white">
+          <Card className="w-full lg:w-1/3 bg-[#2D2D2D] text-white border-[#4F46E5]">
             <CardHeader>
               <CardTitle>Available Positions</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-[#A0A0A0]">
                 Click on a job to view details
               </CardDescription>
             </CardHeader>
@@ -312,42 +303,40 @@ export default function JobPosts() {
                   filteredJobs.map((job) => (
                     <div key={job._id} className="mb-4">
                       <button
-                        id={`job-${job._id}`}
                         onClick={() => setSelectedJob(job)}
                         className={`w-full text-left p-4 rounded-lg transition-colors ${
                           selectedJob?._id === job._id
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-800 hover:bg-gray-700"
+                            ? "bg-[#1b1938] text-white"
+                            : "bg-[#2D2D2D] hover:bg-[#3D3D3D]"
                         }`}
                       >
                         {renderCompanyAvatar(job.company_id, "")}
                         <h3 className="font-semibold">{job.title}</h3>
-                        <p className="text-sm text-black-400">
+                        <p className="text-sm text-[#A0A0A0]">
                           {job.company.companyName}
                         </p>
-                        <p className="text-sm text-black-400">{job.location}</p>
+                        <p className="text-sm text-[#A0A0A0]">{job.location}</p>
                         {isSkillBasedSorting && (
-                          <p className="text-sm text-green-400">
-                            Skill Matches: {countSkillMatches(job.requirements)}
+                          <p className="text-sm text-[#22C55E]">
+                            Skill Matches: {countSkillMatches(job.skills)}
                           </p>
                         )}
                       </button>
                       {job._id !==
                         filteredJobs[filteredJobs.length - 1]._id && (
-                        <Separator className="my-2 bg-gray-400" />
+                        <Separator className="my-2 bg-[#4F46E5]" />
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-4 text-gray-400">
+                  <div className="text-center py-4 text-[#A0A0A0]">
                     No job posts found. Please try a different search.
                   </div>
                 )}
               </ScrollArea>
             </CardContent>
           </Card>
-          {/* Job details */}
-          <Card className="w-full lg:w-2/3 bg-gray-800 text-white">
+          <Card className="w-full lg:w-2/3 bg-[#2D2D2D] text-white border-[#4F46E5]">
             <CardHeader>
               {renderCompanyAvatar(selectedJob?.company_id, "")}
               <CardTitle>
@@ -357,7 +346,7 @@ export default function JobPosts() {
                     : "No Job Selected"
                   : "No Jobs Found"}
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-[#A0A0A0]">
                 {filteredJobs.length > 0 && selectedJob
                   ? selectedJob.company.companyName
                   : ""}
@@ -372,28 +361,29 @@ export default function JobPosts() {
                         <div className="flex flex-wrap gap-2">
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-white"
+                            className="bg-[#3D3D3D] text-white"
                           >
                             <MapPin className="mr-1 h-3 w-3" />
                             {selectedJob.location}
                           </Badge>
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-white"
+                            className="bg-[#3D3D3D] text-white"
                           >
-                            ₹ {selectedJob.salaryRange.min} -{" "}
+                            <DollarSign className="mr-1 h-3 w-3" />
+                            {selectedJob.salaryRange.min} -{" "}
                             {selectedJob.salaryRange.max}
                           </Badge>
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-white"
+                            className="bg-[#3D3D3D] text-white"
                           >
                             <Clock className="mr-1 h-3 w-3" />
                             {selectedJob.employmentType}
                           </Badge>
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-white"
+                            className="bg-[#3D3D3D] text-white"
                           >
                             <Calendar className="mr-1 h-3 w-3" />
                             Posted {selectedJob.posted}
@@ -403,7 +393,7 @@ export default function JobPosts() {
                           <h3 className="text-lg font-semibold mb-2">
                             Job Description
                           </h3>
-                          <p className="text-gray-300">
+                          <p className="text-[#E0E0E0]">
                             {selectedJob.description}
                           </p>
                         </div>
@@ -411,7 +401,7 @@ export default function JobPosts() {
                           <h3 className="text-lg font-semibold mb-2">
                             Responsibilities
                           </h3>
-                          <ul className="list-disc pl-5 space-y-1 text-gray-300">
+                          <ul className="list-disc pl-5 space-y-1 text-[#E0E0E0]">
                             {selectedJob.responsibilities.map(
                               (resp: string, index: number) => (
                                 <li key={index}>{resp}</li>
@@ -421,10 +411,10 @@ export default function JobPosts() {
                         </div>
                         <div>
                           <h3 className="text-lg font-semibold mb-2">
-                            Requirements
+                            skills
                           </h3>
-                          <ul className="list-disc pl-5 space-y-1 text-gray-300">
-                            {selectedJob.requirements.map(
+                          <ul className="list-disc pl-5 space-y-1 text-[#E0E0E0]">
+                            {selectedJob.skills.map(
                               (req: string, index: number) => (
                                 <li key={index}>{req}</li>
                               )
@@ -433,14 +423,14 @@ export default function JobPosts() {
                         </div>
                       </div>
                     </ScrollArea>
-                    <div>
+                    <div className="mt-4">
                       <div className="flex gap-4">
                         {userInfo && (
                           <Button
                             className={`flex-1 ${
                               hasUserApplied(selectedJob)
-                                ? "bg-gray-500 hover:bg-gray-500 cursor-not-allowed"
-                                : "bg-blue-600 hover:bg-blue-700"
+                                ? "bg-[#4B5563] hover:bg-[#4B5563] cursor-not-allowed"
+                                : "bg-[#4F46E5] hover:bg-[#6366F1]"
                             } text-white`}
                             onClick={
                               hasUserApplied(selectedJob)
@@ -458,12 +448,12 @@ export default function JobPosts() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-4 text-gray-400">
+                  <div className="text-center py-4 text-[#A0A0A0]">
                     No job selected. Please choose a job from the list.
                   </div>
                 )
               ) : (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-[#A0A0A0]">
                   No job posts found. Please try a different search.
                 </div>
               )}
@@ -472,15 +462,14 @@ export default function JobPosts() {
         </div>
       </div>
 
-      {/* Application Modal */}
       <Dialog
         open={isApplicationModalOpen}
         onOpenChange={setIsApplicationModalOpen}
       >
-        <DialogContent className="bg-gray-800 text-white">
+        <DialogContent className="bg-[#2D2D2D] text-white border-[#4F46E5]">
           <DialogHeader>
             <DialogTitle>Apply for {selectedJob?.title}</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#A0A0A0]">
               Please fill out the application form below.
             </DialogDescription>
           </DialogHeader>
@@ -498,12 +487,12 @@ export default function JobPosts() {
                       as={Input}
                       id="firstName"
                       name="firstName"
-                      className="bg-gray-700 text-white"
+                      className="bg-[#3D3D3D] text-white"
                     />
                     <ErrorMessage
                       name="firstName"
                       component="div"
-                      className="text-red-500 text-sm"
+                      className="text-[#EF4444] text-sm"
                     />
                   </div>
                   <div>
@@ -512,12 +501,12 @@ export default function JobPosts() {
                       as={Input}
                       id="lastName"
                       name="lastName"
-                      className="bg-gray-700 text-white"
+                      className="bg-[#3D3D3D] text-white"
                     />
                     <ErrorMessage
                       name="lastName"
                       component="div"
-                      className="text-red-500 text-sm"
+                      className="text-[#EF4444] text-sm"
                     />
                   </div>
                 </div>
@@ -527,12 +516,12 @@ export default function JobPosts() {
                     as={Input}
                     id="email"
                     name="email"
-                    className="bg-gray-700 text-white"
+                    className="bg-[#3D3D3D] text-white"
                   />
                   <ErrorMessage
                     name="email"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-[#EF4444] text-sm"
                   />
                 </div>
                 <div>
@@ -541,12 +530,12 @@ export default function JobPosts() {
                     as={Input}
                     id="phone"
                     name="phone"
-                    className="bg-gray-700 text-white"
+                    className="bg-[#3D3D3D] text-white"
                   />
                   <ErrorMessage
                     name="phone"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-[#EF4444] text-sm"
                   />
                 </div>
                 <div>
@@ -555,12 +544,12 @@ export default function JobPosts() {
                     as={Input}
                     id="location"
                     name="location"
-                    className="bg-gray-700 text-white"
+                    className="bg-[#3D3D3D] text-white"
                   />
                   <ErrorMessage
                     name="location"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-[#EF4444] text-sm"
                   />
                 </div>
                 <div>
@@ -569,13 +558,13 @@ export default function JobPosts() {
                     as={Textarea}
                     id="coverLetter"
                     name="coverLetter"
-                    className="bg-gray-700 text-white"
+                    className="bg-[#3D3D3D] text-white"
                     rows={4}
                   />
                   <ErrorMessage
                     name="coverLetter"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-[#EF4444] text-sm"
                   />
                 </div>
                 <div>
@@ -587,19 +576,19 @@ export default function JobPosts() {
                     onChange={(event) => {
                       setFieldValue("resume", event.currentTarget.files?.[0]);
                     }}
-                    className="bg-gray-700 text-white"
+                    className="bg-[#3D3D3D] text-white"
                     accept=".pdf"
                   />
                   <ErrorMessage
                     name="resume"
                     component="div"
-                    className="text-red-500 text-sm"
+                    className="text-[#EF4444] text-sm"
                   />
                 </div>
                 <DialogFooter>
                   <Button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
                   >
                     Next
                   </Button>
@@ -610,12 +599,11 @@ export default function JobPosts() {
         </DialogContent>
       </Dialog>
 
-      {/* Overview Modal */}
       <Dialog open={isOverviewModalOpen} onOpenChange={setIsOverviewModalOpen}>
-        <DialogContent className="bg-gray-800 text-white">
+        <DialogContent className="bg-[#2D2D2D] text-white border-[#4F46E5]">
           <DialogHeader>
             <DialogTitle>Application Overview</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#A0A0A0]">
               Please review your application details before submitting.
             </DialogDescription>
           </DialogHeader>
@@ -637,13 +625,13 @@ export default function JobPosts() {
             </div>
             <div>
               <h3 className="font-semibold">Cover Letter</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-[#E0E0E0]">
                 {applicationData.coverLetter}
               </p>
             </div>
             <div>
               <h3 className="font-semibold">Resume</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-[#E0E0E0]">
                 {applicationData.resume
                   ? applicationData.resume.name
                   : "No resume uploaded"}
@@ -653,13 +641,13 @@ export default function JobPosts() {
           <DialogFooter>
             <Button
               onClick={handlePrevious}
-              className="bg-gray-600 hover:bg-gray-700 text-white"
+              className="bg-[#4B5563] hover:bg-[#6B7280] text-white"
             >
               Previous
             </Button>
             <Button
               onClick={handleConfirmApply}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
             >
               Confirm Apply
             </Button>

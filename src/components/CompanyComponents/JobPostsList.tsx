@@ -159,7 +159,7 @@ export function JobPostsList() {
                             }
                             className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
                           >
-                            View Apps
+                            View Application
                           </Button>
                         </div>
                       </TableCell>

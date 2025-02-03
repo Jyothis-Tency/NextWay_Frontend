@@ -13,6 +13,8 @@ import {
   Plus,
   ArrowLeft,
   FileText,
+  FileX,
+
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -30,4 +32,6 @@ export const Icons = {
   Plus,
   ArrowLeft,
   FileText,
+  FileX,
+
 };

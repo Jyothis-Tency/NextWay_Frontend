@@ -161,7 +161,7 @@ export default function JobPostDetailed() {
                     Qualifications & Skills
                   </h3>
                   <ul className="space-y-2 text-gray-300">
-                    {job.requirements.map((req: string, index: number) => (
+                    {job.skills.map((req: string, index: number) => (
                       <li key={index} className="flex items-start">
                         <span className="mr-2 mt-1 text-red-500">•</span>
                         <span>{req}</span>

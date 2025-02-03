@@ -16,6 +16,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createOrUpdateJobPost } from "@/API/companyAPI";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import ITSkills from "@/enums/skills";
+import { CommandInput } from "cmdk";
+
+function validateSkill(skill: string): boolean {
+  return Object.values(ITSkills).includes(skill as ITSkills);
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
+}
 
 interface IJobPost {
   title: string;
@@ -26,7 +49,7 @@ interface IJobPost {
     min: number;
     max: number;
   };
-  requirements: string[];
+  skills: string[];
   responsibilities: string[];
   perks: string[];
   status: "open" | "closed" | "paused";
@@ -48,9 +71,17 @@ const validationSchema = Yup.object().shape({
       .moreThan(Yup.ref("min"), "Maximum salary must be greater than minimum")
       .required("Maximum salary is required"),
   }),
-  requirements: Yup.array()
-    .of(Yup.string())
-    .min(1, "At least one requirement is needed"),
+  skills: Yup.array()
+    .of(
+      Yup.string().test(
+        "is-valid-skill",
+        "Invalid skill selected",
+        (value) =>
+          value === undefined ||
+          Object.values(ITSkills).includes(value as ITSkills)
+      )
+    )
+    .min(1, "At least one skill is needed"),
   responsibilities: Yup.array()
     .of(Yup.string())
     .min(1, "At least one responsibility is needed"),
@@ -76,7 +107,7 @@ export function CreateJobPost() {
       min: 0,
       max: 0,
     },
-    requirements: [""],
+    skills: [""],
     responsibilities: [""],
     perks: [""],
     status: "open",
@@ -115,7 +146,7 @@ export function CreateJobPost() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched }) => (
+        {({ values, errors, touched, setFieldValue }) => (
           <Form className="space-y-6">
             <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
@@ -264,25 +295,60 @@ export function CreateJobPost() {
 
             <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
-                <CardTitle>Requirements, Responsibilities, and Perks</CardTitle>
+                <CardTitle>Skills, Responsibilities, and Perks</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FieldArray name="requirements">
+                <FieldArray name="skills">
                   {({ push, remove }) => (
                     <div>
                       <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
-                        Requirements
+                        Skills
                       </label>
-                      {values.requirements.map((_, index) => (
+                      {values.skills.map((skill, index) => (
                         <div
                           key={index}
                           className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
-                          <Field
-                            as={Input}
-                            name={`requirements.${index}`}
-                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
-                          />
+                          <div className="relative w-full">
+                            <Field
+                              as={Input}
+                              name={`skills.${index}`}
+                              className="w-full bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
+                              placeholder="Enter a skill..."
+                              autoComplete="off"
+                            />
+                            {skill &&
+                              !Object.values(ITSkills).includes(
+                                skill as ITSkills
+                              ) && (
+                                <div className="absolute z-10 w-full mt-1 bg-[#2D2D2D] border border-[#4B5563] rounded-md shadow-lg">
+                                  {Object.values(ITSkills)
+                                    .filter((s) =>
+                                      s
+                                        .toLowerCase()
+                                        .includes(skill.toLowerCase())
+                                    )
+                                    .map((suggestion) => (
+                                      <div
+                                        key={suggestion}
+                                        className="px-4 py-2 cursor-pointer hover:bg-[#3D3D3D]"
+                                        onClick={() => {
+                                          const updatedSkills = [
+                                            ...values.skills,
+                                          ];
+                                          updatedSkills[index] = suggestion;
+                                          setFieldValue(
+                                            "skills",
+                                            updatedSkills
+                                          );
+                                        }}
+                                      >
+                                        {suggestion}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </div>
                           <Button
                             type="button"
                             onClick={() => remove(index)}
@@ -299,13 +365,13 @@ export function CreateJobPost() {
                         onClick={() => push("")}
                         variant="outline"
                       >
-                        Add Requirement
+                        Add Skill
                       </Button>
                     </div>
                   )}
                 </FieldArray>
                 <ErrorMessage
-                  name="requirements"
+                  name="skills"
                   component="div"
                   className="text-[#EF4444] text-sm mt-1"
                 />

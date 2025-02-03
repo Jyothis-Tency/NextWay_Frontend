@@ -27,7 +27,7 @@ interface IJobPost {
     min: number;
     max: number;
   };
-  requirements: string[];
+  skills: string[];
   responsibilities: string[];
   perks: string[];
   status: "open" | "closed" | "paused";
@@ -51,9 +51,9 @@ const validationSchema = Yup.object().shape({
       .moreThan(Yup.ref("min"), "Maximum salary must be greater than minimum")
       .required("Maximum salary is required"),
   }),
-  requirements: Yup.array()
+  skills: Yup.array()
     .of(Yup.string())
-    .min(1, "At least one requirement is needed"),
+    .min(1, "At least one skill is needed"),
   responsibilities: Yup.array()
     .of(Yup.string())
     .min(1, "At least one responsibility is needed"),
@@ -310,23 +310,23 @@ export function JobPostDetails() {
 
             <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
-                <CardTitle>Requirements, Responsibilities, and Perks</CardTitle>
+                <CardTitle>Skills, Responsibilities, and Perks</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FieldArray name="requirements">
+                <FieldArray name="skills">
                   {({ push, remove }) => (
                     <div>
                       <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
-                        Requirements
+                        Skills
                       </label>
-                      {values.requirements.map((_, index) => (
+                      {values.skills.map((_, index) => (
                         <div
                           key={index}
                           className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
                           <Field
                             as={Input}
-                            name={`requirements.${index}`}
+                            name={`skills.${index}`}
                             className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
                           />
                           <Button
@@ -345,13 +345,13 @@ export function JobPostDetails() {
                         onClick={() => push("")}
                         variant="outline"
                       >
-                        Add Requirement
+                        Add Skills
                       </Button>
                     </div>
                   )}
                 </FieldArray>
                 <ErrorMessage
-                  name="requirements"
+                  name="skills"
                   component="div"
                   className="text-[#EF4444] text-sm mt-1"
                 />

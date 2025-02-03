@@ -97,19 +97,21 @@ const MyJobs: React.FC = () => {
   };
 
   const renderJobApplicationsTable = (applications: JobApplication[]) => (
-    <Card className="bg-gray-800 text-white mb-12">
+    <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-gray-700 hover:bg-gray-750 transition-colors">
-              <TableHead className="text-white font-semibold">
+            <TableRow className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors">
+              <TableHead className="text-[#A0A0A0] font-semibold">
                 Job Title
               </TableHead>
-              <TableHead className="text-white font-semibold">
+              <TableHead className="text-[#A0A0A0] font-semibold">
                 Company
               </TableHead>
-              <TableHead className="text-white font-semibold">Status</TableHead>
-              <TableHead className="text-white font-semibold">
+              <TableHead className="text-[#A0A0A0] font-semibold">
+                Status
+              </TableHead>
+              <TableHead className="text-[#A0A0A0] font-semibold">
                 Applied Date
               </TableHead>
             </TableRow>
@@ -118,7 +120,7 @@ const MyJobs: React.FC = () => {
             {applications.map((app) => (
               <TableRow
                 key={app._id}
-                className="border-b border-gray-700 hover:bg-gray-750 transition-colors"
+                className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
               >
                 <TableCell>{app.jobTitle}</TableCell>
                 <TableCell>{app.companyName}</TableCell>
@@ -140,7 +142,7 @@ const MyJobs: React.FC = () => {
                     {app.status}
                   </Badge>
                   <p
-                    className="text-sm text-blue-400 cursor-pointer hover:underline mt-1"
+                    className="text-sm text-[#6366F1] cursor-pointer hover:underline mt-1"
                     onClick={() => openStatusModal(app)}
                   >
                     View Message
@@ -164,39 +166,41 @@ const MyJobs: React.FC = () => {
 
     if (applicationsWithInterviews.length === 0) {
       return (
-        <Card className="bg-gray-800 text-white mb-12">
+        <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
           <CardContent className="p-6">
-            <p className="text-center text-gray-400">No Interviews Scheduled</p>
+            <p className="text-center text-[#A0A0A0]">
+              No Interviews Scheduled
+            </p>
           </CardContent>
         </Card>
       );
     }
 
     return (
-      <Card className="bg-gray-800 text-white mb-12">
+      <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">Interviews</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-gray-700 hover:bg-gray-750 transition-colors">
-                <TableHead className="text-white font-semibold">
+              <TableRow className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Job Title
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Company
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Interview Status
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Date & Time
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Message
                 </TableHead>
-                <TableHead className="text-white font-semibold">
+                <TableHead className="text-[#A0A0A0] font-semibold">
                   Actions
                 </TableHead>
               </TableRow>
@@ -205,7 +209,7 @@ const MyJobs: React.FC = () => {
               {applicationsWithInterviews.map((app) => (
                 <TableRow
                   key={app._id}
-                  className="border-b border-gray-700 hover:bg-gray-750 transition-colors"
+                  className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
                 >
                   <TableCell>{app.jobTitle}</TableCell>
                   <TableCell>{app.companyName}</TableCell>
@@ -242,6 +246,7 @@ const MyJobs: React.FC = () => {
                       onClick={() =>
                         handleJoinInterview(videoCallState.roomId || "")
                       }
+                      className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
                     >
                       Join Interview
                     </Button>
@@ -258,14 +263,14 @@ const MyJobs: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="bg-gray-800 text-white mb-12">
+      <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
         <CardContent className="p-6">
           <p className="text-center text-red-500">{error}</p>
         </CardContent>
@@ -275,15 +280,15 @@ const MyJobs: React.FC = () => {
 
   if (jobApplications.length === 0) {
     return (
-      <Card className="bg-gray-800 text-white mb-12 max-w-2xl mx-auto">
+      <Card className="bg-[#1E1E1E] text-white mb-12 max-w-2xl mx-auto border border-[#2D2D2D]">
         <CardContent className="p-8 text-center">
-          <PlusCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <PlusCircle className="h-16 w-16 text-[#A0A0A0] mx-auto mb-4" />
           <h2 className="text-2xl font-semibold mb-4">No Applications Found</h2>
-          <p className="text-gray-400 mb-6">
+          <p className="text-[#A0A0A0] mb-6">
             You haven't applied for any jobs yet. Start by applying to jobs.
           </p>
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
             onClick={() => navigate("/user/job-posts")}
           >
             Start Job Search
@@ -311,9 +316,9 @@ const MyJobs: React.FC = () => {
   );
 
   return (
-    <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)]">
+    <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)] bg-[#000000]">
       <h1 className="text-3xl font-bold mb-6 text-white flex items-center">
-        <Briefcase className="h-8 w-8 text-blue-500 mr-2" />
+        <Briefcase className="h-8 w-8 text-[#4F46E5] mr-2" />
         Your Job Applications
       </h1>
 
@@ -325,8 +330,8 @@ const MyJobs: React.FC = () => {
         <TabsList className="grid w-full grid-cols-5 gap-4 mb-6">
           <TabsTrigger
             value="pending"
-            className={`bg-gray-700 text-white ${
-              activeTab === "pending" ? "border-b-2 border-blue-500" : ""
+            className={`bg-[#1E1E1E] text-white ${
+              activeTab === "pending" ? "border-b-2 border-[#4F46E5]" : ""
             }`}
           >
             <Clock className="h-4 w-4 mr-2" />
@@ -334,8 +339,8 @@ const MyJobs: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger
             value="shortlisted"
-            className={`bg-gray-700 text-white ${
-              activeTab === "shortlisted" ? "border-b-2 border-blue-500" : ""
+            className={`bg-[#1E1E1E] text-white ${
+              activeTab === "shortlisted" ? "border-b-2 border-[#4F46E5]" : ""
             }`}
           >
             <BookmarkIcon className="h-4 w-4 mr-2" />
@@ -343,8 +348,8 @@ const MyJobs: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger
             value="rejected"
-            className={`bg-gray-700 text-white ${
-              activeTab === "rejected" ? "border-b-2 border-blue-500" : ""
+            className={`bg-[#1E1E1E] text-white ${
+              activeTab === "rejected" ? "border-b-2 border-[#4F46E5]" : ""
             }`}
           >
             <XCircle className="h-4 w-4 mr-2" />
@@ -352,8 +357,8 @@ const MyJobs: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger
             value="hired"
-            className={`bg-gray-700 text-white ${
-              activeTab === "hired" ? "border-b-2 border-blue-500" : ""
+            className={`bg-[#1E1E1E] text-white ${
+              activeTab === "hired" ? "border-b-2 border-[#4F46E5]" : ""
             }`}
           >
             <CheckCircle className="h-4 w-4 mr-2" />
@@ -361,8 +366,8 @@ const MyJobs: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger
             value="interviews"
-            className={`bg-gray-700 text-white ${
-              activeTab === "interviews" ? "border-b-2 border-blue-500" : ""
+            className={`bg-[#1E1E1E] text-white ${
+              activeTab === "interviews" ? "border-b-2 border-[#4F46E5]" : ""
             }`}
           >
             <Calendar className="h-4 w-4 mr-2" />
@@ -376,9 +381,9 @@ const MyJobs: React.FC = () => {
           {pendingApplications.length > 0 ? (
             renderJobApplicationsTable(pendingApplications)
           ) : (
-            <Card className="bg-gray-800 text-white mb-12">
+            <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
               <CardContent className="p-6">
-                <p className="text-center text-gray-400">
+                <p className="text-center text-[#A0A0A0]">
                   No Pending Applications Found
                 </p>
               </CardContent>
@@ -392,9 +397,9 @@ const MyJobs: React.FC = () => {
           {shortlistedApplications.length > 0 ? (
             renderJobApplicationsTable(shortlistedApplications)
           ) : (
-            <Card className="bg-gray-800 text-white mb-12">
+            <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
               <CardContent className="p-6">
-                <p className="text-center text-gray-400">
+                <p className="text-center text-[#A0A0A0]">
                   No Shortlisted Applications Found
                 </p>
               </CardContent>
@@ -408,9 +413,9 @@ const MyJobs: React.FC = () => {
           {rejectedApplications.length > 0 ? (
             renderJobApplicationsTable(rejectedApplications)
           ) : (
-            <Card className="bg-gray-800 text-white mb-12">
+            <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
               <CardContent className="p-6">
-                <p className="text-center text-gray-400">
+                <p className="text-center text-[#A0A0A0]">
                   No Rejected Applications Found
                 </p>
               </CardContent>
@@ -424,9 +429,9 @@ const MyJobs: React.FC = () => {
           {hiredApplications.length > 0 ? (
             renderJobApplicationsTable(hiredApplications)
           ) : (
-            <Card className="bg-gray-800 text-white mb-12">
+            <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
               <CardContent className="p-6">
-                <p className="text-center text-gray-400">
+                <p className="text-center text-[#A0A0A0]">
                   No Hired Applications Found
                 </p>
               </CardContent>
@@ -439,7 +444,7 @@ const MyJobs: React.FC = () => {
         </TabsContent>
       </Tabs>
       <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
-        <DialogContent className="bg-gray-800 text-white">
+        <DialogContent className="bg-[#1E1E1E] text-white border border-[#2D2D2D]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">
               Application Status
@@ -451,14 +456,14 @@ const MyJobs: React.FC = () => {
               <span className="font-bold">{currentJobApplication?.status}</span>
             </h5>
             <p className="font-semibold mb-1">Message from Company:</p>
-            <p className="text-gray-300">
+            <p className="text-[#A0A0A0]">
               {currentJobApplication?.statusMessage || "No message provided."}
             </p>
           </div>
           <DialogFooter>
             <Button
               onClick={() => setIsStatusModalOpen(false)}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
             >
               Close
             </Button>

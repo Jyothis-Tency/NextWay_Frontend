@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Loader2, Calendar, CheckCircle, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { axiosUser, axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
@@ -39,25 +39,25 @@ interface SubscriptionPlan {
 
 interface SubscriptionHistory {
   _id: string;
-  user_id: string; // Reference to the User model
-  plan_id: string; // Reference to the SubscriptionPlan model
-  planName: string; // Name of the subscription plan
-  period: string; // Duration of the subscription (e.g., monthly, yearly)
+  user_id: string;
+  plan_id: string;
+  planName: string;
+  period: string;
   startDate: Date;
-  features: string[]; // Start date of the subscription
-  endDate: Date; // End date of the subscription
-  price: number; // Price of the subscription
-  paymentId: string; // Payment identifier
-  status: String;
-  subscriptionId?: string; // Status of the subscription
-  isCurrent?: boolean; // Indicates if this is the user's current subscription
-  createdAt?: Date; // Timestamp when the subscription record was created
+  features: string[];
+  endDate: Date;
+  price: number;
+  paymentId: string;
+  status: string;
+  subscriptionId?: string;
+  isCurrent?: boolean;
+  createdAt?: Date;
 }
 
 interface History {
-  user_id: string; // Reference to the User
-  plan_id: string; // Reference to the Subscription Plan
-  planName: string; // Redundant storage for ease of querying
+  user_id: string;
+  plan_id: string;
+  planName: string;
   period: "daily" | "weekly" | "monthly" | "yearly";
   createdType: string;
   startDate: Date;
@@ -68,25 +68,24 @@ interface History {
 
 interface CurrentSubscription {
   _id: "strings";
-  user_id: string; // Reference to the User model
-  plan_id: string; // Reference to the SubscriptionPlan model
-  planName: string; // Name of the subscription plan
+  user_id: string;
+  plan_id: string;
+  planName: string;
   startDate: Date;
-  features: string[]; // Start date of the subscription
-  endDate: Date; // End date of the subscription
+  features: string[];
+  endDate: Date;
   period: string;
-  price: number; // Price of the subscription
-  paymentId: string; // Payment identifier
-  status: String;
-  subscriptionId?: string; // Status of the subscription
-  isCurrent?: boolean; // Indicates if this is the user's current subscription
-  createdAt?: Date; // Timestamp when the subscription record was created
+  price: number;
+  paymentId: string;
+  status: string;
+  subscriptionId?: string;
+  isCurrent?: boolean;
+  createdAt?: Date;
 }
 
 const Subscriptions: React.FC = () => {
   const socket = useSocket();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  console.log("plans", plans);
   const [history, setHistory] = useState<History[]>([]);
   const [currentSubscription, setCurrentSubscription] =
     useState<CurrentSubscription | null>(null);
@@ -119,13 +118,8 @@ const Subscriptions: React.FC = () => {
 
         setHistory(historyResponse.data.history || []);
         setCurrentSubscription(currentResponse.data.current || null);
-        console.log(
-          "currentResponse.data.current",
-          currentResponse.data.current
-        );
       } catch (err) {
         console.error("Error fetching subscription data:", err);
-        // toast.error("Failed to refresh subscription data");
       } finally {
         setLoadingHistory(false);
         setLoadingCurrent(false);
@@ -156,7 +150,6 @@ const Subscriptions: React.FC = () => {
               break;
             case "subscription_cancelled":
               toast.info("Subscription has been cancelled");
-
               break;
             case "subscription_renewed":
               toast.success("Subscription has been renewed successfully!");
@@ -172,7 +165,7 @@ const Subscriptions: React.FC = () => {
         socket.emit("leave:subscription", userId);
       };
     }
-  }, [socket, userId]);
+  }, [socket, userId, fetchSubscriptionData]); // Added fetchSubscriptionData to dependencies
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -208,10 +201,6 @@ const Subscriptions: React.FC = () => {
           `/current-subscription/${userId}`
         );
         setCurrentSubscription(currentResponse.data.current || null);
-        console.log(
-          "currentResponse.data.current",
-          currentResponse.data.current
-        );
       } catch (err) {
         console.error("Error fetching current subscription:", err);
       } finally {
@@ -327,7 +316,6 @@ const Subscriptions: React.FC = () => {
       setIsCancelModalOpen(false);
       toast.success("Cancellation request submitted");
 
-      // Refresh subscription data
       await fetchSubscriptionData();
     } catch (error) {
       console.error("Error cancelling subscription:", error);
@@ -336,33 +324,30 @@ const Subscriptions: React.FC = () => {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)]">
+    <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)] bg-[#000000]">
       <section>
         <h1 className="text-3xl font-bold mb-6">Current Subscription</h1>
         {loadingCurrent ? (
           <div className="flex justify-center items-center h-40">
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
           </div>
         ) : errorCurrent ? (
-          <Card className="bg-gray-800 text-white mb-12">
+          <Card className="bg-[#1E1E1E] text-white mb-12">
             <CardContent className="p-6">
               <p className="text-center text-red-500">{errorCurrent}</p>
             </CardContent>
           </Card>
         ) : currentSubscription ? (
-          <Card className="bg-gray-800 text-white mb-12 max-w-2xl mx-auto">
+          <Card className="bg-[#1E1E1E] text-white mb-12 max-w-2xl mx-auto border border-[#2D2D2D]">
             <CardContent className="p-8">
               <div className="flex items-center justify-between gap-3 mb-6">
                 <h3 className="text-2xl font-semibold">
                   {currentSubscription.planName}
                 </h3>
-                {/* <h3 className="text-2xl font-semibold">
-                  {currentSubscription.subscriptionId}
-                </h3> */}
                 {currentSubscription.status === "active" && (
                   <Button
                     variant="destructive"
-                    className="text-black"
+                    className="bg-[#EF4444] hover:bg-[#DC2626] text-white"
                     onClick={() => setIsCancelModalOpen(true)}
                   >
                     Cancel Subscription
@@ -371,7 +356,7 @@ const Subscriptions: React.FC = () => {
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <Calendar className="h-5 w-5 text-[#A0A0A0]" />
                   <p>
                     Start Date:{" "}
                     <span className="font-medium">
@@ -382,9 +367,9 @@ const Subscriptions: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <Calendar className="h-5 w-5 text-[#A0A0A0]" />
                   <p>
-                    Start Date:{" "}
+                    End Date:{" "}
                     <span className="font-medium">
                       {new Date(
                         currentSubscription.endDate
@@ -393,7 +378,7 @@ const Subscriptions: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <Calendar className="h-5 w-5 text-[#A0A0A0]" />
                   <p>
                     Period:{" "}
                     <span className="font-medium">
@@ -402,7 +387,7 @@ const Subscriptions: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <CreditCard className="h-5 w-5 text-gray-400" />
+                  <CreditCard className="h-5 w-5 text-[#A0A0A0]" />
                   <p>
                     Price:{" "}
                     <span className="font-medium">
@@ -414,9 +399,9 @@ const Subscriptions: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-gray-800 text-white mb-12">
+          <Card className="bg-[#1E1E1E] text-white mb-12">
             <CardContent className="p-6">
-              <p className="text-center text-gray-400">
+              <p className="text-center text-[#A0A0A0]">
                 You are not currently subscribed.
               </p>
             </CardContent>
@@ -428,10 +413,10 @@ const Subscriptions: React.FC = () => {
         <h1 className="text-3xl font-bold mb-6">Subscription Plans</h1>
         {loadingPlans ? (
           <div className="flex justify-center items-center h-40">
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#494691]" />
           </div>
         ) : errorPlans ? (
-          <Card className="bg-gray-800 text-white mb-12">
+          <Card className="bg-[#1E1E1E] text-white mb-12">
             <CardContent className="p-6">
               <p className="text-center text-red-500">{errorPlans}</p>
             </CardContent>
@@ -445,9 +430,9 @@ const Subscriptions: React.FC = () => {
                   key={plan._id}
                   className={`${
                     isCurrentPlan
-                      ? "bg-gray-700 border-2 border-gray-600"
-                      : "bg-gray-800"
-                  } text-white`}
+                      ? "bg-[#1b1938] border-2 border-gray-600"
+                      : "bg-[#1E1E1E]"
+                  } text-white border border-[#2D2D2D]`}
                 >
                   <CardHeader>
                     <CardTitle className="flex justify-between items-center">
@@ -457,7 +442,7 @@ const Subscriptions: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center space-x-2 mb-4">
-                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <Calendar className="h-4 w-4 text-[#A0A0A0]" />
                       <span>Period: {plan.period}</span>
                     </div>
                     <h4 className="font-semibold mb-2">Features:</h4>
@@ -474,8 +459,8 @@ const Subscriptions: React.FC = () => {
                       className={`w-full ${
                         isCurrentPlan
                           ? "bg-gray-600 hover:bg-gray-600 cursor-not-allowed"
-                          : "bg-red-600 hover:bg-red-700"
-                      }`}
+                          : "bg-[#4F46E5] hover:bg-[#6366F1]"
+                      } text-white`}
                       disabled={isCurrentPlan}
                     >
                       {isCurrentPlan ? "Current Plan" : "Subscribe"}
@@ -486,9 +471,9 @@ const Subscriptions: React.FC = () => {
             })}
           </div>
         ) : (
-          <Card className="bg-gray-800 text-white mb-12">
+          <Card className="bg-[#1E1E1E] text-white mb-12">
             <CardContent className="p-6">
-              <p className="text-center text-gray-400">
+              <p className="text-center text-[#A0A0A0]">
                 No subscription plans are currently available.
               </p>
             </CardContent>
@@ -500,31 +485,34 @@ const Subscriptions: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4">Subscription History</h2>
         {loadingHistory ? (
           <div className="flex justify-center items-center h-40">
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
           </div>
         ) : errorHistory ? (
-          <Card className="bg-gray-800 text-white">
+          <Card className="bg-[#1E1E1E] text-white">
             <CardContent className="p-6">
               <p className="text-center text-red-500">{errorHistory}</p>
             </CardContent>
           </Card>
         ) : history.length > 0 ? (
-          <Card className="bg-gray-800">
+          <Card className="bg-[#1E1E1E]">
             <CardContent>
-              <Table>
+              <Table className="border-[#2D2D2D]">
                 <TableHeader>
-                  <TableRow className="text-white">
-                    <TableHead className="text-white">Plan Name</TableHead>
-                    <TableHead className="text-white">Start Date</TableHead>
-                    <TableHead className="text-white">End Date</TableHead>
-                    <TableHead className="text-white">Period</TableHead>
-                    <TableHead className="text-white">Price</TableHead>
-                    <TableHead className="text-white">Type</TableHead>
+                  <TableRow className="border-b border-[#2D2D2D] text-white">
+                    <TableHead className="text-[#A0A0A0]">Plan Name</TableHead>
+                    <TableHead className="text-[#A0A0A0]">Start Date</TableHead>
+                    <TableHead className="text-[#A0A0A0]">End Date</TableHead>
+                    <TableHead className="text-[#A0A0A0]">Period</TableHead>
+                    <TableHead className="text-[#A0A0A0]">Price</TableHead>
+                    <TableHead className="text-[#A0A0A0]">Type</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {history.map((item) => (
-                    <TableRow key={item.user_id} className="text-white">
+                    <TableRow
+                      key={item.user_id}
+                      className="border-b border-[#2D2D2D] text-white"
+                    >
                       <TableCell>{item.planName}</TableCell>
                       <TableCell>
                         {new Date(item.startDate).toLocaleDateString()}
@@ -533,8 +521,8 @@ const Subscriptions: React.FC = () => {
                         {new Date(item.endDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell>{item.period}</TableCell>
-                      <TableCell>₹{item.price} </TableCell>
-                      <TableCell>{item.createdType} </TableCell>
+                      <TableCell>₹{item.price}</TableCell>
+                      <TableCell>{item.createdType}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -542,9 +530,9 @@ const Subscriptions: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          <Card className="bg-gray-800 text-white">
+          <Card className="bg-[#1E1E1E] text-white">
             <CardContent className="p-6">
-              <p className="text-center text-gray-400">
+              <p className="text-center text-[#A0A0A0]">
                 No subscription history.
               </p>
             </CardContent>
@@ -553,31 +541,36 @@ const Subscriptions: React.FC = () => {
       </section>
 
       <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-white border border-[#2D2D2D]">
           <DialogHeader>
             <DialogTitle>Confirm Subscription</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#A0A0A0]">
               Are you sure you want to subscribe to this plan?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               variant="outline"
-              className="text-black"
+              className="bg-transparent text-white border-[#4F46E5] hover:bg-[#2D2D2D]"
               onClick={() => setIsConfirmModalOpen(false)}
             >
               Cancel
             </Button>
-            <Button onClick={handleConfirmSubscribe}>Confirm</Button>
+            <Button
+              className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
+              onClick={handleConfirmSubscribe}
+            >
+              Confirm
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-gray-800 text-white">
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-white border border-[#2D2D2D]">
           <DialogHeader>
             <DialogTitle>Cancel Subscription</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-[#A0A0A0]">
               Are you sure you want to cancel your subscription? This action
               cannot be undone.
             </DialogDescription>
@@ -585,12 +578,16 @@ const Subscriptions: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              className="text-black"
+              className="bg-transparent text-white border-[#4F46E5] hover:bg-[#2D2D2D]"
               onClick={() => setIsCancelModalOpen(false)}
             >
               Keep Subscription
             </Button>
-            <Button variant="destructive" onClick={handleCancelSubscription}>
+            <Button
+              variant="destructive"
+              className="bg-[#EF4444] hover:bg-[#DC2626] text-white"
+              onClick={handleCancelSubscription}
+            >
               Yes, Cancel
             </Button>
           </DialogFooter>
