@@ -16,6 +16,7 @@ import {
 import { axiosCompany } from "@/Utils/axiosUtil";
 import { createOrUpdateJobPost, deleteJobPost } from "@/API/companyAPI";
 import { toast } from "sonner";
+import ITSkills from "@/enums/skills";
 
 interface IJobPost {
   _id: string;
@@ -51,9 +52,7 @@ const validationSchema = Yup.object().shape({
       .moreThan(Yup.ref("min"), "Maximum salary must be greater than minimum")
       .required("Maximum salary is required"),
   }),
-  skills: Yup.array()
-    .of(Yup.string())
-    .min(1, "At least one skill is needed"),
+  skills: Yup.array().of(Yup.string()).min(1, "At least one skill is needed"),
   responsibilities: Yup.array()
     .of(Yup.string())
     .min(1, "At least one responsibility is needed"),
@@ -319,21 +318,57 @@ export function JobPostDetails() {
                       <label className="block text-sm font-medium text-[#A0A0A0] mb-2">
                         Skills
                       </label>
-                      {values.skills.map((_, index) => (
+                      {values.skills.map((skill, index) => (
                         <div
                           key={index}
                           className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2 mb-2"
                         >
-                          <Field
-                            as={Input}
-                            name={`skills.${index}`}
-                            className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] flex-grow"
-                          />
+                          <div className="relative w-full">
+                            <Field
+                              as={Input}
+                              name={`skills.${index}`}
+                              className="w-full bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
+                              placeholder="Enter a skill..."
+                              autoComplete="off"
+                            />
+                            {skill &&
+                              !Object.values(ITSkills).includes(
+                                skill as ITSkills
+                              ) && (
+                                <div className="absolute z-10 w-full mt-1 bg-[#2D2D2D] border border-[#4B5563] rounded-md shadow-lg">
+                                  {Object.values(ITSkills)
+                                    .filter((s) =>
+                                      s
+                                        .toLowerCase()
+                                        .includes(skill.toLowerCase())
+                                    )
+                                    .slice(0, 7)
+                                    .map((suggestion) => (
+                                      <div
+                                        key={suggestion}
+                                        className="px-4 py-2 cursor-pointer hover:bg-[#3D3D3D]"
+                                        onClick={() => {
+                                          const updatedSkills = [
+                                            ...values.skills,
+                                          ];
+                                          updatedSkills[index] = suggestion;
+                                          setFieldValue(
+                                            "skills",
+                                            updatedSkills
+                                          );
+                                        }}
+                                      >
+                                        {suggestion}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </div>
                           <Button
                             type="button"
                             onClick={() => remove(index)}
                             variant="destructive"
-                            className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF] mt-2 md:mt-0"
+                            className="mt-2 md:mt-0"
                           >
                             Remove
                           </Button>

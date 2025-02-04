@@ -16,29 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createOrUpdateJobPost } from "@/API/companyAPI";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
 import ITSkills from "@/enums/skills";
-import { CommandInput } from "cmdk";
 
-function validateSkill(skill: string): boolean {
-  return Object.values(ITSkills).includes(skill as ITSkills);
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 interface IJobPost {
   title: string;
@@ -327,7 +306,7 @@ export function CreateJobPost() {
                                       s
                                         .toLowerCase()
                                         .includes(skill.toLowerCase())
-                                    )
+                                    ).slice(0,7)
                                     .map((suggestion) => (
                                       <div
                                         key={suggestion}
