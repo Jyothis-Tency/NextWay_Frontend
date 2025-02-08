@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
+import { clearTokens } from "@/redux/Slices/tokenSlice";
 
 interface Notification {
   id: number;
@@ -116,6 +117,7 @@ export const Header: React.FC = () => {
 
   const confirmLogout = () => {
     dispatch(clearCompany());
+    dispatch(clearTokens());
     setIsLogoutModalOpen(false);
     navigate("../login");
   };

@@ -5,6 +5,7 @@ import userSlice from "./Slices/userSlice";
 import companySlice from "./Slices/companySlice";
 import adminSlice from "./Slices/adminSlice";
 import videoCallSlice from "./Slices/videoCallSlice";
+import tokenSlice from "./Slices/tokenSlice";
 
 const persistConfig = {
   key: "root",
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   company: companySlice,
   admin: adminSlice,
   videoCall: videoCallSlice,
+  token: tokenSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

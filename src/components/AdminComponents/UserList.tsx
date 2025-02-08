@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin, axiosCompany, axiosUser } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosAdmin} from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { toggleUserBlock } from "@/API/adminAPI"; // Import toggle function
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ const UserList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllUserProfileImages");
+      const response = await axiosAdmin.get("/getAllUserProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {

@@ -3,6 +3,8 @@ import { loginAdminAct } from "../Actions/adminActions";
 
 interface Admin {
   email: string;
+  accessToken: string | null;
+  refreshToken: string | null;
   // Add other fields from userData if needed
 }
 

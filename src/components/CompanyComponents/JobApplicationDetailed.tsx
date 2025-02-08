@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosCompany, axiosUser } from "@/Utils/axiosUtil";
+import { axiosCompany} from "@/Utils/axiosUtil";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -113,7 +113,7 @@ export function JobApplicationDetailed() {
         setApplication(applicationResponse.data.application);
         const user_id = applicationResponse.data.application.user_id;
 
-        const userResponse = await axiosUser.get(`/user-profile/${user_id}`);
+        const userResponse = await axiosCompany.get(`/user-profile/${user_id}`);
         setUserDetails({
           ...userResponse.data.userProfile,
           profileImage: userResponse.data.image,

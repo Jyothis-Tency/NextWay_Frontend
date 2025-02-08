@@ -29,7 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { RootState } from "@/redux/store";
 import { toast } from "sonner";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 
@@ -110,7 +110,7 @@ export default function JobPosts() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      const response = await axiosUser.get("/getAllCompanyProfileImages");
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);

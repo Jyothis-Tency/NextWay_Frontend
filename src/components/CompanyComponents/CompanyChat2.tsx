@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
-import { axiosChat, axiosUser } from "@/Utils/axiosUtil";
+import { axiosChat, axiosCompany } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
@@ -129,7 +129,7 @@ export function CompanyChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllUserProfileImages");
+      const response = await axiosCompany.get("/getAllUserProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -184,7 +184,7 @@ export function CompanyChatInterface() {
 
     setIsSearching(true);
     try {
-      const response = await axiosUser.get<UserSearchResult[]>(
+      const response = await axiosCompany.get<UserSearchResult[]>(
         `/search/users?query=${searchQuery}`
       );
 

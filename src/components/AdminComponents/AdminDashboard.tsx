@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Building, Briefcase, Loader2 } from "lucide-react";
-import { axiosAdmin,axiosUser } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 
 interface DashboardData {
   totalUsers: number;
@@ -24,13 +24,14 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [usersResponse, companiesResponse,jobPostsResponse] = await Promise.all([
-          axiosAdmin.get("/all-users"),
-          axiosAdmin.get("/all-companies"),
-          axiosUser.get("/getAllJobPosts"),
-        ]);
+        const [usersResponse, companiesResponse, jobPostsResponse] =
+          await Promise.all([
+            axiosAdmin.get("/all-users"),
+            axiosAdmin.get("/all-companies"),
+            axiosAdmin.get("/getAllJobPosts"),
+          ]);
         console.log(jobPostsResponse.data.jobPosts.length);
-        
+
         const totalUsers = Array.isArray(usersResponse.data.userData)
           ? usersResponse.data.userData.length
           : 0;
@@ -40,12 +41,12 @@ const AdminDashboard = () => {
         const activeJobPosts = Array.isArray(jobPostsResponse.data.jobPosts)
           ? jobPostsResponse.data.jobPosts.length
           : 0;
-        console.log("...",activeJobPosts);
-        
+        console.log("...", activeJobPosts);
+
         setDashboardData({
           totalUsers,
           totalCompanies,
-          activeJobPosts // This is still hardcoded as we don't have an API for this yet
+          activeJobPosts, // This is still hardcoded as we don't have an API for this yet
         });
         setIsLoading(false);
       } catch (err) {

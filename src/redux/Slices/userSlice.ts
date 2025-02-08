@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { loginUserAct, updateUserProfileAct } from "../Actions/userActions";
 
 interface User {
@@ -12,6 +12,8 @@ interface User {
   profileImage: any;
   location: string;
   skills: string[];
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 interface UserState {
@@ -55,10 +57,6 @@ const userSlice = createSlice({
           };
         }
       });
-    //  .addCase(updateUserProfileAct.rejected, (state, action) => {
-    //    state.loading = false;
-    //    state.error = action.payload?.message || "Failed to update profile";
-    //  });
   },
 });
 

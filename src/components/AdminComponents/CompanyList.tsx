@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin, axiosCompany } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
@@ -40,7 +40,7 @@ const CompanyList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      const response = await axiosAdmin.get("/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {

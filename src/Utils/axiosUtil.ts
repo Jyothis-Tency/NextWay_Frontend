@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 
+const baseURL = "http://localhost:3000/data";
 const userURL = "http://localhost:3000/data/user";
 const companyURL = "http://localhost:3000/data/company";
 const adminURL = "http://localhost:3000/data/admin";
@@ -8,30 +9,28 @@ const chatURL = "http://localhost:3000/data/chat";
 const subscribeURL = "http://localhost:3000/data/subscribe";
 
 // Retrieve and parse the 'user' data in one step, then access userInfo
-const user_id = JSON.parse(
+const userToken = JSON.parse(
   JSON.parse(localStorage.getItem("persist:root") || "{}").user || "{}"
-).userInfo?.user_id;
+).userInfo?.accessToken;
 
-const company_id = JSON.parse(
+const companyToken = JSON.parse(
   JSON.parse(localStorage.getItem("persist:root") || "{}").company || "{}"
-).companyInfo?.company_id;
+).companyInfo?.accessToken;
 
+export const axiosMain = axios.create({
+  baseURL: baseURL,
+  withCredentials: true,
+});
 
 export const axiosUser = axios.create({
   baseURL: userURL,
   withCredentials: true,
-  headers: user_id ? { user_id: user_id } : {},
 });
 
 export const axiosCompany = axios.create({
   baseURL: companyURL,
   withCredentials: true,
-  // headers: company_id ? { company_id: company_id } : {},
 });
-
-if (company_id) {
-  axiosCompany.defaults.headers.common["company_id"] = company_id;
-}
 
 export const axiosAdmin = axios.create({
   baseURL: adminURL,
@@ -46,6 +45,26 @@ export const axiosChat = axios.create({
 export const axiosSubscription = axios.create({
   baseURL: subscribeURL,
   withCredentials: true,
+});
+
+axiosUser.interceptors.request.use((config) => {
+  const accessToken = userToken || "";
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
+});
+
+axiosCompany.interceptors.request.use((config) => {
+  const accessToken = companyToken || "";
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
 });
 
 axiosUser.interceptors.response.use(
@@ -79,6 +98,26 @@ axiosUser.interceptors.response.use(
         window.location.href = "/user/login"; // Or use `navigate("/login")` if in React Router
       }, 1500);
     }
+
+    // if (
+    //   error.response &&
+    //   error.response.status === 401 &&
+    //   !originalRequest._retry
+    // ) {
+    //   if (!isRefreshing) {
+    //     isRefreshing = true;
+    //     const newToken = await refreshToken();
+    //     isRefreshing = false;
+    //     if (!newToken) return Promise.reject(error);
+    //   }
+
+    //   return new Promise((resolve) => {
+    //     refreshClients.push((token) => {
+    //       originalRequest.headers.Authorization = `Bearer ${token}`;
+    //       resolve(axiosUser(originalRequest));
+    //     });
+    //   });
+    // }
     // Return the error for other cases
     return Promise.reject(error);
   }

@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { RootState } from "@/redux/store";
-import { axiosUser, axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
+import { axiosUser, axiosSubscription } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
@@ -170,7 +170,7 @@ const Subscriptions: React.FC = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const plansResponse = await axiosAdmin.get("/get-subscription-plan");
+        const plansResponse = await axiosUser.get("/get-subscription-plan");
         setPlans(plansResponse.data.planData || []);
       } catch (err) {
         setErrorPlans(

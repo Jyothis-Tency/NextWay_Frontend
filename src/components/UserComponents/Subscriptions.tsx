@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { Loader2, Calendar, CheckCircle, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -21,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { RootState } from "@/redux/store";
-import { axiosUser, axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
+import { axiosUser, axiosSubscription } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
@@ -177,7 +176,7 @@ const Subscriptions: React.FC = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const plansResponse = await axiosAdmin.get("/get-subscription-plan");
+        const plansResponse = await axiosUser.get("/get-subscription-plan");
         setPlans(plansResponse.data.planData || []);
       } catch (err) {
         setErrorPlans(

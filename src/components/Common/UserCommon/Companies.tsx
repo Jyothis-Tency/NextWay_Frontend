@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin, axiosCompany } from "@/Utils/axiosUtil";
+import { axiosAdmin,  axiosUser } from "@/Utils/axiosUtil";
 import CompanyStatic from "../../../../public/Comany-Static-Logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
@@ -43,7 +43,7 @@ const TopCompanies: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      const response = await axiosUser.get("/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {

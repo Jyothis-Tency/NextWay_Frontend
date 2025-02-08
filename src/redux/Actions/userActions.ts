@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {axiosUser} from "@/Utils/axiosUtil";
+import { axiosUser } from "@/Utils/axiosUtil";
+import { addTokens } from "../Slices/tokenSlice";
 
 export const registerUserAct = (userData: {
   firstName: string;
@@ -71,7 +72,7 @@ export const OTPVerifyAct = (otp: string) => {
 };
 
 export const loginUserAct = createAsyncThunk(
-  "user/login",
+  "auth/login",
   async (
     { email, password }: { email: string; password: string },
     { rejectWithValue }
@@ -194,7 +195,7 @@ export const forgotPasswordResetAct = (email: string, password: string) => {
 };
 
 export const updateUserProfileAct = createAsyncThunk(
-  "user/updateProfile",
+  "auth/updateProfile",
   async (
     profileData: {
       userId: string;

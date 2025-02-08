@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { axiosChat, axiosCompany } from "@/Utils/axiosUtil";
+import { axiosChat, axiosUser } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
@@ -134,7 +134,7 @@ export function UserChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      const response = await axiosUser.get("/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -189,7 +189,7 @@ export function UserChatInterface() {
 
     setIsSearching(true);
     try {
-      const response = await axiosCompany.get<CompanySearchResult[]>(
+      const response = await axiosUser.get<CompanySearchResult[]>(
         `/search/companies?query=${searchQuery}`
       );
       console.log("response.data : ", response.data);

@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { clearUser } from "@/redux/Slices/userSlice";
+import { clearTokens } from "@/redux/Slices/tokenSlice";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -171,6 +172,7 @@ const Header: React.FC = () => {
 
   const confirmLogout = () => {
     dispatch(clearUser());
+    dispatch(clearTokens());
     setIsLogoutModalOpen(false);
     navigate("../login");
   };

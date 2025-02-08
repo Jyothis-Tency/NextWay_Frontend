@@ -9,6 +9,8 @@ interface Company {
   role: string;
   isBlocked: boolean;
   profileImage: any;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 interface CompanyState {

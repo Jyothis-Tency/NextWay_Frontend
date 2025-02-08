@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {axiosCompany} from "@/Utils/axiosUtil";
+import { axiosCompany } from "@/Utils/axiosUtil";
+import { addTokens } from "../Slices/tokenSlice";
 
 export const registerCompanyAct = (userData: {
   name:string
@@ -70,7 +71,7 @@ export const OTPVerifyAct = (otp: string) => {
 };
 
 export const loginCompanyAct = createAsyncThunk(
-  "company/login",
+  "auth/login",
   async (
     { email, password }: { email: string; password: string },
     { rejectWithValue }

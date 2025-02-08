@@ -5,7 +5,7 @@ import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
-import { axiosAdmin, axiosCompany, axiosUser } from "@/Utils/axiosUtil";
+import {  axiosUser } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Briefcase, MapPin, Star } from "lucide-react";
 import {
@@ -65,6 +65,9 @@ const Home: React.FC = () => {
   const userName = useSelector(
     (state: RootState) => state.user.userInfo?.firstName
   );
+  const state = useSelector((state: RootState) => state);
+  console.log("redux state",state);
+  
   console.log(userName);
   const navigate = useNavigate();
   const fetchTopCompanies = async () => {
@@ -72,7 +75,7 @@ const Home: React.FC = () => {
       setLoading(true);
       setError("");
 
-      const response = await axiosAdmin.get("/all-companies");
+      const response = await axiosUser.get("/all-companies");
       console.log(response);
       setAllCompanies(response.data.companyData);
       setTopCompanies(response.data?.companyData || []);
@@ -86,7 +89,7 @@ const Home: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllCompanyProfileImages");
+      const response = await axiosUser.get("/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
