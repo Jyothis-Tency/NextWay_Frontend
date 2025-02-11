@@ -52,7 +52,7 @@ const RegisterUser: React.FC = () => {
     onSubmit: async (values) => {
       try {
         localStorage.setItem("register-email", values.email);
-        const result = await dispatch(registerUserAct(values));
+        const result = await registerUserAct(values);
         console.log(result);
 
         if (result?.success) {

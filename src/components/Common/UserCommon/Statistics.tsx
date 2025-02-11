@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Briefcase, Star, Calendar, Award } from "lucide-react";
-import { axiosAdmin, axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 const Statistics: React.FC = () => {
   const [allCompanies, setAllCompanies] = useState([]);
@@ -15,11 +15,11 @@ const Statistics: React.FC = () => {
 
   useEffect(() => {
     async function getAllCompanies() {
-      const companies = await axiosAdmin.get("/all-companies");
+      const companies = await axiosMain.get("/admin/all-companies");
       setAllCompanies(companies.data.companyData);
     }
     async function getAllJobPosts() {
-      const allJobPosts = await axiosUser.get("/getAllJobPosts");
+      const allJobPosts = await axiosMain.get("/user/user/getAllJobPosts");
 
       setAllJobPosts(allJobPosts.data.jobPosts);
     }

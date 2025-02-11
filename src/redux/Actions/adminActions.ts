@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosAdmin } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 export const loginAdminAct = createAsyncThunk(
   "admin/login",
@@ -8,7 +8,10 @@ export const loginAdminAct = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosAdmin.post(`/login`, { email, password });
+      const response = await axiosMain.post(`/admin/login`, {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         // Only return userData to match the expected type

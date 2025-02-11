@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 interface IJobPost {
   _id: string;
@@ -41,8 +41,8 @@ export function JobPostsList() {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await axiosCompany.get(
-          `get-company-jobs/${company_id}`
+        const response = await axiosMain.get(
+          `/company/get-company-jobs/${company_id}`
         );
         setJobs(response.data.jobPosts);
       } catch (error) {

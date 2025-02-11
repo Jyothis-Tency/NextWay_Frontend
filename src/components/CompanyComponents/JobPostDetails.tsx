@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { createOrUpdateJobPost, deleteJobPost } from "@/API/companyAPI";
 import { toast } from "sonner";
 import ITSkills from "@/enums/skills";
@@ -72,7 +72,9 @@ export function JobPostDetails() {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        const response = await axiosCompany.get(`get-job-post/${jobId}`);
+        const response = await axiosMain.get(
+          `/company/get-job-post/${jobId}`
+        );
         setJob(response.data.jobPost);
       } catch (error) {
         console.error("Error fetching job details:", error);

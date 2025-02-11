@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {  axiosUser } from "@/Utils/axiosUtil";
+import {  axiosMain } from "@/Utils/axiosUtil";
 import CompanyStatic from "../../../../public/Comany-Static-Logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
@@ -43,7 +43,7 @@ const RecommendedJobs: React.FC = () => {
       setLoading(true);
       setError(""); // Clear previous errors
 
-      const response = await axiosUser.get(`/getAllJobPosts`);
+      const response = await axiosMain.get(`/user/getAllJobPosts`);
 
       const jobPosts: JobPost[] = response.data?.jobPosts || [];
       const companies: Company[] = response.data?.companies || [];
@@ -79,7 +79,7 @@ const RecommendedJobs: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllCompanyProfileImages");
+      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {

@@ -1,5 +1,5 @@
 import React from "react";
-import Subscriptions from "@/components/UserComponents/SubscribeClone";
+import Subscriptions from "@/components/UserComponents/Subscription";
 import Header from "@/components/Common/UserCommon/Header";
 import Footer from "@/components/Common/UserCommon/Footer";
 

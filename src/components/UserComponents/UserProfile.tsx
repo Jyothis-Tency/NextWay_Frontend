@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import type { RootState } from "@/redux/store"
-import { axiosUser } from "@/Utils/axiosUtil"
+import { axiosMain } from "@/Utils/axiosUtil"
 import { toast } from "sonner"
 
 interface IUser {
@@ -89,7 +89,9 @@ const JobUserProfile: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosUser.get<UserProfileResponse>(`/user-profile/${userId}`)
+        const response = await axiosMain.get<UserProfileResponse>(
+          `/user/user-profile/${userId}`
+        );
         console.log("userProfile - ", response.data.userProfile)
         console.log("image - ", response.data.image)
 
@@ -124,11 +126,15 @@ const JobUserProfile: React.FC = () => {
       console.log(selectedFile)
       const user_id = userId
       try {
-        const response = await axiosUser.post(`/upload-profile-picture/${user_id}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+        const response = await axiosMain.post(
+          `/user/upload-profile-picture/${user_id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         if (response.data.status) {
           setUploaded("Done")

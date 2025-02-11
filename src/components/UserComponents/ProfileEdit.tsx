@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { updateUserProfile } from "@/API/userAPI";
 import Header from "../Common/UserCommon/Header";
@@ -92,7 +92,7 @@ const JobUserProfileEdit: React.FC = () => {
 
       try {
         setLoading(true);
-        const response = await axiosUser.get(`/user-profile/${user_id}`);
+        const response = await axiosMain.get(`/user/user-profile/${user_id}`);
         const fetchedUserData = response.data.userProfile;
         console.log("Fetched user data:", fetchedUserData);
         setUserData({

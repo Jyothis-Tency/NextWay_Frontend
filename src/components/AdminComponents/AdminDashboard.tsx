@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Building, Briefcase, Loader2 } from "lucide-react";
-import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosMain } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 
 interface DashboardData {
   totalUsers: number;
@@ -26,9 +26,9 @@ const AdminDashboard = () => {
       try {
         const [usersResponse, companiesResponse, jobPostsResponse] =
           await Promise.all([
-            axiosAdmin.get("/all-users"),
-            axiosAdmin.get("/all-companies"),
-            axiosAdmin.get("/getAllJobPosts"),
+            axiosMain.get("/admin/all-users"),
+            axiosMain.get("/admin/all-companies"),
+            axiosMain.get("/admin/getAllJobPosts"),
           ]);
         console.log(jobPostsResponse.data.jobPosts.length);
 

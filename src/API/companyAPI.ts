@@ -1,8 +1,11 @@
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 export const createOrUpdateJobPost = async (jobData: any) => {
   try {
-    const response = await axiosCompany.put(`/create-update-job-post`, jobData);
+    const response = await axiosMain.put(
+      `/company/create-update-job-post`,
+      jobData
+    );
 
     if (response.status === 200) {
       console.log(`Created new job post successfully: ${response.data}`);
@@ -26,7 +29,7 @@ export const createOrUpdateJobPost = async (jobData: any) => {
 
 export const resentOtp = async (email: string | null) => {
   try {
-    const response = await axiosCompany.post(`/resent-otp`, { email });
+    const response = await axiosMain.post(`/company/resent-otp`, { email });
     console.log(`response- ${response}`);
     if (response?.data.success) {
       return {
@@ -45,7 +48,9 @@ export const resentOtp = async (email: string | null) => {
 
 export const deleteJobPost = async (job_id: string | undefined) => {
   try {
-    const response = await axiosCompany.delete(`/delete-job-post/${job_id}`);
+    const response = await axiosMain.delete(
+      `/company/delete-job-post/${job_id}`
+    );
     if (response.status === 200) {
       console.log(`Created new job post successfully: ${response}`);
       return { success: true, message: "Job Post Deleted" };

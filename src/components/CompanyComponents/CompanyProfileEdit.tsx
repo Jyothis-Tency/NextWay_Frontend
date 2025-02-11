@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { updateCompanyProfile } from "@/redux/Actions/companyActions";
 
@@ -88,7 +88,9 @@ const CompanyProfileEdit = () => {
 
       try {
         setLoading(true);
-        const response = await axiosCompany.get(`get-company/${company_id}`);
+        const response = await axiosMain.get(
+          `/company/get-company/${company_id}`
+        );
         console.log(response.data);
 
         const companyData = response.data.companyProfile;

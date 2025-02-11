@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 interface IJobApplication {
   _id: string;
@@ -39,8 +39,8 @@ export function JobApplicationByPosts() {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await axiosCompany.get(
-          `job-applications-post/${jobId}`
+        const response = await axiosMain.get(
+          `/company/job-applications-post/${jobId}`
         );
         setApplications(response.data.jobApplications);
       } catch (error) {
@@ -73,9 +73,12 @@ export function JobApplicationByPosts() {
     newStatus: string
   ) => {
     try {
-      await axiosCompany.put(`update-application-status/${applicationId}`, {
-        status: newStatus,
-      });
+      await axiosMain.put(
+        `/company/update-application-status/${applicationId}`,
+        {
+          status: newStatus,
+        }
+      );
       setApplications(
         applications.map((app) =>
           app._id === applicationId

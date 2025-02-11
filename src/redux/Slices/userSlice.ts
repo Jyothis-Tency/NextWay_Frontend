@@ -14,6 +14,8 @@ interface User {
   skills: string[];
   accessToken: string | null;
   refreshToken: string | null;
+  isSubscribed: boolean | undefined;
+  subscriptionFeatures: string[] | null;
 }
 
 interface UserState {
@@ -30,6 +32,20 @@ const userSlice = createSlice({
   reducers: {
     clearUser(state) {
       state.userInfo = null;
+    },
+    setSubscriptions(state, action) {
+      if (state.userInfo) {
+        console.log("state.userInfo.....................", state.userInfo);
+        state.userInfo.isSubscribed = true;
+        state.userInfo.subscriptionFeatures =
+          action.payload;
+      }
+    },
+    clearSubscriptions(state) {
+      if (state.userInfo) {
+        state.userInfo.isSubscribed = false;
+        state.userInfo.subscriptionFeatures = null;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -48,7 +64,6 @@ const userSlice = createSlice({
       //    })
       .addCase(updateUserProfileAct.fulfilled, (state, action) => {
         //  state.loading = false;
-        console.log("action.payload in userSlice", action.payload);
         if (state.userInfo && action.payload?.updatedData) {
           // Update only the relevant user fields
           state.userInfo = {
@@ -60,5 +75,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { clearUser } = userSlice.actions;
+export const { clearUser, setSubscriptions, clearSubscriptions } =
+  userSlice.actions;
 export default userSlice.reducer;

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosAdmin, axiosSubscription } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FeatureRegistry } from "@/enums/features";
 
 interface SubscriptionPlan {
   _id: string;
@@ -60,14 +61,12 @@ interface UserSubscription {
   createdAt: string;
 }
 
-const FeatureRegistry = {
-  job_alerts: "Receive personalized job alerts",
-  trending_jobs: "Access to trending job listings",
-  priority_jobs: "Highlight applications for priority jobs",
-  resume_boost: "Feature your resume in search results",
-  unlimited_search: "Unlimited advanced job search filters",
-  company_stats: "Detailed analytics about companies",
-};
+// const FeatureRegistry = {
+//   Max_3_Apply: "Max Apply 3 in a Day",
+//   job_alerts: "New Job Notification",
+//   sort_by_skills: "Sort by Skills",
+//   no_first_message_to_company: "No First Message to Company",
+// };
 
 const Subscriptions: React.FC = () => {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -90,7 +89,7 @@ const Subscriptions: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axiosAdmin.get("/get-subscription-plan");
+      const response = await axiosMain.get("/admin/get-subscription-plan");
       setPlans(response.data.planData);
     } catch (error) {
       console.error("Error fetching subscription plans:", error);
@@ -102,7 +101,7 @@ const Subscriptions: React.FC = () => {
 
   const fetchAllSubscriptions = async () => {
     try {
-      const response = await axiosSubscription.get("/all-Subscriptions");
+      const response = await axiosMain.get("/subscribe/all-Subscriptions");
       setAllSubscriptions(response.data);
     } catch (error) {
       console.error("Error fetching all subscriptions:", error);
@@ -144,9 +143,12 @@ const Subscriptions: React.FC = () => {
 
   const handleToggleBlock = async (planId: string, isBlocked: boolean) => {
     try {
-      await axiosAdmin.patch(`/subscription-plans/${planId}/toggle-block`, {
-        isBlocked,
-      });
+      await axiosMain.patch(
+        `/admin/subscription-plans/${planId}/toggle-block`,
+        {
+          isBlocked,
+        }
+      );
       fetchPlans();
     } catch (error) {
       console.error("Error toggling plan block status:", error);
@@ -222,7 +224,6 @@ const Subscriptions: React.FC = () => {
                           <TableHead>Period</TableHead>
                           <TableHead>Price</TableHead>
                           <TableHead>Status</TableHead>
-                          
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -236,13 +237,12 @@ const Subscriptions: React.FC = () => {
                               ).toLocaleDateString()}
                             </TableCell>
                             <TableCell>{subscription.period}</TableCell>
-                              {/* {new Date(
+                            {/* {new Date(
                                 subscription.period
                               ).toLocaleDateString()}
                             </TableCell> */}
                             <TableCell>₹{subscription.price}</TableCell>
                             <TableCell>{subscription.status}</TableCell>
-                            
                           </TableRow>
                         ))}
                       </TableBody>

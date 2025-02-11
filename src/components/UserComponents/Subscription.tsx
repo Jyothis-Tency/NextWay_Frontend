@@ -21,11 +21,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { RootState } from "@/redux/store";
+import { setSubscriptions, clearSubscriptions } from "@/redux/Slices/userSlice";
 import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
-import { clearSubscriptions, setSubscriptions } from "@/redux/Slices/userSlice";
+import { current } from "@reduxjs/toolkit";
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
@@ -89,40 +90,6 @@ const Subscriptions: React.FC = () => {
   const userName = `${userInfo?.firstName} ${userInfo?.lastName}`;
   const userEmail = userInfo?.email;
   const userPhone = userInfo?.phone;
-  console.log(currentSubscription);
-
-  // const fetchSubscriptionData = useCallback(async () => {
-  //   if (userId) {
-  //     try {
-  //       console.log("fetchSubscriptionData");
-
-  //       setLoadingHistory(true);
-  //       setLoadingCurrent(true);
-  //       const [historyResponse, currentResponse] = await Promise.all([
-  //         axiosMain.get(`/subscribe/subscription-history/${userId}`),
-  //         axiosMain.get(`/subscribe/current-subscription/${userId}`),
-  //       ]);
-
-  //       setHistory(historyResponse.data.history || []);
-  //       setCurrentSubscription(currentResponse.data.current || null);
-  //       setLoadingHistory(false);
-  //       setLoadingCurrent(false);
-  //     } catch (err) {
-  //       console.error("Error fetching subscription data:", err);
-  //     } finally {
-  //       setLoadingHistory(false);
-  //       setLoadingCurrent(false);
-  //     }
-  //   }
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   const pollInterval = setInterval(() => {
-  //     fetchSubscriptionData();
-  //   }, 30000); // Poll every 30 seconds
-
-  //   return () => clearInterval(pollInterval);
-  // }, [fetchSubscriptionData]);
 
   useEffect(() => {
     if (socket && userId) {
@@ -143,9 +110,14 @@ const Subscriptions: React.FC = () => {
 
           switch (data.type) {
             case "new_subscription":
+              console.log("New Subscription in socket");
+
               toast.success("New subscription activated successfully!");
+
               break;
             case "subscription_cancelled":
+              console.log("Cancelled Subscription in socket");
+              dispatch(clearSubscriptions());
               toast.info("Subscription has been cancelled");
               break;
             case "subscription_renewed":
@@ -153,7 +125,6 @@ const Subscriptions: React.FC = () => {
               break;
           }
           setReload((prev) => !prev);
-          // await fetchSubscriptionData();
         }
       );
 
@@ -171,6 +142,11 @@ const Subscriptions: React.FC = () => {
           const plansResponse = await axiosMain.get(
             "/subscribe/get-subscription-plan"
           );
+          console.log(
+            "fetchPlans in fetchSubscriptionData",
+            plansResponse.data.planData
+          );
+
           setPlans(plansResponse.data.planData || []);
         } catch (err) {
           setErrorPlans(
@@ -187,6 +163,10 @@ const Subscriptions: React.FC = () => {
           const historyResponse = await axiosMain.get(
             `/subscribe/subscription-history/${userId}`
           );
+          console.log(
+            "fetchHistory in fetchSubscriptionData",
+            historyResponse.data.history
+          );
           setHistory(historyResponse.data.history || []);
         } catch (err) {
           setErrorHistory("No Subscription History");
@@ -198,10 +178,20 @@ const Subscriptions: React.FC = () => {
 
       const fetchCurrentSubscription = async () => {
         try {
+          console.log("fetCurrent");
+
           const currentResponse = await axiosMain.get(
             `/subscribe/current-subscription/${userId}`
           );
+
+          console.log(
+            "fetchCurrent in fetchSubscriptionData",
+            currentResponse.data.current
+          );
           setCurrentSubscription(currentResponse.data.current || null);
+          if (currentResponse.data.current) {
+            dispatch(setSubscriptions(currentResponse.data.current.features));
+          }
         } catch (err) {
           setErrorCurrent("No Current Subscription");
           console.error("Error fetching current subscription:", err);
@@ -211,9 +201,9 @@ const Subscriptions: React.FC = () => {
       };
 
       if (userId) {
+        fetchCurrentSubscription();
         fetchPlans();
         fetchHistory();
-        fetchCurrentSubscription();
       }
     }
     fetchSubscriptionData();
@@ -276,10 +266,6 @@ const Subscriptions: React.FC = () => {
 
             if (verifyResponse.data.success) {
               toast.success("Subscription successful");
-              console.log(currentSubscription);
-
-              dispatch(setSubscriptions(currentSubscription?.features));
-              setReload((prev) => !prev);
             } else {
               toast.error(
                 "Subscription verification failed. Please try again."
@@ -320,18 +306,11 @@ const Subscriptions: React.FC = () => {
       await axiosMain.delete(
         `/subscribe/cancel/${currentSubscription.subscriptionId}`
       );
-      dispatch(clearSubscriptions());
       setIsCancelModalOpen(false);
-      setReload((prev) => !prev);
-
-      toast.success("Subscription cancelled successfully");
-      // await fetchSubscriptionData();
-      // setReload((prev) => !prev);
+      toast.success("Subscription cancellation request sent");
     } catch (error) {
       console.error("Error cancelling subscription:", error);
       toast.error("Failed to cancel subscription");
-    } finally {
-      setLoadingCurrent(false);
     }
   };
 

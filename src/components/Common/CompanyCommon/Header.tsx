@@ -27,7 +27,9 @@ import { useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
+
 import { clearTokens } from "@/redux/Slices/tokenSlice";
+import { Description } from "@radix-ui/react-dialog";
 
 interface Notification {
   id: number;
@@ -119,7 +121,10 @@ export const Header: React.FC = () => {
     dispatch(clearCompany());
     dispatch(clearTokens());
     setIsLogoutModalOpen(false);
-    navigate("../login");
+    toast({ title: "Logging out" });
+    setTimeout(() => {
+      navigate("../login");
+    }, 1500);
   };
 
   const handleNotificationClick = (notification: Notification) => {

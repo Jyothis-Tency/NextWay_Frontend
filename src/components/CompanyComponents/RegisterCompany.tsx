@@ -45,7 +45,7 @@ const RegisterCompany: React.FC = () => {
     onSubmit: async (values) => {
       try {
         localStorage.setItem("register-email", values.email);
-        const result = await dispatch(registerCompanyAct(values));
+        const result = await registerCompanyAct(values)
         console.log(result);
 
         if (result?.success) {

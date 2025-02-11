@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosCompany} from "@/Utils/axiosUtil";
+import { axiosMain} from "@/Utils/axiosUtil";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -107,13 +107,15 @@ export function JobApplicationDetailed() {
     const fetchApplicationDetails = async () => {
       try {
         setLoading(true);
-        const applicationResponse = await axiosCompany.get(
-          `job-applications-detailed/${applicationId}`
+        const applicationResponse = await axiosMain.get(
+          `/company/job-applications-detailed/${applicationId}`
         );
         setApplication(applicationResponse.data.application);
         const user_id = applicationResponse.data.application.user_id;
 
-        const userResponse = await axiosCompany.get(`/user-profile/${user_id}`);
+        const userResponse = await axiosMain.get(
+          `/company/user-profile/${user_id}`
+        );
         setUserDetails({
           ...userResponse.data.userProfile,
           profileImage: userResponse.data.image,
@@ -133,10 +135,13 @@ export function JobApplicationDetailed() {
     message: string
   ) => {
     try {
-      await axiosCompany.put(`update-application-status/${applicationId}`, {
-        status,
-        statusMessage: message,
-      });
+      await axiosMain.put(
+        `/company/update-application-status/${applicationId}`,
+        {
+          status,
+          statusMessage: message,
+        }
+      );
       setApplication((prev) =>
         prev ? { ...prev, status, statusMessage: message } : null
       );
@@ -179,8 +184,8 @@ export function JobApplicationDetailed() {
 
   const handleInterviewUpdate = async (dateTime: string, message: string) => {
     try {
-      const response = await axiosCompany.put(
-        `set-interview-details/${applicationId}`,
+      const response = await axiosMain.put(
+        `/company/set-interview-details/${applicationId}`,
         {
           interviewStatus: modalType === "cancel" ? "canceled" : "scheduled",
           dateTime: modalType !== "cancel" ? dateTime : undefined,

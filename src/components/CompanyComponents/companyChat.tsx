@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Menu } from "lucide-react";
-import { axiosChat, axiosCompany} from "@/Utils/axiosUtil";
+import { axiosMain} from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useSocket } from "@/Context/SocketContext";
@@ -51,13 +51,14 @@ export function CompanyChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const company = useSelector((state: RootState) => state.company.companyInfo);
+  
   const socket = useSocket();
 
   const fetchChatHistory = useCallback(async () => {
     if (!company) return;
 
     try {
-      const response = await axiosChat.get<IChat[]>(`/company-history`, {
+      const response = await axiosMain.get<IChat[]>(`/chat/company-history`, {
         params: { company_id: company.company_id },
       });
 
@@ -143,7 +144,9 @@ export function CompanyChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosCompany.get("/getAllUserProfileImages");
+      const response = await axiosMain.get(
+        "/company/getAllUserProfileImages"
+      );
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -173,8 +176,8 @@ export function CompanyChatInterface() {
     }
 
     try {
-      const response = await axiosCompany.get<UserSearchResult[]>(
-        `/search/users?query=${searchQuery}`
+      const response = await axiosMain.get<UserSearchResult[]>(
+        `/company/search/users?query=${searchQuery}`
       );
 
       const searchResults = response.data.map((user) => {

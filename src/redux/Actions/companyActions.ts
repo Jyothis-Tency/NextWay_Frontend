@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { addTokens } from "../Slices/tokenSlice";
 
 export const registerCompanyAct = (userData: {
@@ -12,7 +12,7 @@ export const registerCompanyAct = (userData: {
   return async () => {
     try {
       console.log(`userData in registerFrom at userActions: ${userData}`);
-      const response = await axiosCompany.post(`/register`, userData);
+      const response = await axiosMain.post(`/company/register`, userData);
       console.log(response);
       if (response.status === 200) {
         localStorage.setItem("userEmail", userData.email);
@@ -42,7 +42,7 @@ export const OTPVerifyAct = (otp: string) => {
   return async () => {
     try {
       const email = localStorage.getItem("userEmail");
-      const response = await axiosCompany.post(`/verify-otp`, {
+      const response = await axiosMain.post(`/company/verify-otp`, {
         email,
         receivedOTP: otp,
       });
@@ -71,13 +71,16 @@ export const OTPVerifyAct = (otp: string) => {
 };
 
 export const loginCompanyAct = createAsyncThunk(
-  "auth/login",
+  "company/login",
   async (
     { email, password }: { email: string; password: string },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosCompany.post(`/login`, { email, password });
+      const response = await axiosMain.post(`/company/login`, {
+        email,
+        password,
+      });
       console.log(response);
       
       if (response.status === 200) {
@@ -108,9 +111,12 @@ export const loginCompanyAct = createAsyncThunk(
 export const forgotPasswordEmailAct = (email: string) => {
   return async () => {
     try {
-      const response = await axiosCompany.post(`/forgot-password-email`, {
-        email,
-      });
+      const response = await axiosMain.post(
+        `/company/forgot-password-email`,
+        {
+          email,
+        }
+      );
       if (response.status === 200) {
         localStorage.setItem("userEmail", email);
         return {
@@ -137,7 +143,7 @@ export const forgotPasswordOTPAct = (otp: string) => {
   return async () => {
     try {
       const email = localStorage.getItem("userEmail");
-      const response = await axiosCompany.post(`/forgot-password-OTP`, {
+      const response = await axiosMain.post(`/company/forgot-password-OTP`, {
         email,
         otp,
       });
@@ -168,10 +174,13 @@ export const forgotPasswordOTPAct = (otp: string) => {
 export const forgotPasswordResetAct = (email: string, password: string) => {
   return async () => {
     try {
-      const response = await axiosCompany.post(`/forgot-password-reset`, {
-        email,
-        password,
-      });
+      const response = await axiosMain.post(
+        `/company/forgot-password-reset`,
+        {
+          email,
+          password,
+        }
+      );
       if (response.status === 200) {
         return {
           success: true,
@@ -200,8 +209,8 @@ export const updateCompanyProfile = (company_id:string|undefined,profileData:Rec
         `Profile Data in updateCompanyProfile: ${JSON.stringify(profileData)}`
       );
       
-      const response = await axiosCompany.put(
-        `/edit-company/${company_id}`,
+      const response = await axiosMain.put(
+        `/company/edit-company/${company_id}`,
         profileData
       );
 

@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { Pencil, MapPin, Mail, Phone, Link } from "lucide-react";
 
@@ -68,7 +68,9 @@ export function CompanyProfile() {
     const fetchCompanyData = async () => {
       try {
         setLoading(true);
-        const response = await axiosCompany.get(`get-company/${company_id}`);
+        const response = await axiosMain.get(
+          `/company/get-company/${company_id}`
+        );
         setCompany(response.data.companyProfile);
         setProfileImage(response.data.image);
       } catch (error) {
@@ -95,8 +97,8 @@ export function CompanyProfile() {
       const formData = new FormData();
       formData.append("profilePicture", selectedFile);
       try {
-        const response = await axiosCompany.post(
-          `/upload-profile-img/${company_id}`,
+        const response = await axiosMain.post(
+          `/company/upload-profile-img/${company_id}`,
           formData,
           {
             headers: {
@@ -108,8 +110,8 @@ export function CompanyProfile() {
         if (response.data.status) {
           toast.success("Company profile picture updated");
           // Refetch company data to get the updated profile picture
-          const updatedResponse = await axiosCompany.get(
-            `get-company/${company_id}`
+          const updatedResponse = await axiosMain.get(
+            `/company/get-company/${company_id}`
           );
           setCompany(updatedResponse.data.companyProfile);
           setProfileImage(updatedResponse.data.image);

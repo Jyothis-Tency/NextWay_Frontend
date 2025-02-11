@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosCompany } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 interface IJobApplication {
   _id: string;
@@ -43,8 +43,8 @@ export function JobApplicationsList() {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await axiosCompany.get(
-          `job-applications/${company_id}`
+        const response = await axiosMain.get(
+          `/company/job-applications/${company_id}`
         );
         setApplications(response.data.jobApplications);
       } catch (error) {

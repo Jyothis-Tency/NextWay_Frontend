@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { axiosChat, axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
@@ -46,7 +46,7 @@ export function UserChatInterface() {
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CompanySearchResult[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [displayChats, setDisplayChats] = useState<IChat[]>([]);
   const [allProfileImages, setAllProfileImages] = useState<
@@ -123,7 +123,7 @@ export function UserChatInterface() {
 
   useEffect(() => {
     setDisplayChats(chats);
-    getAllProfileImages()
+    getAllProfileImages();
   }, [chats]);
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export function UserChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllCompanyProfileImages");
+      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -146,7 +146,7 @@ export function UserChatInterface() {
     if (!user) return;
 
     try {
-      const response = await axiosChat.get<IChat[]>(`/user-history`, {
+      const response = await axiosMain.get<IChat[]>(`/chat/user-history`, {
         params: { user_id: user.user_id },
       });
       console.log("Fetched chat history:", response.data);
@@ -189,8 +189,8 @@ export function UserChatInterface() {
 
     setIsSearching(true);
     try {
-      const response = await axiosUser.get<CompanySearchResult[]>(
-        `/search/companies?query=${searchQuery}`
+      const response = await axiosMain.get<CompanySearchResult[]>(
+        `/user/search/companies?query=${searchQuery}`
       );
       console.log("response.data : ", response.data);
 
@@ -358,17 +358,24 @@ export function UserChatInterface() {
     </div>
   );
 
-return (
+  return (
     <div className="flex h-full bg-[#0a0c10]">
       {/* Mobile Sidebar Trigger */}
       <div className="md:hidden mt-20 fixed left-4 z-50">
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="bg-[#1c2128] hover:bg-[#2c3138]">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-[#1c2128] hover:bg-[#2c3138]"
+            >
               <Menu className="h-5 w-5 text-white" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 p-4 bg-[#0d1117] border-r border-gray-800">
+          <SheetContent
+            side="left"
+            className="w-80 p-4 bg-[#0d1117] border-r border-gray-800"
+          >
             <SidebarContent />
           </SheetContent>
         </Sheet>
@@ -385,8 +392,13 @@ return (
         {currentChat ? (
           <>
             <div className="px-4 py-3 border-b border-gray-800 flex items-center">
-              {renderUserAvatar(currentChat.company_id, currentChat.companyName)}
-              <h2 className="text-lg font-medium text-white ml-3">{currentChat.companyName}</h2>
+              {renderUserAvatar(
+                currentChat.company_id,
+                currentChat.companyName
+              )}
+              <h2 className="text-lg font-medium text-white ml-3">
+                {currentChat.companyName}
+              </h2>
             </div>
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
@@ -394,7 +406,9 @@ return (
                   <div
                     key={message._id || `message-${index}`}
                     className={`flex ${
-                      message.sender === user?.user_id ? "justify-end" : "justify-start"
+                      message.sender === user?.user_id
+                        ? "justify-end"
+                        : "justify-start"
                     } items-start gap-2`}
                   >
                     {message.sender === user?.user_id ? (
@@ -402,10 +416,13 @@ return (
                         <div className="max-w-[80%] bg-[#0066FF] text-white rounded-t-2xl rounded-bl-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">
-                            {new Date(message.timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(message.timestamp).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </p>
                         </div>
                         <Avatar className="h-10 w-10 rounded-full">
@@ -416,20 +433,28 @@ return (
                               className="rounded-full object-cover"
                             />
                           ) : (
-                            <AvatarFallback className="rounded-full">{user.firstName?.[0]}</AvatarFallback>
+                            <AvatarFallback className="rounded-full">
+                              {user.firstName?.[0]}
+                            </AvatarFallback>
                           )}
                         </Avatar>
                       </>
                     ) : (
                       <>
-                        {renderUserAvatar(currentChat.company_id, currentChat.companyName)}
+                        {renderUserAvatar(
+                          currentChat.company_id,
+                          currentChat.companyName
+                        )}
                         <div className="max-w-[80%] bg-[#1c2128] text-white rounded-t-2xl rounded-br-2xl px-4 py-2">
                           <p className="text-[15px]">{message.content}</p>
                           <p className="text-xs mt-1 opacity-70">
-                            {new Date(message.timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(message.timestamp).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </p>
                         </div>
                       </>
@@ -449,7 +474,10 @@ return (
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   className="flex-1 bg-[#1c2128] border-0 text-white placeholder-gray-400 focus-visible:ring-1 focus-visible:ring-gray-600"
                 />
-                <Button onClick={handleSendMessage} className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4">
+                <Button
+                  onClick={handleSendMessage}
+                  className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4"
+                >
                   Send
                 </Button>
               </div>
@@ -462,7 +490,5 @@ return (
         )}
       </div>
     </div>
-  )
+  );
 }
-
-

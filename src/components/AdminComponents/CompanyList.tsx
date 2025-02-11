@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin } from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosMain } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
@@ -40,7 +40,9 @@ const CompanyList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosAdmin.get("/getAllCompanyProfileImages");
+      const response = await axiosMain.get(
+        "/admin/getAllCompanyProfileImages"
+      );
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -72,7 +74,7 @@ const CompanyList = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axiosAdmin.get("/all-companies");
+        const response = await axiosMain.get("/admin/all-companies");
         console.log("API response:", response.data.companyData);
         setCompanies(
           Array.isArray(response.data.companyData)
@@ -95,7 +97,7 @@ const CompanyList = () => {
     currentBlockStatus: boolean
   ) => {
     try {
-      await axiosAdmin.post("/block-unblock-company", {
+      await axiosMain.post("/admin/block-unblock-company", {
         company_id: companyId,
         block: !currentBlockStatus,
       });

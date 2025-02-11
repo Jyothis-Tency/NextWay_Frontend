@@ -25,11 +25,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { RootState } from "@/redux/store";
 import { toast } from "sonner";
-import { axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 
@@ -58,6 +59,7 @@ export default function JobPosts() {
   const [searchLocation, setSearchLocation] = useState("");
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   const [isOverviewModalOpen, setIsOverviewModalOpen] = useState(false);
+  const [notSubscribedModalOpen, setNotSubscribedModalOpen] = useState(false);
   const [applicationData, setApplicationData] = useState({
     firstName: "",
     lastName: "",
@@ -110,7 +112,7 @@ export default function JobPosts() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllCompanyProfileImages");
+      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -168,19 +170,26 @@ export default function JobPosts() {
   };
 
   const handleSkillBasedSort = () => {
-    setIsSkillBasedSorting(!isSkillBasedSorting);
-    if (!isSkillBasedSorting) {
-      const sortedJobs = [...filteredJobs].sort((a, b) => {
-        const aMatchCount = countSkillMatches(a.skills);
-        const bMatchCount = countSkillMatches(b.skills);
-        return bMatchCount - aMatchCount;
-      });
-      setFilteredJobs(sortedJobs);
-      if (sortedJobs.length > 0) {
-        setSelectedJob(sortedJobs[0]);
+    if (
+      userInfo?.isSubscribed &&
+      userInfo.subscriptionFeatures?.includes("sort_by_skills")
+    ) {
+      setIsSkillBasedSorting(!isSkillBasedSorting);
+      if (!isSkillBasedSorting) {
+        const sortedJobs = [...filteredJobs].sort((a, b) => {
+          const aMatchCount = countSkillMatches(a.skills);
+          const bMatchCount = countSkillMatches(b.skills);
+          return bMatchCount - aMatchCount;
+        });
+        setFilteredJobs(sortedJobs);
+        if (sortedJobs.length > 0) {
+          setSelectedJob(sortedJobs[0]);
+        }
+      } else {
+        handleSearch(); // Reset to original order
       }
     } else {
-      handleSearch(); // Reset to original order
+      setNotSubscribedModalOpen(true);
     }
   };
 
@@ -410,9 +419,7 @@ export default function JobPosts() {
                           </ul>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold mb-2">
-                            skills
-                          </h3>
+                          <h3 className="text-lg font-semibold mb-2">skills</h3>
                           <ul className="list-disc pl-5 space-y-1 text-[#E0E0E0]">
                             {selectedJob.skills.map(
                               (req: string, index: number) => (
@@ -654,6 +661,11 @@ export default function JobPosts() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <NotSubscribedModal
+        isOpen={notSubscribedModalOpen}
+        onClose={() => setNotSubscribedModalOpen(false)}
+      />
     </div>
   );
 }

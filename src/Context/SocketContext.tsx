@@ -2,7 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 import { RootState } from "@/redux/store";
-import { setVideoCallInvitation,clearVideoCallInvitation } from "@/redux/Slices/videoCallSlice";
+import {
+  setVideoCallInvitation,
+  clearVideoCallInvitation,
+} from "@/redux/Slices/videoCallSlice";
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -17,7 +20,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const userInRedux = useSelector((state: RootState) => state.user);
   const companyInRedux = useSelector((state: RootState) => state.company);
   const dispatch = useDispatch();
-  console.log("companyInRedux", companyInRedux);
 
   // Determine client type and ID
   const clientType = userInRedux.userInfo ? "user" : "company";
@@ -36,34 +38,31 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         reconnectionDelay: 1000,
       });
 
-      newSocket.on("connect", () => {
-        console.log("Socket connected", newSocket.id);
-        // If it's a user, automatically join their subscription room on connection
-        if (clientType === "user") {
-          newSocket.emit("join:subscription", clientId);
-        }
-        setSocket(newSocket);
-      });
+      // console.log("Socket connected", newSocket.id);
+      // If it's a user, automatically join their subscription room on connection
+      if (clientType === "user") {
+        newSocket.emit("join:subscription", clientId);
+      }
+      setSocket(newSocket);
 
       if (clientType === "user") {
         newSocket.on("interview:started", (interviewData) => {
-          console.log("Interview started:", interviewData);
+          // console.log("Interview started:", interviewData);
 
           // Dispatch interview details to Redux
           dispatch(
             setVideoCallInvitation({
               roomId: interviewData.roomID,
               applicationId: interviewData.applicationId,
-              companyName:interviewData.companyName||`Unknown Company`,
+              companyName: interviewData.companyName || `Unknown Company`,
             })
           );
         });
 
         newSocket.on("interview:ended", () => {
-          console.log("Interview ended in socketContext");
+          // console.log("Interview ended in socketContext");
           dispatch(clearVideoCallInvitation());
         });
-        
       }
 
       return () => {
@@ -75,7 +74,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       setSocket(null);
     }
-  }, [clientId, clientType,dispatch]);
+  }, [clientId, clientType, dispatch]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

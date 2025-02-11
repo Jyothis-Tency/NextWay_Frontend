@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 
-import { Bell, Mail, User } from "lucide-react";
+import { Bell, Crown, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSocket } from "@/Context/SocketContext";
+import { toast } from "sonner";
 // import { set } from "react-hook-form";
 
 interface Notification {
@@ -174,7 +175,10 @@ const Header: React.FC = () => {
     dispatch(clearUser());
     dispatch(clearTokens());
     setIsLogoutModalOpen(false);
-    navigate("../login");
+    toast.success("Logging out");
+    setTimeout(() => {
+      navigate("../login");
+    }, 1500);
   };
 
   return (
@@ -185,6 +189,11 @@ const Header: React.FC = () => {
       >
         <span className="text-2xl font-bold text-white">Next</span>
         <span className="text-2xl font-bold text-[#4F46E5]">Way</span>
+        {userData?.isSubscribed && (
+          <span className="text-[#E5C100] ml-2">
+            <Crown size={18} />
+          </span>
+        )}
       </div>
 
       <nav className="hidden md:flex space-x-6">

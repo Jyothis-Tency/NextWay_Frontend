@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RootState } from "@/redux/store";
-import { axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 interface JobApplication {
   _id: string;
@@ -69,7 +69,9 @@ const MyJobs: React.FC = () => {
     const fetchJobApplications = async () => {
       if (!userId) return;
       try {
-        const response = await axiosUser.get(`/job-applications/${userId}`);
+        const response = await axiosMain.get(
+          `/user/job-applications/${userId}`
+        );
         console.log(response.data.applications);
         setJobApplications(response.data.applications || []);
       } catch (err) {

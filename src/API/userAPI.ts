@@ -1,8 +1,8 @@
-import { axiosUser } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 export const fetchJobs = async () => {
   try {
-    const response = await axiosUser.get(`/getAllJobPosts`);
+    const response = await axiosMain.get(`/user/getAllJobPosts`);
     console.log(`response- ${response}`);
 
     const { jobPosts, companies } = response.data;
@@ -35,7 +35,7 @@ export const fetchJobs = async () => {
 
 export const resentOtp = async (email:string|null) => {
   try {
-    const response = await axiosUser.post(`/resent-otp`,{email});
+    const response = await axiosMain.post(`/user/resent-otp`, { email });
     console.log(`response- ${response}`);
     if (response?.data.success) {
       return {
@@ -54,7 +54,7 @@ export const resentOtp = async (email:string|null) => {
 
 export const fetchJobById = async (jobId: string) => {
   try {
-    const response = await axiosUser.get(`/getAllJobPosts`);
+    const response = await axiosMain.get(`/user/getAllJobPosts`);
     console.log(`fetchJobById response- ${response}`);
 
     const { jobPosts, companies } = response.data;
@@ -98,8 +98,8 @@ export const fetchJobById = async (jobId: string) => {
 
 export const updateUserProfile = async (user_id: any, userData: any) => {
   try {
-    const response = await axiosUser.put(
-      `/edit-user/${user_id}`,
+    const response = await axiosMain.put(
+      `/user/edit-user/${user_id}`,
       userData
     );
 
@@ -157,11 +157,15 @@ export const submitJobApplication = async (
       formData.append(key, value);
     });
 
-    const response = await axiosUser.post("/post-job-application", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosMain.post(
+      "/user/post-job-application",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error submitting job application:", error);

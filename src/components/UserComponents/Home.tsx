@@ -5,7 +5,7 @@ import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
-import {  axiosUser } from "@/Utils/axiosUtil";
+import {  axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Briefcase, MapPin, Star } from "lucide-react";
 import {
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
       setLoading(true);
       setError("");
 
-      const response = await axiosUser.get("/all-companies");
+      const response = await axiosMain.get("/user/all-companies");
       console.log(response);
       setAllCompanies(response.data.companyData);
       setTopCompanies(response.data?.companyData || []);
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosUser.get("/getAllCompanyProfileImages");
+      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
   };
 
   const getAllJobPosts = async () => {
-    const allJobPosts = await axiosUser.get("/getAllJobPosts");
+    const allJobPosts = await axiosMain.get("/user/getAllJobPosts");
     const jobPosts: JobPost[] = allJobPosts.data?.jobPosts || [];
     const companies: Company[] = allJobPosts.data?.companies || [];
 

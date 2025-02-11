@@ -1,4 +1,4 @@
-import { axiosAdmin } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 
 interface SubscriptionPlan {
   _id: string;
@@ -17,7 +17,7 @@ export const toggleUserBlock = async (
   currentBlockStatus: boolean
 ) => {
   try {
-    const response = await axiosAdmin.post("/block-unblock-user", {
+    const response = await axiosMain.post("/admin/block-unblock-user", {
       user_id: userId,
       //   block: !currentBlockStatus,
     });
@@ -38,7 +38,7 @@ export const toggleCompanyBlock = async (
   currentBlockStatus: boolean
 ) => {
   try {
-    const response = await axiosAdmin.post(`/toggle-company-block`, {
+    const response = await axiosMain.post(`/admin/toggle-company-block`, {
       company_id: companyId,
       //   isBlocked: !currentBlockStatus,
     });
@@ -58,8 +58,8 @@ export const createSubscriptionPlan = async (
   newPlan: Omit<SubscriptionPlan, "_id" | "isBlocked" | "createdAt">
 ) => {
   try {
-    const response = await axiosAdmin.post(
-      "/create-subscription-plan",
+    const response = await axiosMain.post(
+      "/admin/create-subscription-plan",
       newPlan
     );
     if (response.status === 200) {
@@ -79,8 +79,8 @@ export const createSubscriptionPlan = async (
 
 export const editSubscriptionPlan = async (updatedPlan: SubscriptionPlan) => {
   try {
-    const response = await axiosAdmin.put(
-      `/edit-subscription-plan`,
+    const response = await axiosMain.put(
+      `/admin/edit-subscription-plan`,
       updatedPlan
     );
     if (response.status === 200) {

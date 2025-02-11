@@ -4,11 +4,13 @@ import { loginUserAct } from "../Actions/userActions";
 interface Token {
   accessToken: string | null;
   refreshToken: string | null;
+  role: string | null;
 }
 
 const initialState: Token = {
   accessToken: null,
   refreshToken: null,
+  role: null,
 };
 
 const tokenSlice = createSlice({
@@ -27,8 +29,11 @@ const tokenSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(loginUserAct.fulfilled, (state, action) => {
       if (action.payload) {
+        console.log("action.payload.................", action.payload);
+
         state.accessToken = action.payload.userData.accessToken;
         state.refreshToken = action.payload.userData.refreshToken;
+        state.role = action.payload.userData.role;
       }
     });
   },

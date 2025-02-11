@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosAdmin} from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosMain} from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { toggleUserBlock } from "@/API/adminAPI"; // Import toggle function
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ const UserList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosAdmin.get("/getAllUserProfileImages");
+      const response = await axiosMain.get("/admin/getAllUserProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -74,7 +74,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axiosAdmin.get("/all-users");
+        const response = await axiosMain.get("/admin/all-users");
         console.log("API response:", response.data.userData);
         setUsers(
           Array.isArray(response.data.userData) ? response.data.userData : []
