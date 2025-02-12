@@ -1,5 +1,14 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
 import { loginCompanyAct } from "@/redux/Actions/companyActions";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +26,8 @@ const LoginSchema = Yup.object().shape({
 
 export default function LoginUser() {
   const [showPassword, setShowPassword] = useState(false);
+  const [notVerifiedModalOpen, setNotVerifiedModalOpen] = useState(false);
+  const [verifiedMessage, setVerifiedMessage] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
 
@@ -32,13 +43,27 @@ export default function LoginUser() {
         const result = await dispatch(
           loginCompanyAct({ email, password })
         ).unwrap();
+        console.log("onsubmit");
+
         console.log(result);
 
         if (result) {
-          if (result?.isBlocked) {
+          if (result.userData.isBlocked) {
             toast.error(
               "Currently, you are restricted from accessing the site."
             );
+            return;
+          }
+          if (result.userData.isVerified === "reject") {
+            setVerifiedMessage("Sorry!!! Your account has been rejected by Admin");
+            setNotVerifiedModalOpen(true);
+            return;
+          }
+          if (result.userData.isVerified === "pending") {
+            setVerifiedMessage(
+              "Your account is still verifying by admin. Please come and check again later"
+            );
+            setNotVerifiedModalOpen(true);
             return;
           }
           toast.success(result.message);
@@ -188,6 +213,33 @@ export default function LoginUser() {
           </div>
         </div>
       </div>
+      <Dialog
+        open={notVerifiedModalOpen}
+        onOpenChange={() => setNotVerifiedModalOpen(false)}
+      >
+        <DialogContent className="bg-[#2D2D2D] text-white border-[#4F46E5]">
+          <DialogHeader>
+            <DialogTitle>Account Verification</DialogTitle>
+            <DialogDescription className="text-[#A0A0A0]">
+              {verifiedMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => setNotVerifiedModalOpen(false)}
+              className="bg-[rgb(229,70,70)] hover:bg-[#6366F1] text-white"
+            >
+              Close
+            </Button>
+            {/* <Button
+              onClick={() => navigate("/user/subscriptions")}
+              className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
+            >
+              Subscribe Now
+            </Button> */}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

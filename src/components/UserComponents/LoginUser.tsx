@@ -214,6 +214,16 @@ export default function LoginUser() {
               </a>
             </p>
           </div>
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-red-500/30"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-black px-4 text-sm text-red-500 font-medium">
+                OR
+              </span>
+            </div>
+          </div>
           <div className="mt-6">
             <div className="flex justify-center">
               <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

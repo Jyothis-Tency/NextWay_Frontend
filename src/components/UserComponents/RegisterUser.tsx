@@ -109,31 +109,31 @@ const RegisterUser: React.FC = () => {
 
       <div className="z-10 w-full max-w-md">
         {/* Logo */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Way</span>
+            <span className="text-2xl font-bold text-white">Next</span>
+            <span className="text-2xl font-bold text-red-600">Way</span>
           </div>
         </div>
 
         {/* Form box */}
-        <div className="bg-black bg-opacity-50 p-8 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-red-600">
+        <div className="bg-black bg-opacity-50 p-6 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
+          <h1 className="mb-4 text-center text-xl font-semibold text-red-600">
             Sign Up
           </h1>
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
               <input
                 type="text"
                 name="firstName"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full text-white py-1.5 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="First Name"
                 value={formik.values.firstName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.firstName && formik.errors.firstName ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-red-500 text-xs mt-0.5">
                   {formik.errors.firstName}
                 </div>
               ) : null}
@@ -219,7 +219,7 @@ const RegisterUser: React.FC = () => {
                 </div>
               ) : null}
             </div>
-            <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center justify-between pt-2">
               <p className="text-xs text-gray-400">
                 Already have an account?{" "}
                 <a
@@ -231,23 +231,33 @@ const RegisterUser: React.FC = () => {
               </p>
               <button
                 type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-md"
               >
                 Sign Up
               </button>
             </div>
           </form>
-        </div>
-        <div className="mt-6">
-          <div className="flex justify-center">
-            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => {
-                  toast.error("Google sign up failed");
-                }}
-              />
-            </GoogleOAuthProvider>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-red-500/30"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-black px-4 text-sm text-red-500 font-medium">
+                OR
+              </span>
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="flex justify-center">
+              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    toast.error("Google sign up failed");
+                  }}
+                />
+              </GoogleOAuthProvider>
+            </div>
           </div>
         </div>
       </div>
