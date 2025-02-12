@@ -4,9 +4,14 @@ import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUserAct } from "../../redux/Actions/userActions";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import {
+  googleLoginUserAct,
+  registerUserAct,
+} from "../../redux/Actions/userActions";
 import { toast } from "sonner";
-
+import { axiosMain } from "@/Utils/axiosUtil";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const registerSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, "Name must be at least 2 characters")
@@ -52,7 +57,7 @@ const RegisterUser: React.FC = () => {
     onSubmit: async (values) => {
       try {
         localStorage.setItem("register-email", values.email);
-        const result = await registerUserAct(values);
+        const result = await dispatch(registerUserAct(values));
         console.log(result);
 
         if (result?.success) {
@@ -70,6 +75,26 @@ const RegisterUser: React.FC = () => {
       }
     },
   });
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const credential = credentialResponse.credential;
+      const res = await dispatch(googleLoginUserAct(credential)).unwrap();
+      const result = res?.userData;
+      if (result) {
+        if (result?.isBlocked) {
+          toast.error("Currently, you are restricted from accessing the site.");
+          return;
+        }
+        toast.success("Google Authentication Successful");
+        setTimeout(() => {
+          navigate("../home", { replace: true });
+        }, 1500);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Google authentication failed");
+    }
+  };
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
       {/* Background image with overlay */}
@@ -212,6 +237,18 @@ const RegisterUser: React.FC = () => {
               </button>
             </div>
           </form>
+        </div>
+        <div className="mt-6">
+          <div className="flex justify-center">
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  toast.error("Google sign up failed");
+                }}
+              />
+            </GoogleOAuthProvider>
+          </div>
         </div>
       </div>
     </div>

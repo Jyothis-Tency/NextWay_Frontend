@@ -3,10 +3,10 @@ import { LayoutDashboard, Users, Building,DollarSign } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
   const sidebarContents = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "./dashboard" },
-    { icon: Users, label: "Users", path: "./user-list" },
-    { icon: Building, label: "Companies", path: "./company-list" },
-    { icon: DollarSign, label: "Subscriptions", path: "./subscriptions" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+    { icon: Users, label: "Users", path: "/admin/user-list" },
+    { icon: Building, label: "Companies", path: "/admin/company-list" },
+    { icon: DollarSign, label: "Subscriptions", path: "/admin/subscriptions" },
   ];
 
   return (

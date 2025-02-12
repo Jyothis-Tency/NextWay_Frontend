@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { loginAdminAct } from "../Actions/adminActions";
 
 interface Admin {
+  _id: string;
   email: string;
+  role: string;
   accessToken: string | null;
   refreshToken: string | null;
   // Add other fields from userData if needed

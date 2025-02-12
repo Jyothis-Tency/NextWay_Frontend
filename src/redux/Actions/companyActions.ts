@@ -1,18 +1,34 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosMain } from "@/Utils/axiosUtil";
-import { addTokens } from "../Slices/tokenSlice";
+import store from "../store";
+import { addTokens, clearTokens } from "../Slices/tokenSlice";
 
 export const registerCompanyAct = (userData: {
-  name:string
+  name: string;
   email: string;
   phone: string;
   password: string;
   confirmPassword: string;
+  certificate: any;
 }): any => {
   return async () => {
     try {
       console.log(`userData in registerFrom at userActions: ${userData}`);
-      const response = await axiosMain.post(`/company/register`, userData);
+      const formData = new FormData();
+      Object.keys(userData).forEach((key) => {
+        if (key === "certificate" && userData.certificate) {
+          formData.append(key, userData.certificate);
+        } else {
+          formData.append(
+            key,
+            userData[key as keyof typeof userData] as string
+          );
+        }
+      });
+
+      const response = await axiosMain.post(`/company/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       console.log(response);
       if (response.status === 200) {
         localStorage.setItem("userEmail", userData.email);
@@ -82,8 +98,16 @@ export const loginCompanyAct = createAsyncThunk(
         password,
       });
       console.log(response);
-      
+      const { accessToken, refreshToken, role } = response.data.userData;
+      console.log(
+        "accessToken, refreshToken, role",
+        accessToken,
+        refreshToken,
+        role
+      );
       if (response.status === 200) {
+        store.dispatch(clearTokens());
+        store.dispatch(addTokens({ accessToken, refreshToken, role }));
         return {
           success: true,
           message: "User Registered Successfully",
@@ -111,12 +135,9 @@ export const loginCompanyAct = createAsyncThunk(
 export const forgotPasswordEmailAct = (email: string) => {
   return async () => {
     try {
-      const response = await axiosMain.post(
-        `/company/forgot-password-email`,
-        {
-          email,
-        }
-      );
+      const response = await axiosMain.post(`/company/forgot-password-email`, {
+        email,
+      });
       if (response.status === 200) {
         localStorage.setItem("userEmail", email);
         return {
@@ -174,13 +195,10 @@ export const forgotPasswordOTPAct = (otp: string) => {
 export const forgotPasswordResetAct = (email: string, password: string) => {
   return async () => {
     try {
-      const response = await axiosMain.post(
-        `/company/forgot-password-reset`,
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axiosMain.post(`/company/forgot-password-reset`, {
+        email,
+        password,
+      });
       if (response.status === 200) {
         return {
           success: true,
@@ -202,20 +220,22 @@ export const forgotPasswordResetAct = (email: string, password: string) => {
   };
 };
 
-export const updateCompanyProfile = (company_id:string|undefined,profileData:Record<string,any>) => {
+export const updateCompanyProfile = (
+  company_id: string | undefined,
+  profileData: Record<string, any>
+) => {
   return async () => {
     try {
       console.log(
         `Profile Data in updateCompanyProfile: ${JSON.stringify(profileData)}`
       );
-      
+
       const response = await axiosMain.put(
         `/company/edit-company/${company_id}`,
         profileData
       );
 
       console.log(`response - ${response}`);
-      
 
       if (response.status === 200) {
         console.log(`Profile updated successfully: ${response.data}`);

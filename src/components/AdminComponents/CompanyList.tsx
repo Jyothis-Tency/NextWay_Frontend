@@ -40,9 +40,7 @@ const CompanyList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get(
-        "/admin/getAllCompanyProfileImages"
-      );
+      const response = await axiosMain.get("/admin/getAllCompanyProfileImages");
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -116,7 +114,7 @@ const CompanyList = () => {
   };
 
   const navigateToDetails = (companyId: string) => {
-    navigate(`/admin/company/${companyId}`);
+    navigate(`/admin/company-detailed/${companyId}`);
   };
 
   return (
@@ -151,7 +149,6 @@ const CompanyList = () => {
                       <TableRow
                         key={company.company_id}
                         className="cursor-pointer hover:bg-gray-800"
-                        onClick={() => navigateToDetails(company.company_id)}
                       >
                         <TableCell>
                           {renderCompanyAvatar(
@@ -177,6 +174,17 @@ const CompanyList = () => {
                             }
                           >
                             {company.isBlocked ? "Unblock" : "Block"}
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => {
+                              navigate(
+                                `/admin/company-detailed/${company.company_id}`
+                              );
+                            }}
+                          >
+                            View Company
                           </Button>
                         </TableCell>
                       </TableRow>

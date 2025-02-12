@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { loginUserAct } from "@/redux/Actions/userActions";
+import { googleLoginUserAct, loginUserAct } from "@/redux/Actions/userActions";
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
@@ -29,7 +30,9 @@ export default function LoginUser() {
     onSubmit: async (values) => {
       try {
         const { email, password } = values;
-        const result = await dispatch(loginUserAct({ email, password })).unwrap();
+        const result = await dispatch(
+          loginUserAct({ email, password })
+        ).unwrap();
         console.log(result);
 
         if (result) {
@@ -41,7 +44,7 @@ export default function LoginUser() {
           }
           toast.success(result.message);
           setTimeout(() => {
-            navigate("../home");
+            navigate("../home", { replace: true });
           }, 1500);
         }
       } catch (error: any) {
@@ -55,7 +58,27 @@ export default function LoginUser() {
 
   const goToForgotPassword = () => {
     navigate("../forgot-password");
-  }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const credential = credentialResponse.credential;
+      const res = await dispatch(googleLoginUserAct(credential)).unwrap();
+      const result = res?.userData;
+      if (result) {
+        if (result?.isBlocked) {
+          toast.error("Currently, you are restricted from accessing the site.");
+          return;
+        }
+        toast.success("Google Authentication Successful");
+        setTimeout(() => {
+          navigate("../home", { replace: true });
+        }, 1500);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Google authentication failed");
+    }
+  };
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
@@ -190,6 +213,18 @@ export default function LoginUser() {
                 Sign up here
               </a>
             </p>
+          </div>
+          <div className="mt-6">
+            <div className="flex justify-center">
+              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    toast.error("Google sign up failed");
+                  }}
+                />
+              </GoogleOAuthProvider>
+            </div>
           </div>
         </div>
       </div>

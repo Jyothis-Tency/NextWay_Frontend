@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosMain } from "@/Utils/axiosUtil";
-import { addTokens } from "../Slices/tokenSlice";
+import store from "../store";
+import { addTokens, clearTokens } from "../Slices/tokenSlice";
 
 export const registerUserAct = (userData: {
   firstName: string;
@@ -80,8 +81,59 @@ export const loginUserAct = createAsyncThunk(
     try {
       const response = await axiosMain.post(`/user/login`, { email, password });
       console.log(response);
-      
+      const { accessToken, refreshToken, role } = response.data.userData;
+      console.log(
+        "accessToken, refreshToken, role",
+        accessToken,
+        refreshToken,
+        role
+      );
+
       if (response.status === 200) {
+        store.dispatch(clearTokens());
+        store.dispatch(addTokens({ accessToken, refreshToken, role }));
+        return {
+          success: true,
+          message: "User Registered Successfully",
+          userData: response.data.userData,
+        };
+      }
+    } catch (error: any) {
+      console.error(`Error in loginUser at userActions`);
+      if (error.response) {
+        if (error.response.status === 404) {
+          return rejectWithValue({ message: "Email not found" });
+        } else if (error.response.status === 401) {
+          return rejectWithValue({ message: "Incorrect Password" });
+        } else if (error.response.status === 403) {
+          return rejectWithValue({ message: "User is blocked" });
+        }
+      }
+      return rejectWithValue({
+        message: "Something went wrong. Please try again later.",
+      });
+    }
+  }
+);
+export const googleLoginUserAct = createAsyncThunk(
+  "user/googleLogin",
+  async (credential: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosMain.post(`/user/googleAuth`, {
+        credential,
+      });
+      console.log("google back response", response);
+      const { accessToken, refreshToken, role } = response.data.userData;
+      console.log(
+        "accessToken, refreshToken, role",
+        accessToken,
+        refreshToken,
+        role
+      );
+
+      if (response.status === 200) {
+        store.dispatch(clearTokens());
+        store.dispatch(addTokens({ accessToken, refreshToken, role }));
         return {
           success: true,
           message: "User Registered Successfully",
@@ -213,8 +265,8 @@ export const updateUserProfileAct = createAsyncThunk(
         `/user/edit-profile/${userId}`,
         data
       );
-      console.log("response.data in updateUserProfileAct",response.data);
-      
+      console.log("response.data in updateUserProfileAct", response.data);
+
       if (response.status === 200) {
         return {
           success: true,

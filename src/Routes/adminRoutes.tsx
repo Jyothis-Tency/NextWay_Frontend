@@ -6,6 +6,7 @@ import SubscriptionsPage from "@/Pages/AdminPages/SubscriptionsPage";
 import AdminProtector from "@/Utils/adminProtector";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
+import CompanyDetailedPage from "@/Pages/AdminPages/CompanyDetailedPage";
 
 const AdminRoutes: React.FC = () => {
   return (
@@ -34,6 +35,14 @@ const AdminRoutes: React.FC = () => {
           element={
             <AdminProtector>
               <CompanyListPage />
+            </AdminProtector>
+          }
+        />
+        <Route
+          path="company-detailed/:company_id"
+          element={
+            <AdminProtector>
+              <CompanyDetailedPage />
             </AdminProtector>
           }
         />

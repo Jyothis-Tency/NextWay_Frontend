@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserAct, updateUserProfileAct } from "../Actions/userActions";
+import {
+  loginUserAct,
+  updateUserProfileAct,
+  googleLoginUserAct,
+} from "../Actions/userActions";
 
 interface User {
   user_id: string;
@@ -37,8 +41,7 @@ const userSlice = createSlice({
       if (state.userInfo) {
         console.log("state.userInfo.....................", state.userInfo);
         state.userInfo.isSubscribed = true;
-        state.userInfo.subscriptionFeatures =
-          action.payload;
+        state.userInfo.subscriptionFeatures = action.payload;
       }
     },
     clearSubscriptions(state) {
@@ -52,6 +55,11 @@ const userSlice = createSlice({
     builder
       .addCase(loginUserAct.rejected, (state, action) => {})
       .addCase(loginUserAct.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.userInfo = action.payload.userData; // Assuming userData contains the user details
+        }
+      })
+      .addCase(googleLoginUserAct.fulfilled, (state, action) => {
         if (action.payload) {
           state.userInfo = action.payload.userData; // Assuming userData contains the user details
         }

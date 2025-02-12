@@ -31,10 +31,11 @@ export const axiosMain = axios.create({
 });
 
 axiosMain.interceptors.request.use((config) => {
+  console.log("Request interceptor");
+
   const accessToken: string = getAccessToken() || "";
   const refreshToken: string = getRefreshToken() || "";
   // console.log("axiosMain.interceptors.request.getResfrshToken",getRefreshToken());
-  
 
   if (accessToken) {
     config.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -49,6 +50,34 @@ axiosMain.interceptors.response.use(
   async (error) => {
     console.log("interceptor response");
     const originalRequest = error.config;
+
+    const excludedEndpoints = [
+      "/user/login",
+      "/user/googleAuth",
+      "/user/register",
+      "/user/verify-otp",
+      "/user/resent-otp",
+      "/user/forgot-password-email",
+      "/user/forgot-password-OTP",
+      "/user/forgot-password-reset",
+      "/company/login",
+      "/company/register",
+      "/company/verify-otp",
+      "/company/resent-otp",
+      "/company/forgot-password-email",
+      "/company/forgot-password-OTP",
+      "/company/forgot-password-reset",
+      "/admin/login",
+    ];
+
+    // Check if the request is one of the excluded endpoints
+    if (
+      excludedEndpoints.some((endpoint) =>
+        originalRequest.url.includes(endpoint)
+      )
+    ) {
+      return Promise.reject(error);
+    }
 
     if (error.response) {
       const { status, data } = error.response;

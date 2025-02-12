@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
@@ -6,6 +6,9 @@ import { AppDispatch } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
 import { registerCompanyAct } from "../../redux/Actions/companyActions";
 import { toast } from "sonner";
+
+const FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const SUPPORTED_FORMATS = ["application/pdf"];
 
 const registerSchema = Yup.object().shape({
   name: Yup.string()
@@ -28,9 +31,24 @@ const registerSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm password is required"),
+  certificate: Yup.mixed()
+    .test(
+      "fileSize",
+      "File is too large",
+      (value) => value && value instanceof File && value.size <= FILE_SIZE
+    )
+    .test(
+      "fileType",
+      "Unsupported file format",
+      (value) =>
+        value &&
+        value instanceof File &&
+        SUPPORTED_FORMATS.includes((value as File).type)
+    ),
 });
 
 const RegisterCompany: React.FC = () => {
+  const [fileName, setFileName] = useState<string>("");
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const formik = useFormik({
@@ -40,12 +58,24 @@ const RegisterCompany: React.FC = () => {
       phone: "",
       password: "",
       confirmPassword: "",
+      certificate: null as File | null,
     },
     validationSchema: registerSchema,
     onSubmit: async (values) => {
       try {
+        console.log("values in onSubmit", values);
+
         localStorage.setItem("register-email", values.email);
-        const result = await registerCompanyAct(values)
+        // const formData = new FormData();
+        // Object.keys(values).forEach((key) => {
+        //   if (key === "certificate" && values.certificate) {
+            
+        //     formData.append(key, values.certificate);
+        //   } else {
+        //     formData.append(key, values[key as keyof typeof values] as string);
+        //   }
+        // });
+        const result = await dispatch(registerCompanyAct(values));
         console.log(result);
 
         if (result?.success) {
@@ -62,6 +92,13 @@ const RegisterCompany: React.FC = () => {
       }
     },
   });
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    if (file) {
+      formik.setFieldValue("certificate", file);
+      setFileName(file.name);
+    }
+  };
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
       {/* Background image with overlay */}
@@ -168,6 +205,26 @@ const RegisterCompany: React.FC = () => {
               formik.errors.confirmPassword ? (
                 <div className="text-red-500 text-xs mt-1">
                   {formik.errors.confirmPassword}
+                </div>
+              ) : null}
+            </div>
+            <div>
+              <input
+                type="file"
+                id="certificate"
+                name="certificate"
+                accept=".pdf"
+                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
+                onChange={handleFileChange}
+              />
+              {fileName && (
+                <p className="text-white text-xs mt-1">
+                  Selected file: {fileName}
+                </p>
+              )}
+              {formik.touched.certificate && formik.errors.certificate ? (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.certificate as string}
                 </div>
               ) : null}
             </div>

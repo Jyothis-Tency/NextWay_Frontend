@@ -1,5 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosMain } from "@/Utils/axiosUtil";
+import store from "../store";
+import { addTokens, clearTokens } from "../Slices/tokenSlice";
 
 export const loginAdminAct = createAsyncThunk(
   "admin/login",
@@ -12,8 +14,16 @@ export const loginAdminAct = createAsyncThunk(
         email,
         password,
       });
-
+      const { accessToken, refreshToken, role } = response.data.adminData;
+      console.log(
+        "accessToken, refreshToken, role",
+        accessToken,
+        refreshToken,
+        role
+      );
       if (response.status === 200) {
+        store.dispatch(clearTokens());
+        store.dispatch(addTokens({ accessToken, refreshToken, role }));
         // Only return userData to match the expected type
         return response.data;
       }

@@ -229,6 +229,8 @@ export default function JobPosts() {
   const handleConfirmApply = async () => {
     if (selectedJob && userInfo && applicationData.resume) {
       try {
+        console.log("resume: applicationData.resume",applicationData.resume);
+        
         await submitJobApplication({
           job_id: selectedJob._id,
           company_id: selectedJob.company_id,

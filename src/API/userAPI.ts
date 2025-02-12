@@ -33,7 +33,7 @@ export const fetchJobs = async () => {
   }
 };
 
-export const resentOtp = async (email:string|null) => {
+export const resentOtp = async (email: string | null) => {
   try {
     const response = await axiosMain.post(`/user/resent-otp`, { email });
     console.log(`response- ${response}`);
@@ -43,7 +43,7 @@ export const resentOtp = async (email:string|null) => {
         message: response?.data.message,
       };
     }
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error fetching job posts:", error);
     return {
       success: error.response?.data?.success,
@@ -129,7 +129,6 @@ export const updateUserProfile = async (user_id: any, userData: any) => {
   }
 };
 
-
 interface JobApplicationData {
   job_id: string;
   company_id: string;
@@ -171,4 +170,13 @@ export const submitJobApplication = async (
     console.error("Error submitting job application:", error);
     throw error;
   }
+};
+
+export const googleAuth = async (credential: string) => {
+  const response = await axiosMain.post(`/user/googleAuth`, { credential });
+  if (response.status===200) {
+    // Store tokens
+
+  }
+  return response.data;
 };
