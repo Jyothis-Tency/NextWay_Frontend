@@ -5,7 +5,7 @@ import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
-import {  axiosMain } from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Briefcase, MapPin, Star } from "lucide-react";
 import {
@@ -24,6 +24,7 @@ interface Company {
 }
 
 interface JobPost {
+  _id: string;
   title: string;
   company_id: string;
   location: string;
@@ -66,8 +67,8 @@ const Home: React.FC = () => {
     (state: RootState) => state.user.userInfo?.firstName
   );
   const state = useSelector((state: RootState) => state);
-  console.log("redux state",state);
-  
+  console.log("redux state", state);
+
   console.log(userName);
   const navigate = useNavigate();
   const fetchTopCompanies = async () => {
@@ -237,6 +238,9 @@ const Home: React.FC = () => {
                   <div
                     key={index}
                     className="bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px]"
+                    onClick={() =>
+                      navigate(`../company-profile/${company.company_id}`)
+                    }
                   >
                     <div className="flex items-start gap-3">
                       {renderCompanyAvatar(company.company_id, company.name)}
@@ -331,6 +335,9 @@ const Home: React.FC = () => {
                   <div
                     key={index}
                     className="group bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300"
+                    onClick={() =>
+                      navigate(`../job-posts?selectedJobId=${job._id}`)
+                    }
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex gap-2">
@@ -364,7 +371,7 @@ const Home: React.FC = () => {
           )}
         </section>
 
-        <section className="my-12">
+        {/* <section className="my-12">
           <h2 className="text-2xl font-bold mb-6 text-white">
             Frequently Asked Questions
           </h2>
@@ -417,7 +424,7 @@ const Home: React.FC = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </section>
+        </section> */}
       </div>
     </div>
   );

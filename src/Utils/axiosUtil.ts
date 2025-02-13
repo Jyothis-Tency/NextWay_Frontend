@@ -97,7 +97,9 @@ axiosMain.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-          const refreshResponse = await axiosMain.get("/auth/refresh");
+          const refreshResponse = await axiosMain.get(
+            `/${data.role}/auth/refresh`
+          );
           const newAccessToken = refreshResponse.headers["x-access-token"];
 
           if (newAccessToken) {

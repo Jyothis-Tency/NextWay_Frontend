@@ -124,8 +124,20 @@ const MyJobs: React.FC = () => {
                 key={app._id}
                 className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
               >
-                <TableCell>{app.jobTitle}</TableCell>
-                <TableCell>{app.companyName}</TableCell>
+                <TableCell
+                  onClick={() =>
+                    navigate(`/user/job-posts?selectedJobId=${app.job_id}`)
+                  }
+                >
+                  {app.jobTitle}
+                </TableCell>
+                <TableCell
+                  onClick={() =>
+                    navigate(`../company-profile/${app.company_id}`)
+                  }
+                >
+                  {app.companyName}
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant={
@@ -213,8 +225,20 @@ const MyJobs: React.FC = () => {
                   key={app._id}
                   className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
                 >
-                  <TableCell>{app.jobTitle}</TableCell>
-                  <TableCell>{app.companyName}</TableCell>
+                  <TableCell
+                    onClick={() =>
+                      navigate(`/user/job-posts?selectedJobId=${app.job_id}`)
+                    }
+                  >
+                    {app.jobTitle}
+                  </TableCell>
+                  <TableCell
+                    onClick={() =>
+                      navigate(`../company-profile/${app.company_id}`)
+                    }
+                  >
+                    {app.companyName}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={
@@ -291,7 +315,7 @@ const MyJobs: React.FC = () => {
           </p>
           <Button
             className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
-            onClick={() => navigate("/user/job-posts")}
+            onClick={() => navigate(`/user/job-posts`)}
           >
             Start Job Search
           </Button>

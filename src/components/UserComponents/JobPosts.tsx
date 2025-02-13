@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -78,6 +78,7 @@ export default function JobPosts() {
     }[]
   >([]);
   const navigate = useNavigate();
+  const location = useLocation();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   useEffect(() => {
@@ -85,6 +86,16 @@ export default function JobPosts() {
       try {
         const jobs = await fetchJobs();
         setFilteredJobs(jobs);
+        const params = new URLSearchParams(location.search);
+        const jobIdFromUrl = params.get("selectedJobId");
+
+        if (jobIdFromUrl) {
+          const jobToSelect = jobs.find((job: any) => job._id === jobIdFromUrl);
+          if (jobToSelect) {
+            setSelectedJob(jobToSelect);
+            return;
+          }
+        }
         if (jobs.length > 0) {
           setSelectedJob(jobs[0]);
         }
@@ -172,7 +183,7 @@ export default function JobPosts() {
   const handleSkillBasedSort = () => {
     if (
       userInfo?.isSubscribed &&
-      userInfo.subscriptionFeatures?.includes("sort_by_skills")
+      userInfo.subscriptionFeatures?.includes("job_post_skill_filter")
     ) {
       setIsSkillBasedSorting(!isSkillBasedSorting);
       if (!isSkillBasedSorting) {
@@ -229,8 +240,8 @@ export default function JobPosts() {
   const handleConfirmApply = async () => {
     if (selectedJob && userInfo && applicationData.resume) {
       try {
-        console.log("resume: applicationData.resume",applicationData.resume);
-        
+        console.log("resume: applicationData.resume", applicationData.resume);
+
         await submitJobApplication({
           job_id: selectedJob._id,
           company_id: selectedJob.company_id,
@@ -323,7 +334,12 @@ export default function JobPosts() {
                       >
                         {renderCompanyAvatar(job.company_id, "")}
                         <h3 className="font-semibold">{job.title}</h3>
-                        <p className="text-sm text-[#A0A0A0]">
+                        <p
+                          className="text-sm text-[#A0A0A0]"
+                          onClick={() =>
+                            navigate(`../company-profile/${job.company_id}`)
+                          }
+                        >
                           {job.company.companyName}
                         </p>
                         <p className="text-sm text-[#A0A0A0]">{job.location}</p>
@@ -357,7 +373,14 @@ export default function JobPosts() {
                     : "No Job Selected"
                   : "No Jobs Found"}
               </CardTitle>
-              <CardDescription className="text-[#A0A0A0]">
+              <CardDescription
+                className="text-[#A0A0A0]"
+                onClick={() => {
+                  console.log("onclick", selectedJob);
+
+                  navigate(`../company-profile/${selectedJob.company_id}`);
+                }}
+              >
                 {filteredJobs.length > 0 && selectedJob
                   ? selectedJob.company.companyName
                   : ""}

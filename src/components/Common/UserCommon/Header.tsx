@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 
-import { Bell, Crown, Mail, User } from "lucide-react";
+import { Bell, CheckCircle2, Crown, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,8 @@ const Header: React.FC = () => {
   const firstName = userData?.firstName;
   const lastName = userData?.lastName;
   const isLoggedIn = !!userData;
-
+  const isSubscribed = userData?.isSubscribed;
+  const subFeatures = userData?.subscriptionFeatures;
   useEffect(() => {
     const storedNotifications = localStorage.getItem("userNotifications");
     if (storedNotifications) {
@@ -75,18 +76,34 @@ const Header: React.FC = () => {
     if (socket) {
       socket.on("notification:newJob", (data) => {
         console.log("New Job Notification:", data);
-        const newNotification: Notification = {
-          id: Date.now(),
-          type: "newJob",
-          title: "New Job Posted!",
-          message: `${data.company} is hiring for ${data.title} in ${data.location}`,
-          time: new Date().toLocaleString(),
-          data: {
-            jobId: data.job_id,
-            company: data.company,
-            jobTitle: data.title,
-          },
-        };
+        let newNotification: Notification;
+        if (isSubscribed && subFeatures?.includes("")) {
+          newNotification = {
+            id: Date.now(),
+            type: "newJob",
+            title: "New Job Posted!",
+            message: `${data.company} is hiring for ${data.title} in ${data.location}`,
+            time: new Date().toLocaleString(),
+            data: {
+              jobId: data.job_id,
+              company: data.company,
+              jobTitle: data.title,
+            },
+          };
+        } else {
+          newNotification = {
+            id: Date.now(),
+            type: "newJob",
+            title: "New Job Posted!",
+            message: `****Company is hiring for ****Job Title in ****location. Subscribe for getting updates of New Job Posts as notifications`,
+            time: new Date().toLocaleString(),
+            data: {
+              jobId: data.job_id,
+              company: data.company,
+              jobTitle: data.title,
+            },
+          };
+        }
         setNotifications((prev) => [newNotification, ...prev]);
 
         // toast({

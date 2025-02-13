@@ -26,6 +26,7 @@ import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
+import { FeatureRegistry } from "@/enums/features";
 import { current } from "@reduxjs/toolkit";
 
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
@@ -441,7 +442,13 @@ const Subscriptions: React.FC = () => {
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-center space-x-2">
                           <CheckCircle className="h-4 w-4 text-green-500" />
-                          <span>{feature}</span>
+                          <span>
+                            {
+                              FeatureRegistry[
+                                feature as keyof typeof FeatureRegistry
+                              ]
+                            }
+                          </span>
                         </li>
                       ))}
                     </ul>

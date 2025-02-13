@@ -16,6 +16,7 @@ import UserChatPage from "@/Pages/UserPages/UserChatPage";
 import VideoCallUserPage from "@/Pages/UserPages/VideoCallUserPage";
 import { AnimatePresence } from "framer-motion";
 import InterviewModal from "../components/Common/CompanyCommon/IncomingInterViewModal";
+import CompanyDetailedPage from "@/Pages/UserPages/CompanyDetailedPage";
 
 const UserRoutes = () => {
   return (
@@ -106,6 +107,14 @@ const UserRoutes = () => {
           element={
             <UserProtector>
               <VideoCallUserPage />
+            </UserProtector>
+          }
+        />
+        <Route
+          path="company-profile/:company_id"
+          element={
+            <UserProtector>
+              <CompanyDetailedPage />
             </UserProtector>
           }
         />

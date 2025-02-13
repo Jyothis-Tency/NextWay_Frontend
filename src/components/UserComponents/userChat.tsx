@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
 import CompanyStatic from "/Comany-Static-Logo.svg";
 
 interface IMessage {
@@ -43,6 +44,8 @@ interface CompanySearchResult {
 export function UserChatInterface() {
   const [chats, setChats] = useState<IChat[]>([]);
   const [currentChat, setCurrentChat] = useState<IChat | null>(null);
+  const [notSubscribedModalOpen, setNotSubscribedModalOpen] = useState(false);
+  const [sendOk, setSendOk] = useState(true);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CompanySearchResult[]>([]);
@@ -58,6 +61,10 @@ export function UserChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const user = useSelector((state: RootState) => state.user.userInfo);
+
+  const isSubscribed = user?.isSubscribed;
+  const subFeatures = user?.subscriptionFeatures;
+
   const socket = useSocket();
 
   useEffect(() => {
@@ -99,6 +106,7 @@ export function UserChatInterface() {
         if (currentChat && currentChat.company_id === message.company_id) {
           setCurrentChat((prevChat) => {
             if (!prevChat?.messages.some((m) => m._id === message._id)) {
+              setSendOk(true);
               // Scroll to bottom after state update
               setTimeout(() => scrollToBottom(), 100);
               return {
@@ -108,6 +116,7 @@ export function UserChatInterface() {
                 lastMessageTime: message.timestamp,
               };
             }
+
             return prevChat;
           });
         }
@@ -135,7 +144,7 @@ export function UserChatInterface() {
   const getAllProfileImages = async () => {
     try {
       const response = await axiosMain.get("/user/getAllCompanyProfileImages");
-      console.log(response.data);
+      // console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -224,6 +233,32 @@ export function UserChatInterface() {
     }
   };
 
+  useEffect(() => {
+    checkSendPermission();
+  }, [currentChat, isSubscribed, subFeatures]);
+
+  const checkSendPermission = () => {
+    if (!currentChat) {
+      setSendOk(false);
+      return;
+    }
+
+    // If user is subscribed and has first_message feature, they can always send
+    if (isSubscribed && subFeatures?.includes("first_chat")) {
+      setSendOk(true);
+      return;
+    }
+
+    // If chat has no messages and user doesn't have permission, they can't send
+    if (currentChat.messages.length === 0) {
+      setSendOk(false);
+      return;
+    }
+
+    // If chat has messages, user can send regardless of subscription
+    setSendOk(true);
+  };
+
   const handleSelectChat = (chat: IChat) => {
     setCurrentChat(chat);
     setSearchResults([]);
@@ -235,6 +270,16 @@ export function UserChatInterface() {
         user_id: user.user_id,
         company_id: chat.company_id,
       });
+    }
+
+    if (
+      chat.messages.length === 0 &&
+      (!isSubscribed || !subFeatures?.includes("first_message"))
+    ) {
+      setSendOk(false);
+      setNotSubscribedModalOpen(true);
+    } else {
+      setSendOk(true);
     }
   };
 
@@ -260,11 +305,21 @@ export function UserChatInterface() {
     setCurrentChat(newChat);
     setSearchResults([]);
     setSearchQuery("");
+
+    if (!isSubscribed || !subFeatures?.includes("first_message")) {
+      setSendOk(false);
+      setNotSubscribedModalOpen(true);
+    } else {
+      setSendOk(true);
+    }
   };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  console.log("displayChats", displayChats);
+  console.log("currentChat", currentChat);
 
   const renderUserAvatar = (companyId: string, companyName: string) => {
     const userProfileImage = allProfileImages.find(
@@ -474,12 +529,25 @@ export function UserChatInterface() {
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   className="flex-1 bg-[#1c2128] border-0 text-white placeholder-gray-400 focus-visible:ring-1 focus-visible:ring-gray-600"
                 />
-                <Button
-                  onClick={handleSendMessage}
-                  className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4"
-                >
-                  Send
-                </Button>
+                {sendOk ? (
+                  <>
+                    <Button
+                      onClick={handleSendMessage}
+                      className="ml-2 bg-[#0066FF] hover:bg-[#0052cc] text-white px-4"
+                    >
+                      Send
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => setNotSubscribedModalOpen(false)}
+                      className="ml-2 bg-[#616161] hover:bg-[#c7c7c7] text-white px-4"
+                    >
+                      Send
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </>
@@ -489,6 +557,10 @@ export function UserChatInterface() {
           </div>
         )}
       </div>
+      <NotSubscribedModal
+        isOpen={notSubscribedModalOpen}
+        onClose={() => setNotSubscribedModalOpen(false)}
+      />
     </div>
   );
 }
