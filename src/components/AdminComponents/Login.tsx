@@ -48,7 +48,7 @@ export default function AdminLogin() {
   });
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden">
+    <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -56,29 +56,29 @@ export default function AdminLogin() {
           alt="Admin Background"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gray-900 bg-opacity-70"></div>
+        <div className="absolute inset-0 bg-[#121212] bg-opacity-70"></div>
       </div>
 
       <div className="z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-blue-500">Way</span>
-            <span className="text-xl font-bold text-blue-500">Admin</span>
+            <span className="text-3xl font-bold text-[#FFFFFF]">Next</span>
+            <span className="text-3xl font-bold text-[#4F46E5]">Way</span>
+            <span className="text-xl font-bold text-[#4F46E5]">Admin</span>
           </div>
         </div>
 
         {/* Login box */}
-        <div className="bg-gray-800 bg-opacity-50 p-8 rounded-lg border-2 border-blue-500 shadow-lg shadow-blue-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-blue-500">
+        <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">
             Admin Login
           </h1>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 Email
               </label>
@@ -87,13 +87,13 @@ export default function AdminLogin() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                className="w-full px-3 py-2 text-white bg-gray-700 border-2 border-blue-500 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-[#FFFFFF] bg-[#2D2D2D] border-2 border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.email}
                 </div>
               ) : null}
@@ -101,7 +101,7 @@ export default function AdminLogin() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 Password
               </label>
@@ -111,54 +111,34 @@ export default function AdminLogin() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  className="w-full px-3 py-2 text-white bg-gray-700 border-2 border-blue-500 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-[#FFFFFF] bg-[#2D2D2D] border-2 border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-blue-500"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-[#60A5FA]"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.password}
                 </div>
               ) : null}
             </div>
-            {/* <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-white"
-              >
-                Remember me
-              </label>
-            </div> */}
             <div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
               >
                 Sign In
               </button>
             </div>
           </form>
-          {/* <div className="mt-6 text-center">
-            <p className="text-sm text-white">
-              If you're having trouble accessing your account, please contact
-              the system administrator.
-            </p>
-          </div> */}
         </div>
       </div>
     </div>

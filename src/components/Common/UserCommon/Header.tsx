@@ -77,7 +77,7 @@ const Header: React.FC = () => {
       socket.on("notification:newJob", (data) => {
         console.log("New Job Notification:", data);
         let newNotification: Notification;
-        if (isSubscribed && subFeatures?.includes("")) {
+        if (isSubscribed && subFeatures?.includes("new_job_notification")) {
           newNotification = {
             id: Date.now(),
             type: "newJob",
@@ -90,7 +90,10 @@ const Header: React.FC = () => {
               jobTitle: data.title,
             },
           };
-        } else {
+        } else if (
+          !isSubscribed &&
+          !subFeatures?.includes("new_job_notification")
+        ) {
           newNotification = {
             id: Date.now(),
             type: "newJob",
@@ -322,32 +325,43 @@ const Header: React.FC = () => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-[#1E1E1E] text-[#E0E0E0] border-[#2D2D2D]">
+            <DropdownMenuContent className="w-56 cursor-pointer bg-[#1E1E1E] text-[#E0E0E0] border-[#2D2D2D]">
               <DropdownMenuLabel>
                 {firstName} {lastName}
               </DropdownMenuLabel>
-              <DropdownMenuLabel className="text-xs text-[#A0A0A0]">
+              <DropdownMenuLabel className="text-xs cursor-pointer text-[#A0A0A0]">
                 Job User
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onSelect={() => window.open("/company/dashboard", "_blank")}
+                className="cursor-pointer"
               >
                 Go to Company Section
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => navigate("/user/profile")}>
+              </DropdownMenuItem> */}
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => navigate("/user/profile")}
+              >
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => navigate("/user/my-jobs")}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => navigate("/user/my-jobs")}
+              >
                 My Applications
               </DropdownMenuItem>
               <DropdownMenuItem
+                className="cursor-pointer"
                 onSelect={() => navigate("/user/subscriptions")}
               >
                 Subscription
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem onSelect={handleLogout}>
+              {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={handleLogout}
+              >
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -361,13 +375,7 @@ const Header: React.FC = () => {
           >
             Login as User
           </a>
-          <span className="text-[#A0A0A0]">|</span>
-          <a
-            className="text-[#E0E0E0] hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
-            onClick={() => window.open("/company/login", "_blank")}
-          >
-            Login as Company
-          </a>
+          
         </div>
       )}
 

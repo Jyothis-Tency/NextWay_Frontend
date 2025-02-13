@@ -93,6 +93,17 @@ axiosMain.interceptors.response.use(
           redirectToLogin(role);
         }, 1500);
       }
+      if (
+        status === 403 &&
+        data.message === "Your account has rejected by Admin"
+      ) {
+        toast.error("Your account has rejected by Admin");
+        localStorage.clear();
+        clearTokens();
+        setTimeout(() => {
+          redirectToLogin(role);
+        }, 1500);
+      }
       if (status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 

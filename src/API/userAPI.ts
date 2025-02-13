@@ -20,13 +20,19 @@ export const fetchJobs = async () => {
               companyName: company.name,
               location: company.location,
               website: company.website,
+              isVerified: company.isVerified,
             }
           : {}, // Only include the important company details
       };
     });
+   const filteredMergedData = mergedData.filter(
+      (job: any) =>
+        job.company.isVerified === "pending" ||
+        job.company.isVerified === "accept"
+    );
     console.log(mergedData);
 
-    return mergedData;
+    return filteredMergedData;
   } catch (error) {
     console.error("Error fetching job posts:", error);
     throw error;
@@ -174,9 +180,8 @@ export const submitJobApplication = async (
 
 export const googleAuth = async (credential: string) => {
   const response = await axiosMain.post(`/user/googleAuth`, { credential });
-  if (response.status===200) {
+  if (response.status === 200) {
     // Store tokens
-
   }
   return response.data;
 };

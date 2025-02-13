@@ -159,7 +159,7 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-[#121212] text-[#FFFFFF] px-4 md:px-6 py-2 md:py-4 flex items-center justify-between border-b border-[#4B5563] h-16 fixed top-0 left-0 right-0 z-50">
       <div
-        className="flex items-center space-x-2 md:space-x-6 cursor-pointer"
+        className="flex items-center space-x-2 cursor-pointer"
         onClick={() => navigate("../dashboard")}
       >
         <span className="text-2xl font-bold text-white">Next</span>

@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   FileText,
   FileX,
-
+  Building,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -33,5 +33,5 @@ export const Icons = {
   ArrowLeft,
   FileText,
   FileX,
-
+  Building
 };

@@ -27,6 +27,7 @@ function OtpVerify() {
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
   ];
+  const email: string | null = localStorage.getItem("register-email");
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -132,31 +133,31 @@ function OtpVerify() {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
+    <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img
           src="https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg"
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div className="absolute inset-0 bg-[#121212] bg-opacity-70"></div>
       </div>
 
       <div className="z-10 w-full max-w-md">
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Way</span>
-            <span className="text-3sm font-bold text-red-600">Company</span>
+            <span className="text-3xl font-bold text-[#FFFFFF]">Next</span>
+            <span className="text-3xl font-bold text-[#4F46E5]">Way</span>
+            <span className="text-3sm font-bold text-[#4F46E5]">Company</span>
           </div>
         </div>
 
-        <div className="bg-black bg-opacity-50 p-8 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-red-600">
+        <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">
             OTP Verification
           </h1>
-          <p className="text-white text-center mb-6">
-            Enter the 4-digit code which received on your email
+          <p className="text-[#E0E0E0] text-center mb-6">
+            Enter the 4-digit code which received on your email - {email}
           </p>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="flex justify-between">
@@ -165,7 +166,7 @@ function OtpVerify() {
                   key={index}
                   type="text"
                   ref={inputRefs[index]}
-                  className="w-16 h-16 text-white bg-transparent border-2 border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500 text-center text-3xl"
+                  className="w-16 h-16 text-[#FFFFFF] bg-[#2D2D2D] border-2 border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1] text-center text-3xl"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
@@ -174,25 +175,25 @@ function OtpVerify() {
               ))}
             </div>
             {formik.touched.otp && formik.errors.otp ? (
-              <div className="text-red-500 text-xs mt-1 text-center">
+              <div className="text-[#EF4444] text-xs mt-1 text-center">
                 {formik.errors.otp}
               </div>
             ) : null}
             <div className="flex flex-col items-center space-y-4">
               <button
                 type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md w-full"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] px-6 py-2 rounded-md w-full"
               >
                 Verify OTP
               </button>
               {timeLeft && timeLeft > 0 ? (
-                <p className="text-white text-sm">
+                <p className="text-[#E0E0E0] text-sm">
                   Resend OTP in {timeLeft} seconds
                 </p>
               ) : (
                 <button
                   type="button"
-                  className="text-red-600 hover:underline text-sm"
+                  className="text-[#60A5FA] hover:underline text-sm"
                   onClick={handleResendOtp}
                 >
                   Resend OTP
@@ -203,7 +204,7 @@ function OtpVerify() {
           <div className="mt-6 text-center">
             <a
               onClick={() => navigate("../register")}
-              className="text-red-600 hover:underline text-sm cursor-pointer"
+              className="text-[#60A5FA] hover:underline text-sm cursor-pointer"
             >
               Back to Sign Up
             </a>

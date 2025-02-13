@@ -99,8 +99,8 @@ const RegisterCompany: React.FC = () => {
       setFileName(file.name);
     }
   };
-  return (
-    <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
+ return (
+    <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -108,140 +108,129 @@ const RegisterCompany: React.FC = () => {
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div className="absolute inset-0 bg-[#121212] bg-opacity-70"></div>
       </div>
 
       <div className="z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Way</span>
-            <span className="text-3sm font-bold text-red-600">Company</span>
+            <span className="text-3xl font-bold text-[#FFFFFF]">Next</span>
+            <span className="text-3xl font-bold text-[#4F46E5]">Way</span>
+            <span className="text-3sm font-bold text-[#4F46E5]">Company</span>
           </div>
         </div>
 
         {/* Form box */}
-        <div className="bg-black bg-opacity-50 p-8 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-red-600">
-            Company Sign Up
-          </h1>
+        <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">Company Sign Up</h1>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
+              
               <input
                 type="text"
                 name="name"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Company Name"
+                id="name"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
+                placeholder="Enter company name"
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.name && formik.errors.name ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.name}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.name}</div>
               ) : null}
             </div>
             <div>
+              
               <input
                 type="email"
                 name="email"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Email"
+                id="email"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
+                placeholder="Enter email address"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.email}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.email}</div>
               ) : null}
             </div>
             <div>
+              
               <input
                 type="tel"
                 name="phone"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Phone (10 digits)"
+                id="phone"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
+                placeholder="Enter phone number (10 digits)"
                 value={formik.values.phone}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.phone && formik.errors.phone ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.phone}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.phone}</div>
               ) : null}
             </div>
             <div>
+              
               <input
                 type="password"
                 name="password"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Password"
+                id="password"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
+                placeholder="Enter password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.password}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.password}</div>
               ) : null}
             </div>
             <div>
+              
               <input
                 type="password"
                 name="confirmPassword"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
-                placeholder="Confirm Password"
+                id="confirmPassword"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
+                placeholder="Confirm password"
                 value={formik.values.confirmPassword}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              {formik.touched.confirmPassword &&
-              formik.errors.confirmPassword ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.confirmPassword}
-                </div>
+              {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.confirmPassword}</div>
               ) : null}
             </div>
             <div>
+              <label htmlFor="certificate" className="block text-sm font-medium text-[#E0E0E0] mb-1">
+                Certificate (Add company cerificate for validation)
+              </label>
               <input
                 type="file"
                 id="certificate"
-                name="certificate"
+               name="certificate"
+               
                 accept=".pdf"
-                className="w-full text-white py-2 px-3 bg-transparent border border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full text-[#FFFFFF] py-2 px-3 bg-[#2D2D2D] border border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
                 onChange={handleFileChange}
               />
-              {fileName && (
-                <p className="text-white text-xs mt-1">
-                  Selected file: {fileName}
-                </p>
-              )}
+              {fileName && <p className="text-[#E0E0E0] text-xs mt-1">Selected file: {fileName}</p>}
               {formik.touched.certificate && formik.errors.certificate ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.certificate as string}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.certificate as string}</div>
               ) : null}
             </div>
             <div className="flex items-center justify-between pt-4">
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-[#A0A0A0]">
                 Already have a company account?{" "}
-                <a
-                  onClick={() => navigate("../login")}
-                  className="text-red-600 hover:underline"
-                >
+                <a onClick={() => navigate("../login")} className="text-[#60A5FA] hover:underline cursor-pointer">
                   Sign in here
                 </a>
               </p>
-              <button
-                type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-              >
+              <button type="submit" className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] px-4 py-2 rounded-md">
                 Sign Up
               </button>
             </div>
@@ -249,7 +238,7 @@ const RegisterCompany: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default RegisterCompany;

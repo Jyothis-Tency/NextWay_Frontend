@@ -97,13 +97,21 @@ export function CreateJobPost() {
       const company_id = companyData?.company_id;
       const companyName = companyData?.name;
       const jobData = { ...values, company_id, companyName };
+      // if (companyData?.isVerified === "pending") {
+      //   toast.error("Cant post job until admin verifies your account")
+      //   return
+      // }
       const response = await createOrUpdateJobPost(jobData);
+      console.log(response);
+      
       if (response?.success) {
         console.log("Job post created successfully:", response?.message);
         toast.success(response.message);
         setTimeout(() => {
           navigate("../job-post-list");
         }, 1500);
+      } else {
+        toast.error(response?.message)
       }
     } catch (error: any) {
       toast.error(

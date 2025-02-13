@@ -15,6 +15,7 @@ import { axiosMain } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
+import { CheckCircle, Clock } from "lucide-react";
 
 interface ICompany {
   company_id: string;
@@ -22,7 +23,6 @@ interface ICompany {
   email: string;
   phone: string;
   logo?: string;
-  isVerified: boolean;
   industry?: string;
   companySize?: number;
   location?: string;
@@ -34,6 +34,7 @@ interface ICompany {
     facebook?: string;
   };
   jobPosts?: string[];
+  isVerified: string;
 }
 
 interface CompanyProfileResponse {
@@ -110,6 +111,20 @@ const CompanyDetailed: React.FC = () => {
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">{company.name}</CardTitle>
+                <CardDescription className="flex items-center space-x-2 mt-2">
+                  {company.isVerified === "accept" ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Verified by Next Way</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                      <span>Not Verified by Next Way</span>
+                    </>
+                  )}
+                </CardDescription>
+
                 <CardDescription className="text-[#A0A0A0]">
                   {company.industry ?? "Industry not specified"}
                 </CardDescription>

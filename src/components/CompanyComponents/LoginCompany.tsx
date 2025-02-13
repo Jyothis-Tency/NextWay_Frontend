@@ -59,13 +59,13 @@ export default function LoginUser() {
             setNotVerifiedModalOpen(true);
             return;
           }
-          if (result.userData.isVerified === "pending") {
-            setVerifiedMessage(
-              "Your account is still verifying by admin. Please come and check again later"
-            );
-            setNotVerifiedModalOpen(true);
-            return;
-          }
+          // if (result.userData.isVerified === "pending") {
+          //   setVerifiedMessage(
+          //     "Your account is still verifying by admin. Please come and check again later"
+          //   );
+          //   setNotVerifiedModalOpen(true);
+          //   return;
+          // }
           toast.success(result.message);
           setTimeout(() => {
             navigate("../dashboard");
@@ -85,7 +85,7 @@ export default function LoginUser() {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
+    <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -93,30 +93,25 @@ export default function LoginUser() {
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div className="absolute inset-0 bg-[#121212] bg-opacity-70"></div>
       </div>
 
       <div className="z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Way</span>
-            <span className="text-3sm font-bold text-red-600">Company</span>
+            <span className="text-3xl font-bold text-[#FFFFFF]">Next</span>
+            <span className="text-3xl font-bold text-[#4F46E5]">Way</span>
+            <span className="text-3sm font-bold text-[#4F46E5]">Company</span>
           </div>
         </div>
 
         {/* Login box */}
-        <div className="bg-black bg-opacity-50 p-8 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-red-600">
-            Login
-          </h1>
+        <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">Login</h1>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-white mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-[#E0E0E0] mb-1">
                 Email
               </label>
               <input
@@ -124,22 +119,17 @@ export default function LoginUser() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                className="w-full px-3 py-2 text-white bg-transparent border-2 border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-3 py-2 text-[#FFFFFF] bg-[#2D2D2D] border-2 border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.email}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.email}</div>
               ) : null}
             </div>
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-white mb-1"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-[#E0E0E0] mb-1">
                 Password
               </label>
               <div className="relative">
@@ -148,45 +138,26 @@ export default function LoginUser() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  className="w-full px-3 py-2 text-white bg-transparent border-2 border-red-500 rounded-md outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 text-[#FFFFFF] bg-[#2D2D2D] border-2 border-[#4B5563] rounded-md outline-none focus:ring-2 focus:ring-[#6366F1]"
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-red-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-[#60A5FA]"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-red-500 text-xs mt-1">
-                  {formik.errors.password}
-                </div>
+                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.password}</div>
               ) : null}
             </div>
             <div className="flex items-center justify-between">
-              {/* <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-white"
-                >
-                  Remember me
-                </label>
-              </div> */}
               <div className="text-sm">
-                <a
-                  onClick={goToForgotPassword}
-                  className="text-red-600 hover:underline"
-                >
+                <a onClick={goToForgotPassword} className="text-[#60A5FA] hover:underline cursor-pointer">
                   Forgot your password?
                 </a>
               </div>
@@ -194,52 +165,38 @@ export default function LoginUser() {
             <div>
               <button
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
               >
                 Sign In
               </button>
             </div>
           </form>
           <div className="mt-6 text-center">
-            <p className="text-sm text-white">
+            <p className="text-sm text-[#E0E0E0]">
               Don't have an account?{" "}
-              <a
-                onClick={() => navigate("../register")}
-                className="text-red-600 hover:underline"
-              >
+              <a onClick={() => navigate("../register")} className="text-[#60A5FA] hover:underline cursor-pointer">
                 Sign up here
               </a>
             </p>
           </div>
         </div>
       </div>
-      <Dialog
-        open={notVerifiedModalOpen}
-        onOpenChange={() => setNotVerifiedModalOpen(false)}
-      >
-        <DialogContent className="bg-[#2D2D2D] text-white border-[#4F46E5]">
+      <Dialog open={notVerifiedModalOpen} onOpenChange={() => setNotVerifiedModalOpen(false)}>
+        <DialogContent className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4F46E5]">
           <DialogHeader>
             <DialogTitle>Account Verification</DialogTitle>
-            <DialogDescription className="text-[#A0A0A0]">
-              {verifiedMessage}
-            </DialogDescription>
+            <DialogDescription className="text-[#A0A0A0]">{verifiedMessage}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               onClick={() => setNotVerifiedModalOpen(false)}
-              className="bg-[rgb(229,70,70)] hover:bg-[#6366F1] text-white"
+              className="bg-[#EF4444] hover:bg-[#DC2626] text-[#FFFFFF]"
             >
               Close
             </Button>
-            {/* <Button
-              onClick={() => navigate("/user/subscriptions")}
-              className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
-            >
-              Subscribe Now
-            </Button> */}
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

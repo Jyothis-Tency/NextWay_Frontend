@@ -122,7 +122,7 @@ const ForgotPasswordForm: React.FC = () => {
   const getFieldStyle = (fieldName: string) => {
     const baseStyle =
       "w-full px-3 py-2 text-white bg-transparent border-2 rounded-md outline-none focus:ring-2";
-    const activeStyle = "border-red-500 focus:ring-red-500";
+    const activeStyle = "border-blue-500 focus:ring-blue-500";
     const inactiveStyle = "border-gray-500 text-gray-500 cursor-not-allowed";
 
     if (fieldName === "email" && !otpSent) return `${baseStyle} ${activeStyle}`;
@@ -137,7 +137,7 @@ const ForgotPasswordForm: React.FC = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-black relative overflow-hidden">
+    <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -145,29 +145,29 @@ const ForgotPasswordForm: React.FC = () => {
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-70"></div>
+        <div className="absolute inset-0 bg-[#121212] bg-opacity-70"></div>
       </div>
 
       <div className="z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Next</span>
-            <span className="text-3xl font-bold text-red-600">Way</span>
-            <span className="text-3sm font-bold text-red-600">Company</span>
+            <span className="text-3xl font-bold text-[#FFFFFF]">Next</span>
+            <span className="text-3xl font-bold text-[#4F46E5]">Way</span>
+            <span className="text-3sm font-bold text-[#4F46E5]">Company</span>
           </div>
         </div>
 
         {/* Forgot Password box */}
-        <div className="bg-black bg-opacity-50 p-8 rounded-lg border-2 border-red-500 shadow-lg shadow-red-500/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-red-600">
+        <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">
             Forgot Password
           </h1>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 Email
               </label>
@@ -183,7 +183,7 @@ const ForgotPasswordForm: React.FC = () => {
                 disabled={otpSent}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.email}
                 </div>
               ) : null}
@@ -192,7 +192,7 @@ const ForgotPasswordForm: React.FC = () => {
             <div>
               <label
                 htmlFor="otp"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 Enter OTP
               </label>
@@ -230,20 +230,20 @@ const ForgotPasswordForm: React.FC = () => {
                 ))}
               </div>
               {formik.touched.otp && formik.errors.otp ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.otp}
                 </div>
               ) : null}
               {otpSent && !otpVerified && (
                 <div className="mt-2">
                   {timeLeft && timeLeft > 0 ? (
-                    <p className="text-white text-sm">
+                    <p className="text-[#E0E0E0] text-sm">
                       Resend OTP in {timeLeft} seconds
                     </p>
                   ) : (
                     <button
                       type="button"
-                      className="text-red-600 hover:underline text-sm"
+                      className="text-[#60A5FA] hover:underline text-sm"
                       onClick={handleResendOtp}
                     >
                       Resend OTP
@@ -256,7 +256,7 @@ const ForgotPasswordForm: React.FC = () => {
             <div>
               <label
                 htmlFor="newPassword"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 New Password
               </label>
@@ -273,7 +273,7 @@ const ForgotPasswordForm: React.FC = () => {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-red-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-[#60A5FA]"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={!otpVerified}
                 >
@@ -281,7 +281,7 @@ const ForgotPasswordForm: React.FC = () => {
                 </button>
               </div>
               {formik.touched.newPassword && formik.errors.newPassword ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.newPassword}
                 </div>
               ) : null}
@@ -290,7 +290,7 @@ const ForgotPasswordForm: React.FC = () => {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-white mb-1"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
               >
                 Confirm Password
               </label>
@@ -306,7 +306,7 @@ const ForgotPasswordForm: React.FC = () => {
               />
               {formik.touched.confirmPassword &&
               formik.errors.confirmPassword ? (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-[#EF4444] text-xs mt-1">
                   {formik.errors.confirmPassword}
                 </div>
               ) : null}
@@ -315,7 +315,7 @@ const ForgotPasswordForm: React.FC = () => {
             <div>
               <button
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
               >
                 {!otpSent
                   ? "Send OTP"
@@ -326,11 +326,11 @@ const ForgotPasswordForm: React.FC = () => {
             </div>
           </form>
           <div className="mt-6 text-center">
-            <p className="text-sm text-white">
+            <p className="text-sm text-[#E0E0E0]">
               Remember your password?{" "}
               <a
                 onClick={() => navigate("../login")}
-                className="text-red-600 hover:underline"
+                className="text-[#60A5FA] hover:underline cursor-pointer"
               >
                 Login here
               </a>

@@ -7,13 +7,15 @@ import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Briefcase, MapPin, Star } from "lucide-react";
+import { Briefcase, CheckCircle, Clock, MapPin, Star } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Icons } from "../ui/icons";
+import { CardDescription } from "../ui/card";
 
 interface Company {
   company_id: string;
@@ -37,6 +39,9 @@ interface Company {
   company_id: string;
   name: string;
   logo: string;
+  location: string;
+  industry: string;
+  isVerified: string;
 }
 
 interface CombinedJobPost extends JobPost {
@@ -116,10 +121,16 @@ const Home: React.FC = () => {
         ...job,
         companyName: company?.name || "Unknown Company",
         logo: company?.logo || "/placeholder.svg",
+        isVerified: company?.isVerified,
       };
     });
+    console.log("combinedDataaaaaaaaaa", combinedData);
 
-    setRecommendedJobs(combinedData);
+    const filteredMergedData = combinedData.filter(
+      (job: any) => job.isVerified === "pending" || job.isVerified === "accept"
+    );
+
+    setRecommendedJobs(filteredMergedData);
     setAllJobPosts(allJobPosts.data.jobPosts);
   };
 
@@ -192,12 +203,7 @@ const Home: React.FC = () => {
                 >
                   Login As User
                 </Button>
-                <Button
-                  className="bg-[#4F46E5] hover:bg-[#6366F1] text-white px-8 py-3 rounded-full text-lg"
-                  onClick={() => window.open("/company/login", "_blank")}
-                >
-                  Login As Company
-                </Button>
+                
               </div>
             </>
           )}
@@ -226,7 +232,7 @@ const Home: React.FC = () => {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-white">Top Companies</h2>
+          <h2 className="text-2xl font-bold text-white">Our Companies</h2>
           {loading ? (
             <p className="text-[#E0E0E0]">Loading...</p>
           ) : error ? (
@@ -237,7 +243,7 @@ const Home: React.FC = () => {
                 {topCompanies.map((company, index) => (
                   <div
                     key={index}
-                    className="bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px]"
+                    className="bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px] cursor-pointer"
                     onClick={() =>
                       navigate(`../company-profile/${company.company_id}`)
                     }
@@ -248,15 +254,36 @@ const Home: React.FC = () => {
                         <h3 className="font-semibold text-sm text-white">
                           {company.name}
                         </h3>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <Star className="w-3.5 h-3.5 text-[#6366F1] fill-[#6366F1]" />
+                        <div className="flex items-center gap-1 mt-1">
+                          <Icons.MapPin className="h-4 w-4 text-[#A0A0A0]" />
                           <span className="text-xs text-[#E0E0E0]">
-                            {company.rating}
+                            {company.location || "Not Provided"}
                           </span>
-                          <span className="text-xs text-[#A0A0A0]">
+
+                          {/* <span className="text-xs text-[#A0A0A0]">
                             • {company.employees} employees
+                          </span> */}
+                        </div>
+                        <div className="flex items-center gap-1 mt-2 ">
+                          <Icons.Building className="h-4 w-4 text-[#A0A0A0]" />
+                          <span className="text-xs text-[#E0E0E0]">
+                            {company.industry || "Not Provided"}
                           </span>
                         </div>
+
+                        <CardDescription className="flex items-center space-x-2 mt-2">
+                          {company.isVerified === "accept" ? (
+                            <>
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>Verified by Next Way</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="w-4 h-4 text-yellow-500" />
+                              <span>Not Verified by Next Way</span>
+                            </>
+                          )}
+                        </CardDescription>
                       </div>
                     </div>
                   </div>
@@ -304,7 +331,9 @@ const Home: React.FC = () => {
         </section>
 
         <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">Recommended Jobs</h2>
+          <h2 className="text-2xl font-bold text-white">
+            Jobs Posted By Companies
+          </h2>
           {loading ? (
             <p className="text-[#E0E0E0]">Loading...</p>
           ) : error ? (
@@ -334,7 +363,7 @@ const Home: React.FC = () => {
                 {recommendedJobs.map((job, index) => (
                   <div
                     key={index}
-                    className="group bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300"
+                    className="group bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 cursor-pointer"
                     onClick={() =>
                       navigate(`../job-posts?selectedJobId=${job._id}`)
                     }

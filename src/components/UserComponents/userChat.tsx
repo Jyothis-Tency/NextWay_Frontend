@@ -243,7 +243,7 @@ export function UserChatInterface() {
       return;
     }
 
-    // If user is subscribed and has first_message feature, they can always send
+    // If user is subscribed and has first_chat feature, they can always send
     if (isSubscribed && subFeatures?.includes("first_chat")) {
       setSendOk(true);
       return;
@@ -274,7 +274,7 @@ export function UserChatInterface() {
 
     if (
       chat.messages.length === 0 &&
-      (!isSubscribed || !subFeatures?.includes("first_message"))
+      (!isSubscribed || !subFeatures?.includes("first_chat"))
     ) {
       setSendOk(false);
       setNotSubscribedModalOpen(true);
@@ -306,7 +306,7 @@ export function UserChatInterface() {
     setSearchResults([]);
     setSearchQuery("");
 
-    if (!isSubscribed || !subFeatures?.includes("first_message")) {
+    if (!isSubscribed || !subFeatures?.includes("first_chat")) {
       setSendOk(false);
       setNotSubscribedModalOpen(true);
     } else {

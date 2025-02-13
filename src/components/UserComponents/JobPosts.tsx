@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, DollarSign, MapPin, Search } from "lucide-react";
+import { Calendar, CheckCircle, Clock, DollarSign, MapPin, Search } from "lucide-react";
 import { fetchJobs, submitJobApplication } from "@/API/userAPI";
 import {
   Dialog,
@@ -326,7 +326,7 @@ export default function JobPosts() {
                     <div key={job._id} className="mb-4">
                       <button
                         onClick={() => setSelectedJob(job)}
-                        className={`w-full text-left p-4 rounded-lg transition-colors ${
+                        className={`w-full text-left p-4 cursor-pointer rounded-lg transition-colors ${
                           selectedJob?._id === job._id
                             ? "bg-[#1b1938] text-white"
                             : "bg-[#2D2D2D] hover:bg-[#3D3D3D]"
@@ -342,6 +342,19 @@ export default function JobPosts() {
                         >
                           {job.company.companyName}
                         </p>
+                        <CardDescription className="flex items-center space-x-2 mt-2">
+                          {selectedJob?.company.isVerified === "accept" ? (
+                            <>
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>Verified by Next Way</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="w-4 h-4 text-yellow-500" />
+                              <span>Not Verified by Next Way</span>
+                            </>
+                          )}
+                        </CardDescription>
                         <p className="text-sm text-[#A0A0A0]">{job.location}</p>
                         {isSkillBasedSorting && (
                           <p className="text-sm text-[#22C55E]">
@@ -374,7 +387,7 @@ export default function JobPosts() {
                   : "No Jobs Found"}
               </CardTitle>
               <CardDescription
-                className="text-[#A0A0A0]"
+                className="text-[#A0A0A0] cursor-pointer"
                 onClick={() => {
                   console.log("onclick", selectedJob);
 
@@ -384,6 +397,19 @@ export default function JobPosts() {
                 {filteredJobs.length > 0 && selectedJob
                   ? selectedJob.company.companyName
                   : ""}
+              </CardDescription>
+              <CardDescription className="flex items-center space-x-2 mt-2">
+                {selectedJob?.company.isVerified === "accept" ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span>Verified by Next Way</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-4 h-4 text-yellow-500" />
+                    <span>Not Verified by Next Way</span>
+                  </>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
