@@ -33,6 +33,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RootState } from "@/redux/store";
 import { axiosMain } from "@/Utils/axiosUtil";
+import { toast } from "sonner";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface JobApplication {
   _id: string;
@@ -40,11 +42,13 @@ interface JobApplication {
   company_id: { name: string; _id: string };
   status: "Pending" | "Shortlisted" | "Rejected" | "Hired";
   statusMessage?: string;
+  offerLetter?: string;
   interview?: {
     interviewStatus: "scheduled" | "over" | "canceled" | "postponed";
     dateTime?: Date;
     message?: string;
   };
+
   createdAt: string;
   companyName: string;
   jobTitle: string;
@@ -85,6 +89,28 @@ const MyJobs: React.FC = () => {
     fetchJobApplications();
   }, [userId]);
 
+  const openOfferLetter = (offerLetter: string | null = "") => {
+    console.log("open certificate");
+
+    if (offerLetter) {
+      const base64Data = offerLetter.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } else {
+      toast.info("Offer Letter not provided");
+    }
+  };
+
   const openStatusModal = (application: JobApplication) => {
     setCurrentJobApplication(application);
     setIsStatusModalOpen(true);
@@ -98,79 +124,204 @@ const MyJobs: React.FC = () => {
     }
   };
 
+  const jobColumns = [
+    { key: "jobTitle", label: "Job Title" },
+    { key: "companyName", label: "Company" },
+    {
+      key: "status",
+      label: "Status",
+      render: (row: JobApplication) => (
+        <>
+          <Badge
+            variant={
+              row.status === "Shortlisted"
+                ? "secondary"
+                : row.status === "Rejected"
+                ? "destructive"
+                : row.status === "Hired"
+                ? "secondary"
+                : row.status === "Pending"
+                ? "default"
+                : "default"
+            }
+            className="mb-1"
+          >
+            {row.status}
+          </Badge>
+          <p
+            className="text-sm text-[#6366F1] cursor-pointer hover:underline mt-1"
+            onClick={() => openStatusModal(row)}
+          >
+            View Message
+          </p>
+        </>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Applied Date",
+      render: (row: JobApplication) => (
+        <>{new Date(row.createdAt).toLocaleDateString()}</>
+      ),
+    },
+    {
+      key: "action",
+      label: "Action",
+      render: (row: JobApplication) => (
+        <>
+          <Button
+            onClick={() =>
+              navigate(`/user/job-posts?selectedJobId=${row.job_id}`)
+            }
+          >
+            View Job
+          </Button>
+        </>
+      ),
+    },
+  ];
+  const interviewColumns = [
+    { key: "jobTitle", label: "Job Title" },
+    { key: "companyName", label: "Company" },
+    {
+      key: "status",
+      label: "Interview Status",
+      render: (row: JobApplication) => (
+        <>
+          <Badge
+            variant={
+              row.interview?.interviewStatus === "scheduled"
+                ? "default"
+                : row.interview?.interviewStatus === "over"
+                ? "secondary"
+                : row.interview?.interviewStatus === "canceled"
+                ? "destructive"
+                : "default"
+            }
+          >
+            {row.interview?.interviewStatus}
+          </Badge>
+        </>
+      ),
+    },
+    {
+      key: "dateTime",
+      label: "Date & Time",
+      render: (row: JobApplication) => (
+        <>
+          {row.interview?.dateTime
+            ? new Date(row.interview.dateTime).toLocaleString()
+            : "N/A"}
+        </>
+      ),
+    },
+    {
+      key: "message",
+      label: "Message",
+      render: (row: JobApplication) => <>{row.interview?.message || "N/A"}</>,
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row: JobApplication) => (
+        <>
+          <Button
+            disabled={
+              !(
+                videoCallState &&
+                videoCallState.roomId &&
+                videoCallState.applicationId === row._id
+              )
+            }
+            onClick={() => handleJoinInterview(videoCallState.roomId || "")}
+            className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
+          >
+            Join Interview
+          </Button>
+        </>
+      ),
+    },
+
+  ];
+
   const renderJobApplicationsTable = (applications: JobApplication[]) => (
-    <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors">
-              <TableHead className="text-[#A0A0A0] font-semibold">
-                Job Title
-              </TableHead>
-              <TableHead className="text-[#A0A0A0] font-semibold">
-                Company
-              </TableHead>
-              <TableHead className="text-[#A0A0A0] font-semibold">
-                Status
-              </TableHead>
-              <TableHead className="text-[#A0A0A0] font-semibold">
-                Applied Date
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {applications.map((app) => (
-              <TableRow
-                key={app._id}
-                className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
-              >
-                <TableCell
-                  onClick={() =>
-                    navigate(`/user/job-posts?selectedJobId=${app.job_id}`)
-                  }
-                >
-                  {app.jobTitle}
-                </TableCell>
-                <TableCell
-                  onClick={() =>
-                    navigate(`../company-profile/${app.company_id}`)
-                  }
-                >
-                  {app.companyName}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      app.status === "Shortlisted"
-                        ? "secondary"
-                        : app.status === "Rejected"
-                        ? "destructive"
-                        : app.status === "Hired"
-                        ? "secondary"
-                        : app.status === "Pending"
-                        ? "default"
-                        : "default"
-                    }
-                    className="mb-1"
-                  >
-                    {app.status}
-                  </Badge>
-                  <p
-                    className="text-sm text-[#6366F1] cursor-pointer hover:underline mt-1"
-                    onClick={() => openStatusModal(app)}
-                  >
-                    View Message
-                  </p>
-                </TableCell>
-                <TableCell>
-                  {new Date(app.createdAt).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    // <Card className="bg-[#1E1E1E] text-white mb-12 border border-[#2D2D2D]">
+    //   <CardContent>
+    //     <Table>
+    //       <TableHeader>
+    //         <TableRow className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors">
+    //           <TableHead className="text-[#A0A0A0] font-semibold">
+    //             Job Title
+    //           </TableHead>
+    //           <TableHead className="text-[#A0A0A0] font-semibold">
+    //             Company
+    //           </TableHead>
+    //           <TableHead className="text-[#A0A0A0] font-semibold">
+    //             Status
+    //           </TableHead>
+    //           <TableHead className="text-[#A0A0A0] font-semibold">
+    //             Applied Date
+    //           </TableHead>
+    //         </TableRow>
+    //       </TableHeader>
+    //       <TableBody>
+    //         {applications.map((app) => (
+    //           <TableRow
+    //             key={app._id}
+    //             className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors"
+    //           >
+    //             <TableCell
+    //               onClick={() =>
+    //                 navigate(`/user/job-posts?selectedJobId=${app.job_id}`)
+    //               }
+    //             >
+    //               {app.jobTitle}
+    //             </TableCell>
+    //             <TableCell
+    //               onClick={() =>
+    //                 navigate(`../company-profile/${app.company_id}`)
+    //               }
+    //             >
+    //               {app.companyName}
+    //             </TableCell>
+    //             <TableCell>
+    //               <Badge
+    //                 variant={
+    //                   app.status === "Shortlisted"
+    //                     ? "secondary"
+    //                     : app.status === "Rejected"
+    //                     ? "destructive"
+    //                     : app.status === "Hired"
+    //                     ? "secondary"
+    //                     : app.status === "Pending"
+    //                     ? "default"
+    //                     : "default"
+    //                 }
+    //                 className="mb-1"
+    //               >
+    //                 {app.status}
+    //               </Badge>
+    //               <p
+    //                 className="text-sm text-[#6366F1] cursor-pointer hover:underline mt-1"
+    //                 onClick={() => openStatusModal(app)}
+    //               >
+    //                 View Message
+    //               </p>
+    //             </TableCell>
+    //             <TableCell>
+    //               {new Date(app.createdAt).toLocaleDateString()}
+    //             </TableCell>
+    //           </TableRow>
+    //         ))}
+    //       </TableBody>
+    //     </Table>
+    //   </CardContent>
+    // </Card>
+    <ReusableTable
+      columns={jobColumns}
+      data={applications}
+      defaultRowsPerPage={3}
+    />
   );
 
   const renderInterviewsTable = (applications: JobApplication[]) => {
@@ -196,7 +347,7 @@ const MyJobs: React.FC = () => {
           <CardTitle className="text-2xl font-semibold">Interviews</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
+          {/* <Table>
             <TableHeader>
               <TableRow className="border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors">
                 <TableHead className="text-[#A0A0A0] font-semibold">
@@ -280,7 +431,12 @@ const MyJobs: React.FC = () => {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table> */}
+          <ReusableTable
+            columns={interviewColumns}
+            data={applicationsWithInterviews}
+            defaultRowsPerPage={3}
+          />
         </CardContent>
       </Card>
     );
@@ -465,7 +621,7 @@ const MyJobs: React.FC = () => {
           )}
         </TabsContent>
         <TabsContent value="interviews">
-          <h2 className="text-2xl font-semibold mb-4 text-white">Interviews</h2>
+
           {renderInterviewsTable(jobApplications)}
         </TabsContent>
       </Tabs>
@@ -485,6 +641,15 @@ const MyJobs: React.FC = () => {
             <p className="text-[#A0A0A0]">
               {currentJobApplication?.statusMessage || "No message provided."}
             </p>
+            {currentJobApplication?.status === "Hired" && (
+              <Button
+                onClick={() => {
+                  openOfferLetter(currentJobApplication.offerLetter);
+                }}
+              >
+                Get Offer Letter
+              </Button>
+            )}
           </div>
           <DialogFooter>
             <Button

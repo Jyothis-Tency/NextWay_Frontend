@@ -17,6 +17,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface ICompany {
   company_id: string;
@@ -26,7 +27,7 @@ interface ICompany {
   isBlocked: boolean;
 }
 
-const CompanyList = () => {
+const CompanyList: React.FC = () => {
   const [companies, setCompanies] = useState<ICompany[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +118,42 @@ const CompanyList = () => {
     navigate(`/admin/company-detailed/${companyId}`);
   };
 
+  const columns = [
+    {
+      key: "profileImage",
+      label: "Profile Image",
+      render: (row: ICompany) => renderCompanyAvatar(row.company_id, row.name),
+    },
+    { key: "company_id", label: "Company ID" },
+    { key: "name", label: "Name" },
+    { key: "industry", label: "Industry" },
+    { key: "location", label: "Location" },
+    {
+      key: "action",
+      label: "Action",
+      render: (row: ICompany) => (
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleBlockUnblock(row.company_id, row.isBlocked);
+          }}
+          variant={row.isBlocked ? "default" : "destructive"}
+        >
+          {row.isBlocked ? "Unblock" : "Block"}
+        </Button>
+      ),
+    },
+    {
+      key: "view",
+      label: "View",
+      render: (row: ICompany) => (
+        <Button onClick={() => navigateToDetails(row.company_id)}>
+          View Company
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
@@ -133,64 +170,11 @@ const CompanyList = () => {
               ) : error ? (
                 <div className="text-red-500 text-center">{error}</div>
               ) : Array.isArray(companies) && companies.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Profile Image</TableHead>
-                      <TableHead>Company ID</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Industry</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {companies.map((company) => (
-                      <TableRow
-                        key={company.company_id}
-                        className="cursor-pointer hover:bg-gray-800"
-                      >
-                        <TableCell>
-                          {renderCompanyAvatar(
-                            company.company_id,
-                            company.name
-                          )}
-                        </TableCell>
-                        <TableCell>{company.company_id}</TableCell>
-                        <TableCell>{company.name}</TableCell>
-                        <TableCell>{company.industry}</TableCell>
-                        <TableCell>{company.location}</TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleBlockUnblock(
-                                company.company_id,
-                                company.isBlocked
-                              );
-                            }}
-                            variant={
-                              company.isBlocked ? "default" : "destructive"
-                            }
-                          >
-                            {company.isBlocked ? "Unblock" : "Block"}
-                          </Button>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={() => {
-                              navigate(
-                                `/admin/company-detailed/${company.company_id}`
-                              );
-                            }}
-                          >
-                            View Company
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <ReusableTable
+                  columns={columns}
+                  data={companies}
+                  defaultRowsPerPage={4}
+                />
               ) : (
                 <div className="text-center text-gray-500">
                   No companies found or invalid data format.

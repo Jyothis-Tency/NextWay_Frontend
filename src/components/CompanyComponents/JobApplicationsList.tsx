@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosMain } from "@/Utils/axiosUtil";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface IJobApplication {
   _id: string;
@@ -78,6 +79,33 @@ export function JobApplicationsList() {
     }
   };
 
+   const columns = [
+      {
+        key: "name",
+        label: "Applicant Name",
+        render: (row: IJobApplication) => (
+          <>{`${row.firstName} ${row.lastName}`}</>
+        ),
+      },
+      { key: "email", label: "Email" },
+      { key: "phone", label: "Phone" },
+      { key: "location", label: "Location" },
+      {
+        key: "status",
+        label: "Status",
+        render: (row: IJobApplication) => (
+          <Badge className={getStatusColor(row.status)}>{row.status}</Badge>
+        ),
+      },
+      {
+        key: "createdAt",
+        label: "Applied Date",
+        render: (row: IJobApplication) => (
+          <>{new Date(row.createdAt).toLocaleDateString()}</>
+        ),
+      },
+    ];
+
   return (
     <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
@@ -103,7 +131,7 @@ export function JobApplicationsList() {
             <div className="text-center">No applications found.</div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              {/* <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-[#A0A0A0]">Name</TableHead>
@@ -148,7 +176,12 @@ export function JobApplicationsList() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+              </Table> */}
+              <ReusableTable
+                columns={columns}
+                data={applications}
+                defaultRowsPerPage={5}
+              />
             </div>
           )}
         </CardContent>

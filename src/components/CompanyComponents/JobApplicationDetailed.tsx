@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosMain} from "@/Utils/axiosUtil";
+import { axiosMain } from "@/Utils/axiosUtil";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "../ui/input";
+import { Label } from "@/components/ui/label";
 
 interface IUser {
   user_id: string;
@@ -102,6 +104,13 @@ export function JobApplicationDetailed() {
   const [newStatus, setNewStatus] =
     useState<IJobApplication["status"]>("Pending");
   const [statusMessage, setStatusMessage] = useState("");
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPdfFile(e.target.files[0]);
+    }
+  };
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
@@ -132,16 +141,27 @@ export function JobApplicationDetailed() {
 
   const handleStatusChange = async (
     status: IJobApplication["status"],
-    message: string
+    message: string,
+    pdfFile: any
   ) => {
     try {
+      const formData = new FormData();
+      formData.append("status", status);
+      formData.append("statusMessage", message);
+      if (pdfFile) {
+        formData.append("offerLetter", pdfFile);
+      }
+
       await axiosMain.put(
         `/company/update-application-status/${applicationId}`,
+        formData,
         {
-          status,
-          statusMessage: message,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
+
       setApplication((prev) =>
         prev ? { ...prev, status, statusMessage: message } : null
       );
@@ -173,7 +193,6 @@ export function JobApplicationDetailed() {
       window.open(url, "_blank");
     }
   };
-
 
   const handleInterviewAction = (
     action: "schedule" | "postpone" | "cancel" | "reopen"
@@ -607,6 +626,18 @@ export function JobApplicationDetailed() {
             placeholder="Enter status message"
             className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
           />
+          {newStatus === "Hired" && (
+            <div className="space-y-2">
+              <Label htmlFor="pdf-upload">Upload Offer Letter (PDF)</Label>
+              <Input
+                id="pdf-upload"
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]"
+              />
+            </div>
+          )}
           <DialogFooter>
             <Button
               onClick={() => setIsStatusModalOpen(false)}
@@ -616,7 +647,7 @@ export function JobApplicationDetailed() {
             </Button>
             <Button
               onClick={() => {
-                handleStatusChange(newStatus, statusMessage);
+                handleStatusChange(newStatus, statusMessage, pdfFile);
                 setIsStatusModalOpen(false);
               }}
               className="bg-[#10B981] hover:bg-[#059669] text-[#FFFFFF]"

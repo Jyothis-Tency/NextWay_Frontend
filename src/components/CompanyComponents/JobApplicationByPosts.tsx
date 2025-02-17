@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosMain } from "@/Utils/axiosUtil";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface IJobApplication {
   _id: string;
@@ -91,6 +92,45 @@ export function JobApplicationByPosts() {
     }
   };
 
+  const columns = [
+    {
+      key: "name",
+      label: "Applicant Name",
+      render: (row: IJobApplication) => (
+        <>{`${row.firstName} ${row.lastName}`}</>
+      ),
+    },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    { key: "location", label: "Location" },
+    {
+      key: "status",
+      label: "Status",
+      render: (row: IJobApplication) => (
+        <Badge className={getStatusColor(row.status)}>{row.status}</Badge>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Applied Date",
+      render: (row: IJobApplication) => (
+        <>{new Date(row.createdAt).toLocaleDateString()}</>
+      ),
+    },
+    {
+      key: "action",
+      label: "Actions",
+      render: (row: IJobApplication) => (
+        <Button
+          onClick={() => navigate(`../job-application-detailed/${row._id}`)}
+          className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
+        >
+          View Details
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
@@ -118,7 +158,7 @@ export function JobApplicationByPosts() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
+              {/* <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-[#A0A0A0]">Name</TableHead>
@@ -173,7 +213,12 @@ export function JobApplicationByPosts() {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+              </Table> */}
+              <ReusableTable
+                columns={columns}
+                data={applications}
+                defaultRowsPerPage={5}
+              />
             </div>
           )}
         </CardContent>

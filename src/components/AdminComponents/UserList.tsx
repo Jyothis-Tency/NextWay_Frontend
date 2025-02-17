@@ -12,12 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosMain} from "@/Utils/axiosUtil"; // Adjust the import path as needed
+import { axiosMain } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { toggleUserBlock } from "@/API/adminAPI"; // Import toggle function
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import UserStatic from "../../../public/User-Static-Logo.svg";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface IUser {
   user_id: string;
@@ -114,6 +115,33 @@ const UserList = () => {
     navigate(`/admin/user/${userId}`);
   };
 
+  const columns = [
+    {
+      key: "profileImage",
+      label: "Profile Image",
+      render: (row: IUser) => renderCompanyAvatar(row.user_id, row.firstName),
+    },
+    { key: "user_id", label: "Company ID" },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    {
+      key: "action",
+      label: "Action",
+      render: (row: IUser) => (
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleBlockUnblock(row.user_id, row.isBlocked);
+          }}
+          variant={row.isBlocked ? "default" : "destructive"}
+        >
+          {row.isBlocked ? "Unblock" : "Block"}
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
@@ -130,52 +158,11 @@ const UserList = () => {
               ) : error ? (
                 <div className="text-red-500 text-center">{error}</div>
               ) : Array.isArray(users) && users.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Profile Image</TableHead>
-                      <TableHead>User ID</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {Array.isArray(users) &&
-                      users.map((user) => (
-                        <TableRow
-                          key={user.user_id}
-                          className="cursor-pointer hover:bg-gray-800"
-                          onClick={() => navigateToDetails(user.user_id)}
-                        >
-                          <TableCell>
-                            {renderCompanyAvatar(user.user_id, user.firstName)}
-                          </TableCell>
-                          <TableCell>{user.user_id}</TableCell>
-                          <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>{user.phone}</TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleBlockUnblock(
-                                  user.user_id,
-                                  user.isBlocked
-                                );
-                              }}
-                              variant={
-                                user.isBlocked ? "default" : "destructive"
-                              }
-                            >
-                              {user.isBlocked ? "Unblock" : "Block"}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
+                <ReusableTable
+                  columns={columns}
+                  data={users}
+                  defaultRowsPerPage={4}
+                />
               ) : (
                 <div className="text-center text-gray-500">
                   No users found or invalid data format.

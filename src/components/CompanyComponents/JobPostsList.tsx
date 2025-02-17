@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosMain } from "@/Utils/axiosUtil";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface IJobPost {
   _id: string;
@@ -76,6 +77,62 @@ export function JobPostsList() {
     }
   };
 
+  const columns = [
+    { key: "title", label: "Job Title" },
+    { key: "location", label: "Location" },
+    { key: "employmentType", label: "Type" },
+    {
+      key: "salaryRange",
+      label: "Salary Range",
+      render: (row: IJobPost) => (
+        <>
+          <p>
+            ₹{row.salaryRange.min.toLocaleString()} - ₹
+            {row.salaryRange.max.toLocaleString()}
+          </p>
+        </>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (row: IJobPost) => (
+        <Badge className={getStatusColor(row.status)}>{row.status}</Badge>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Posted Date",
+      render: (row: IJobPost) => (
+        <>{new Date(row.createdAt).toLocaleDateString()}</>
+      )
+    },
+    {
+      key: "action",
+      label: "Action",
+      render: (row: IJobPost) => (
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+          <Button
+            onClick={() => navigate(`../job-post-details/${row._id}`)}
+            className="bg-[#F59E0B] hover:bg-[#D97706] text-[#FFFFFF] text-xs md:text-sm"
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() =>
+              navigate(`../job-applications-by-post/${row._id}`, {
+                state: { jobTitle: row.title },
+              })
+            }
+            className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
+          >
+            View Application
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
@@ -101,72 +158,11 @@ export function JobPostsList() {
             <div className="text-center">No job posts found.</div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-[#A0A0A0]">Title</TableHead>
-                    <TableHead className="text-[#A0A0A0]">Location</TableHead>
-                    <TableHead className="text-[#A0A0A0]">Type</TableHead>
-                    <TableHead className="text-[#A0A0A0]">
-                      Salary Range
-                    </TableHead>
-                    <TableHead className="text-[#A0A0A0]">Status</TableHead>
-                    <TableHead className="text-[#A0A0A0]">
-                      Posted Date
-                    </TableHead>
-                    <TableHead className="text-[#A0A0A0]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {jobs.map((job) => (
-                    <TableRow
-                      key={job._id}
-                      className="cursor-pointer hover:bg-[#2D2D2D] transition-colors"
-                    >
-                      <TableCell className="font-medium">{job.title}</TableCell>
-                      <TableCell>{job.location}</TableCell>
-                      <TableCell>{job.employmentType}</TableCell>
-                      <TableCell>
-                        ₹{job.salaryRange.min.toLocaleString()} - ₹
-                        {job.salaryRange.max.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(job.status)}>
-                          {job.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(job.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                          <Button
-                            onClick={() =>
-                              navigate(`../job-post-details/${job._id}`)
-                            }
-                            className="bg-[#F59E0B] hover:bg-[#D97706] text-[#FFFFFF] text-xs md:text-sm"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            onClick={() =>
-                              navigate(
-                                `../job-applications-by-post/${job._id}`,
-                                {
-                                  state: { jobTitle: job.title },
-                                }
-                              )
-                            }
-                            className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
-                          >
-                            View Application
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ReusableTable
+                columns={columns}
+                data={jobs}
+                defaultRowsPerPage={5}
+              />
             </div>
           )}
         </CardContent>

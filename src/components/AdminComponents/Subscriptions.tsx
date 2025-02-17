@@ -33,6 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FeatureRegistry } from "@/enums/features";
+import ReusableTable from "../Common/Reusable/Table";
 
 interface SubscriptionPlan {
   _id: string;
@@ -155,6 +156,15 @@ const Subscriptions: React.FC = () => {
     }
   };
 
+    const columns = [
+      { key: "user_id", label: "User ID" },
+      { key: "planName", label: "Name" },
+      { key: "startDate", label: "Start Date" },
+      { key: "period", label: "Period" },
+      { key: "price", label: "Price" },
+      { key: "status", label: "Status" },
+    ];
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
@@ -215,38 +225,11 @@ const Subscriptions: React.FC = () => {
                     className="overflow-x-auto"
                     style={{ maxHeight: "400px" }}
                   >
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>User ID</TableHead>
-                          <TableHead>Plan Name</TableHead>
-                          <TableHead>Start Date</TableHead>
-                          <TableHead>Period</TableHead>
-                          <TableHead>Price</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {allSubscriptions.map((subscription) => (
-                          <TableRow key={subscription._id}>
-                            <TableCell>{subscription.user_id}</TableCell>
-                            <TableCell>{subscription.planName}</TableCell>
-                            <TableCell>
-                              {new Date(
-                                subscription.startDate
-                              ).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>{subscription.period}</TableCell>
-                            {/* {new Date(
-                                subscription.period
-                              ).toLocaleDateString()}
-                            </TableCell> */}
-                            <TableCell>₹{subscription.price}</TableCell>
-                            <TableCell>{subscription.status}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <ReusableTable
+                      columns={columns}
+                      data={allSubscriptions}
+                      defaultRowsPerPage={4}
+                    />
                   </div>
                 </div>
               </div>

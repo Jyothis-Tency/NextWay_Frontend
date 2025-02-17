@@ -27,8 +27,7 @@ import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
 import { FeatureRegistry } from "@/enums/features";
-import { current } from "@reduxjs/toolkit";
-
+import ReusableTable from "../Common/Reusable/Table";
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 interface SubscriptionPlan {
@@ -41,8 +40,8 @@ interface SubscriptionPlan {
 }
 
 interface History {
-  user_id: string;
-  plan_id: string;
+  // user_id: string;
+  // plan_id: string;
   planName: string;
   period: "daily" | "weekly" | "monthly" | "yearly";
   createdType: string;
@@ -303,7 +302,6 @@ const Subscriptions: React.FC = () => {
       if (!currentSubscription?.subscriptionId) {
         return;
       }
-
       await axiosMain.delete(
         `/subscribe/cancel/${currentSubscription.subscriptionId}`
       );
@@ -314,6 +312,15 @@ const Subscriptions: React.FC = () => {
       toast.error("Failed to cancel subscription");
     }
   };
+
+  const columns = [
+    { key: "planName" as keyof History, label: "Plan Name" },
+    { key: "startDate" as keyof History, label: "Start Date" },
+    { key: "endDate" as keyof History, label: "End Date" },
+    { key: "period" as keyof History, label: "Period" },
+    { key: "price" as keyof History, label: "Price" },
+    { key: "createdType" as keyof History, label: "Type" },
+  ];
 
   return (
     <main className="container mx-auto px-4 py-8 space-y-8 min-h-[calc(100vh-16rem)] bg-[#000000]">
@@ -492,47 +499,52 @@ const Subscriptions: React.FC = () => {
             </CardContent>
           </Card>
         ) : history.length > 0 ? (
-          <Card className="bg-[#1E1E1E]">
-            <CardContent>
-              <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
-                <Table className="border-[#2D2D2D]">
-                  <TableHeader className="sticky top-0 bg-[#1E1E1E] z-10">
-                    <TableRow className="border-b border-[#2D2D2D] text-white">
-                      <TableHead className="text-[#A0A0A0]">
-                        Plan Name
-                      </TableHead>
-                      <TableHead className="text-[#A0A0A0]">
-                        Start Date
-                      </TableHead>
-                      <TableHead className="text-[#A0A0A0]">End Date</TableHead>
-                      <TableHead className="text-[#A0A0A0]">Period</TableHead>
-                      <TableHead className="text-[#A0A0A0]">Price</TableHead>
-                      <TableHead className="text-[#A0A0A0]">Type</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {history.map((item, index) => (
-                      <TableRow
-                        key={index}
-                        className="border-b border-[#2D2D2D] text-white"
-                      >
-                        <TableCell>{item.planName}</TableCell>
-                        <TableCell>
-                          {new Date(item.startDate).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(item.endDate).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>{item.period}</TableCell>
-                        <TableCell>₹{item.price}</TableCell>
-                        <TableCell>{item.createdType}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+          // <Card className="bg-[#1E1E1E]">
+          //   <CardContent>
+          //     <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+          //       <Table className="border-[#2D2D2D]">
+          //         <TableHeader className="sticky top-0 bg-[#1E1E1E] z-10">
+          //           <TableRow className="border-b border-[#2D2D2D] text-white">
+          //             <TableHead className="text-[#A0A0A0]">
+          //               Plan Name
+          //             </TableHead>
+          //             <TableHead className="text-[#A0A0A0]">
+          //               Start Date
+          //             </TableHead>
+          //             <TableHead className="text-[#A0A0A0]">End Date</TableHead>
+          //             <TableHead className="text-[#A0A0A0]">Period</TableHead>
+          //             <TableHead className="text-[#A0A0A0]">Price</TableHead>
+          //             <TableHead className="text-[#A0A0A0]">Type</TableHead>
+          //           </TableRow>
+          //         </TableHeader>
+          //         <TableBody>
+          //           {history.map((item, index) => (
+          //             <TableRow
+          //               key={index}
+          //               className="border-b border-[#2D2D2D] text-white"
+          //             >
+          //               <TableCell>{item.planName}</TableCell>
+          //               <TableCell>
+          //                 {new Date(item.startDate).toLocaleDateString()}
+          //               </TableCell>
+          //               <TableCell>
+          //                 {new Date(item.endDate).toLocaleDateString()}
+          //               </TableCell>
+          //               <TableCell>{item.period}</TableCell>
+          //               <TableCell>₹{item.price}</TableCell>
+          //               <TableCell>{item.createdType}</TableCell>
+          //             </TableRow>
+          //           ))}
+          //         </TableBody>
+          //       </Table>
+          //     </div>
+          //   </CardContent>
+          //     </Card>
+        <ReusableTable
+          columns={columns}
+          data={history}
+          defaultRowsPerPage={5}
+        />
         ) : (
           <Card className="bg-[#1E1E1E] text-white">
             <CardContent className="p-6">
