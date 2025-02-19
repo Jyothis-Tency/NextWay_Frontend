@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { updateCompanyProfile } from "@/redux/Actions/companyActions";
+import companyAPIs from "@/API/companyAPIs";
+import { ApiError } from "@/Utils/interface";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Company name is required"),
@@ -88,9 +89,7 @@ const CompanyProfileEdit = () => {
 
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/get-company/${company_id}`
-        );
+        const response = await companyAPIs.fetchCompanyData(company_id);
         console.log(response.data);
 
         const companyData = response.data.companyProfile;
@@ -102,11 +101,11 @@ const CompanyProfileEdit = () => {
             ...companyData.socialLinks,
           },
         });
-      } catch (error: any) {
+      } catch (error) {
+        const err = error as ApiError;
         console.error("Error fetching company data:", error);
         toast.error(
-          error.response?.data?.message ||
-            "Failed to fetch company data. Please try again."
+          err.message || "Failed to fetch company data. Please try again."
         );
       } finally {
         setLoading(false);

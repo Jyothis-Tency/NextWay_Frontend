@@ -5,7 +5,6 @@ import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Briefcase, CheckCircle, Clock, MapPin, Star } from "lucide-react";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/accordion";
 import { Icons } from "../ui/icons";
 import { CardDescription } from "../ui/card";
+import userAPIs from "@/API/userAPIs";
 
 interface Company {
   company_id: string;
@@ -81,10 +81,10 @@ const Home: React.FC = () => {
       setLoading(true);
       setError("");
 
-      const response = await axiosMain.get("/user/all-companies");
-      console.log(response);
-      setAllCompanies(response.data.companyData);
-      setTopCompanies(response.data?.companyData || []);
+      const result = await userAPIs.getAllCompanies()
+      console.log(result);
+      setAllCompanies(result.companyData);
+      setTopCompanies(result.companyData || []);
     } catch (error) {
       console.error("Error fetching top companies:", error);
       setError("Failed to load top companies. Please try again later.");
@@ -95,8 +95,7 @@ const Home: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
-      console.log(response.data);
+      const response = await userAPIs.getAllCompanyProfileImages()
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -104,7 +103,7 @@ const Home: React.FC = () => {
   };
 
   const getAllJobPosts = async () => {
-    const allJobPosts = await axiosMain.get("/user/getAllJobPosts");
+    const allJobPosts = await userAPIs.getAllJobPosts()
     const jobPosts: JobPost[] = allJobPosts.data?.jobPosts || [];
     const companies: Company[] = allJobPosts.data?.companies || [];
 

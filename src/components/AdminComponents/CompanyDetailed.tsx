@@ -27,7 +27,6 @@ import {
   LinkIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { Icons } from "../ui/icons";
 import {
   Select,
@@ -36,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import adminAPIs from "@/API/adminAPIs";
 
 interface ICompany {
   company_id: string;
@@ -86,9 +86,7 @@ const CompanyDetailed = () => {
     const fetchCompanyDetails = async () => {
       try {
         // Replace this with your actual API call
-        const response = await axiosMain.get(
-          `/admin/get-company/${company_id}`
-        );
+        const response = await adminAPIs.getCompanyDetails(company_id || "");
         if (response.status !== 200) {
           throw new Error("Failed to fetch company details");
         }
@@ -164,11 +162,9 @@ const CompanyDetailed = () => {
   const handleStatusChange = async (newStatus: string) => {
     setIsUpdating(true);
     try {
-      const response = await axiosMain.patch(
-        `/admin/update-verification/${company?.company_id}`,
-        {
-          newStatus: newStatus,
-        }
+      const response = await adminAPIs.statusChange(
+        company_id || "",
+        newStatus
       );
 
       if (response.status === 200) {

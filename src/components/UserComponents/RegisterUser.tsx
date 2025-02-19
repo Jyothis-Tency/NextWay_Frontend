@@ -10,7 +10,7 @@ import {
   registerUserAct,
 } from "../../redux/Actions/userActions";
 import { toast } from "sonner";
-import { axiosMain } from "@/Utils/axiosUtil";
+import { ApiError } from "@/Utils/interface";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const registerSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -92,6 +92,7 @@ const RegisterUser: React.FC = () => {
         }, 1500);
       }
     } catch (error: any) {
+      const err = error as ApiError;
       toast.error(error.message || "Google authentication failed");
     }
   };

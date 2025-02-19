@@ -8,7 +8,7 @@ interface Company {
   phone: string;
   role: string;
   isBlocked: boolean;
-  profileImage: any;
+  profileImage: string;
   isVerified: string;
   accessToken: string | null;
   refreshToken: string | null;

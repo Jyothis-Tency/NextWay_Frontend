@@ -12,8 +12,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosMain } from "@/Utils/axiosUtil";
 import ReusableTable from "../Common/Reusable/Table";
+import companyAPIs from "@/API/companyAPIs";
 
 interface IJobApplication {
   _id: string;
@@ -34,15 +34,14 @@ export function JobApplicationByPosts() {
   const location = useLocation();
   const jobTitle = location.state?.jobTitle;
   const { jobId } = useParams<{ jobId: string }>();
+  const job_id = jobId || "";
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/job-applications-post/${jobId}`
-        );
+        const response = await companyAPIs.fetchApplications(job_id);
         setApplications(response.data.jobApplications);
       } catch (error) {
         console.error("Error fetching job applications:", error);
@@ -66,29 +65,6 @@ export function JobApplicationByPosts() {
         return "bg-[#10B981] text-[#FFFFFF]";
       default:
         return "bg-[#6B7280] text-[#FFFFFF]";
-    }
-  };
-
-  const handleStatusChange = async (
-    applicationId: string,
-    newStatus: string
-  ) => {
-    try {
-      await axiosMain.put(
-        `/company/update-application-status/${applicationId}`,
-        {
-          status: newStatus,
-        }
-      );
-      setApplications(
-        applications.map((app) =>
-          app._id === applicationId
-            ? { ...app, status: newStatus as IJobApplication["status"] }
-            : app
-        )
-      );
-    } catch (error) {
-      console.error("Error updating application status:", error);
     }
   };
 

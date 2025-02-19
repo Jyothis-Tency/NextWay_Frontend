@@ -23,7 +23,7 @@ import {
   CheckCircle,
   Users,
 } from "lucide-react";
-import { fetchJobById } from "@/API/userAPI"; // You'll need to implement this function
+import userAPIs from "@/API/userAPIs";
 
 export default function JobPostDetailed() {
   const [job, setJob] = useState<any>(null);
@@ -35,7 +35,7 @@ export default function JobPostDetailed() {
     const getJobDetails = async () => {
       if (!_id) return;
       try {
-        const jobData = await fetchJobById(_id);
+        const jobData = await userAPIs.fetchJobById(_id);
         setJob(jobData);
         setLoading(false);
       } catch (error) {

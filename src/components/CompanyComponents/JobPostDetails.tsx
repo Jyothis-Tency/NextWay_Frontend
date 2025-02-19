@@ -13,10 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosMain } from "@/Utils/axiosUtil";
-import { createOrUpdateJobPost, deleteJobPost } from "@/API/companyAPI";
 import { toast } from "sonner";
 import ITSkills from "@/enums/skills";
+import companyAPIs from "@/API/companyAPIs";
+import { ApiError } from "@/Utils/interface";
 
 interface IJobPost {
   _id: string;
@@ -72,9 +72,7 @@ export function JobPostDetails() {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/get-job-post/${jobId}`
-        );
+        const response = await companyAPIs.getJobPost(jobId || "");
         setJob(response.data.jobPost);
       } catch (error) {
         console.error("Error fetching job details:", error);
@@ -90,16 +88,16 @@ export function JobPostDetails() {
   const handleSubmit = async (values: IJobPost) => {
     try {
       const jobData = { ...values, _id: jobId };
-      const response = await createOrUpdateJobPost(jobData);
-      if (response?.success) {
-        toast.success("Job post updated successfully");
-        setTimeout(() => {
-          navigate("../job-post-list");
-        }, 1500);
-      }
-    } catch (error: any) {
+      const response = await companyAPIs.createOrUpdateJobPost(jobData);
+
+      toast.success("Job post updated successfully");
+      setTimeout(() => {
+        navigate("../job-post-list");
+      }, 1500);
+    } catch (error) {
+      const err = error as ApiError;
       toast.error(
-        error.message || "An unexpected error occurred. Please try again."
+        err.message || "An unexpected error occurred. Please try again."
       );
       console.error("Error updating job post:", error);
     }
@@ -108,16 +106,15 @@ export function JobPostDetails() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
       try {
-        const response = await deleteJobPost(jobId);
-        if (response?.success) {
-          toast.success(response?.message);
-          setTimeout(() => {
-            navigate("../job-post-list");
-          }, 1500);
-        }
-      } catch (error: any) {
+        const response = await companyAPIs.deleteJobPost(jobId);
+        toast.success(response?.data.message);
+        setTimeout(() => {
+          navigate("../job-post-list");
+        }, 1500);
+      } catch (error) {
+        const err = error as ApiError;
         toast.error(
-          error.message || "An unexpected error occurred. Please try again."
+          err.message || "An unexpected error occurred. Please try again."
         );
         console.error("Error deleting job:", error);
       }
@@ -233,22 +230,22 @@ export function JobPostDetails() {
                     Employment Type
                   </label>
                   <Field name="employmentType">
-                    {({ field }: any) => (
+                    {({ field }: { field: { value: string } }) => (
                       <Select
-                        onValueChange={(value) =>
-                          setFieldValue("employmentType", value)
-                        }
-                        defaultValue={field.value}
+                      onValueChange={(value) =>
+                        setFieldValue("employmentType", value)
+                      }
+                      defaultValue={field.value}
                       >
-                        <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                          <SelectValue placeholder="Select employment type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Full-time">Full-time</SelectItem>
-                          <SelectItem value="Part-time">Part-time</SelectItem>
-                          <SelectItem value="Contract">Contract</SelectItem>
-                          <SelectItem value="Internship">Internship</SelectItem>
-                        </SelectContent>
+                      <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
+                        <SelectValue placeholder="Select employment type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Full-time">Full-time</SelectItem>
+                        <SelectItem value="Part-time">Part-time</SelectItem>
+                        <SelectItem value="Contract">Contract</SelectItem>
+                        <SelectItem value="Internship">Internship</SelectItem>
+                      </SelectContent>
                       </Select>
                     )}
                   </Field>
@@ -482,21 +479,21 @@ export function JobPostDetails() {
               </CardHeader>
               <CardContent>
                 <Field name="status">
-                  {({ field }: any) => (
+                    {({ field }: { field: { value: string } }) => (
                     <Select
                       onValueChange={(value) => setFieldValue("status", value)}
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                        <SelectValue placeholder="Select job status" />
+                      <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
-                        <SelectItem value="paused">Paused</SelectItem>
+                      <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                      <SelectItem value="paused">Paused</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
+                    )}
                 </Field>
                 <ErrorMessage
                   name="status"

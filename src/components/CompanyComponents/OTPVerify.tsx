@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { OTPVerifyAct } from "@/redux/Actions/companyActions";
 import { AppDispatch } from "@/redux/store";
-import { resentOtp } from "@/API/companyAPI";
+import companyAPIs from "@/API/companyAPIs";
+import { ApiError } from "@/Utils/interface";
 
 const TIMER_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
@@ -121,14 +122,14 @@ function OtpVerify() {
       console.log("Resend OTP");
 
       const email: string | null = localStorage.getItem("register-email");
-      const result = await resentOtp(email);
-      if (result?.success) {
-        toast.success(result.message);
-        localStorage.removeItem("otpTimerStart");
-        startTimer();
-      }
-    } catch (error: any) {
-      toast.error(error.message);
+      const result = await companyAPIs.resentOtp(email);
+
+      toast.success(result.data.message);
+      localStorage.removeItem("otpTimerStart");
+      startTimer();
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
     }
   };
 

@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createOrUpdateJobPost } from "@/API/companyAPI";
 import ITSkills from "@/enums/skills";
-
+import companyAPIs from "@/API/companyAPIs";
+import { ApiError } from "@/Utils/interface";
 
 interface IJobPost {
   title: string;
@@ -101,21 +101,18 @@ export function CreateJobPost() {
       //   toast.error("Cant post job until admin verifies your account")
       //   return
       // }
-      const response = await createOrUpdateJobPost(jobData);
+      const response = await companyAPIs.createOrUpdateJobPost(jobData);
       console.log(response);
-      
-      if (response?.success) {
-        console.log("Job post created successfully:", response?.message);
-        toast.success(response.message);
-        setTimeout(() => {
-          navigate("../job-post-list");
-        }, 1500);
-      } else {
-        toast.error(response?.message)
-      }
-    } catch (error: any) {
+
+      console.log("Job post created successfully:", response.data.message);
+      toast.success(response.data.message);
+      setTimeout(() => {
+        navigate("../job-post-list");
+      }, 1500);
+    } catch (error) {
+      const err = error as ApiError;
       toast.error(
-        error.message || "An unexpected error occurred. Please try again."
+        err.message || "An unexpected error occurred. Please try again."
       );
       console.error("Error creating job post:", error);
     }
@@ -206,7 +203,15 @@ export function CreateJobPost() {
                     Employment Type
                   </label>
                   <Field name="employmentType">
-                    {({ field }: any) => (
+                    {({
+                      field,
+                    }: {
+                      field: {
+                        name: string;
+                        value: string;
+                        onChange: (value: string) => void;
+                      };
+                    }) => (
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -314,7 +319,8 @@ export function CreateJobPost() {
                                       s
                                         .toLowerCase()
                                         .includes(skill.toLowerCase())
-                                    ).slice(0,7)
+                                    )
+                                    .slice(0, 7)
                                     .map((suggestion) => (
                                       <div
                                         key={suggestion}
@@ -452,21 +458,29 @@ export function CreateJobPost() {
               </CardHeader>
               <CardContent>
                 <Field name="status">
-                  {({ field }: any) => (
+                    {({
+                    field,
+                    }: {
+                    field: {
+                      name: string;
+                      value: string;
+                      onChange: (value: string) => void;
+                    };
+                    }) => (
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                        <SelectValue placeholder="Select job status" />
+                      <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
-                        <SelectItem value="paused">Paused</SelectItem>
+                      <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                      <SelectItem value="paused">Paused</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
+                    )}
                 </Field>
                 <ErrorMessage
                   name="status"

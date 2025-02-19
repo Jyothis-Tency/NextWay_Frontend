@@ -13,7 +13,7 @@ interface User {
   phone: string;
   role: string;
   isBlocked: boolean;
-  profileImage: any;
+  profileImage: string;
   location: string;
   skills: string[];
   accessToken: string | null;

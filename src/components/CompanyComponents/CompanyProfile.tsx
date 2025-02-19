@@ -19,9 +19,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { Pencil, MapPin, Mail, Phone, Link } from "lucide-react";
+import companyAPIs from "@/API/companyAPIs";
 
 interface ICompany {
   company_id: string;
@@ -60,17 +60,15 @@ export function CompanyProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const company_id = useSelector(
-    (state: RootState) => state.company.companyInfo?.company_id
-  );
+  const company_id =
+    useSelector((state: RootState) => state.company.companyInfo?.company_id) ||
+    "";
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/get-company/${company_id}`
-        );
+        const response = await companyAPIs.fetchCompanyData(company_id);
         setCompany(response.data.companyProfile);
         setProfileImage(response.data.image);
       } catch (error) {
@@ -97,21 +95,16 @@ export function CompanyProfile() {
       const formData = new FormData();
       formData.append("profilePicture", selectedFile);
       try {
-        const response = await axiosMain.post(
-          `/company/upload-profile-img/${company_id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        const response = await companyAPIs.uploadProfilePicture(
+          company_id,
+          formData
         );
 
         if (response.data.status) {
           toast.success("Company profile picture updated");
           // Refetch company data to get the updated profile picture
-          const updatedResponse = await axiosMain.get(
-            `/company/get-company/${company_id}`
+          const updatedResponse = await companyAPIs.fetchCompanyData(
+            company_id
           );
           setCompany(updatedResponse.data.companyProfile);
           setProfileImage(updatedResponse.data.image);

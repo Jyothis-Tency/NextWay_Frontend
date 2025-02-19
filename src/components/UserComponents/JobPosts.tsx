@@ -15,8 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, CheckCircle, Clock, DollarSign, MapPin, Search } from "lucide-react";
-import { fetchJobs, submitJobApplication } from "@/API/userAPI";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  MapPin,
+  Search,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,9 +36,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { RootState } from "@/redux/store";
 import { toast } from "sonner";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
+import userAPIs from "@/API/userAPIs";
 
 // Validation schema using Yup
 const applicationSchema = Yup.object().shape({
@@ -84,7 +90,7 @@ export default function JobPosts() {
   useEffect(() => {
     const getJobPosts = async () => {
       try {
-        const jobs = await fetchJobs();
+        const jobs = await userAPIs.fetchJobs();
         setFilteredJobs(jobs);
         const params = new URLSearchParams(location.search);
         const jobIdFromUrl = params.get("selectedJobId");
@@ -123,7 +129,7 @@ export default function JobPosts() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
+      const response = await userAPIs.getAllCompanyProfileImages();
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -150,7 +156,7 @@ export default function JobPosts() {
   const handleSearch = async () => {
     if (searchQuery.trim() === "" && searchLocation.trim() === "") {
       try {
-        const jobs = await fetchJobs();
+        const jobs = await userAPIs.fetchJobs();
         setFilteredJobs(jobs);
         if (jobs.length > 0) {
           setSelectedJob(jobs[0]);
@@ -242,7 +248,7 @@ export default function JobPosts() {
       try {
         console.log("resume: applicationData.resume", applicationData.resume);
 
-        await submitJobApplication({
+        await userAPIs.submitJobApplication({
           job_id: selectedJob._id,
           company_id: selectedJob.company_id,
           user_id: userInfo.user_id,

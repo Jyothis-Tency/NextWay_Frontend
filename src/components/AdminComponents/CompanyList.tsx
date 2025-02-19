@@ -12,12 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosMain } from "@/Utils/axiosUtil"; // Adjust the import path as needed
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import ReusableTable from "../Common/Reusable/Table";
+import adminAPIs from "@/API/adminAPIs";
 
 interface ICompany {
   company_id: string;
@@ -41,7 +41,7 @@ const CompanyList: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get("/admin/getAllCompanyProfileImages");
+      const response = await adminAPIs.getAllCompanyProfileImages();
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -73,7 +73,7 @@ const CompanyList: React.FC = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axiosMain.get("/admin/all-companies");
+        const response = await adminAPIs.fetchAllCompanies();
         console.log("API response:", response.data.companyData);
         setCompanies(
           Array.isArray(response.data.companyData)
@@ -96,10 +96,7 @@ const CompanyList: React.FC = () => {
     currentBlockStatus: boolean
   ) => {
     try {
-      await axiosMain.post("/admin/block-unblock-company", {
-        company_id: companyId,
-        block: !currentBlockStatus,
-      });
+      await adminAPIs.handleBlockUnblockCompany(companyId, currentBlockStatus);
       setCompanies(
         companies.map((company) =>
           company.company_id === companyId

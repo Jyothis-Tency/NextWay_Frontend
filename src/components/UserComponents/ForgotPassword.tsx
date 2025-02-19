@@ -10,7 +10,7 @@ import {
   forgotPasswordOTPAct,
   forgotPasswordResetAct,
 } from "@/redux/Actions/userActions";
-import { resentOtp } from "@/API/userAPI";
+import userAPIs from "@/API/userAPIs";
 
 const TIMER_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
@@ -133,14 +133,9 @@ const ForgotPasswordForm: React.FC = () => {
 
   const handleResendOtp = async () => {
     try {
-      const result = await resentOtp(formik.values.email);
-
-      if (result?.success) {
-        toast.success("OTP resent successfully");
-        startTimer();
-      } else {
-        toast.error(result?.message);
-      }
+      const result = await userAPIs.resentOtp(formik.values.email);
+      toast.success("OTP resent successfully");
+      startTimer();
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.");
       console.error(error);

@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useSocket } from "../../Context/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
 import CompanyStatic from "/Comany-Static-Logo.svg";
+import userAPIs from "@/API/userAPIs";
 
 interface IMessage {
   _id: string;
@@ -75,7 +75,6 @@ export function UserChatInterface() {
 
   useEffect(() => {
     if (socket) {
-      // Remove any existing listeners first
       socket.off("receiveMessage");
 
       socket.on("receiveMessage", (message: IMessage) => {
@@ -143,7 +142,7 @@ export function UserChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get("/user/getAllCompanyProfileImages");
+      const response = await userAPIs.getAllCompanyProfileImages();
       // console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -155,13 +154,11 @@ export function UserChatInterface() {
     if (!user) return;
 
     try {
-      const response = await axiosMain.get<IChat[]>(`/chat/user-history`, {
-        params: { user_id: user.user_id },
-      });
+      const response = await userAPIs.fetchChatHistory(user.user_id);
       console.log("Fetched chat history:", response.data);
 
       // Sort chats by last message time
-      const sortedChats = response.data.sort((a, b) => {
+      const sortedChats = response.data.sort((a:IChat, b:IChat) => {
         const timeA = new Date(a.lastMessageTime || 0).getTime();
         const timeB = new Date(b.lastMessageTime || 0).getTime();
         return timeB - timeA;
@@ -198,31 +195,31 @@ export function UserChatInterface() {
 
     setIsSearching(true);
     try {
-      const response = await axiosMain.get<CompanySearchResult[]>(
-        `/user/search/companies?query=${searchQuery}`
-      );
+      const response = await userAPIs.searchCompanies(searchQuery)
       console.log("response.data : ", response.data);
 
       // Convert search results to chat format
-      const searchResults = response.data.map((company) => {
-        // Check if chat already exists with this company
-        const existingChat = chats.find(
-          (chat) => chat.company_id === company.company_id
-        );
-        if (existingChat) {
-          return existingChat;
-        }
+      const searchResults = response.data.map(
+        (company: CompanySearchResult) => {
+          // Check if chat already exists with this company
+          const existingChat = chats.find(
+            (chat) => chat.company_id === company.company_id
+          );
+          if (existingChat) {
+            return existingChat;
+          }
 
-        // Create new chat format for new companies
-        return {
-          _id: `new_${company.company_id}`,
-          user_id: user!.user_id,
-          company_id: company.company_id,
-          messages: [],
-          companyName: company.name,
-          companyAvatar: company.profileImage,
-        };
-      });
+          // Create new chat format for new companies
+          return {
+            _id: `new_${company.company_id}`,
+            user_id: user!.user_id,
+            company_id: company.company_id,
+            messages: [],
+            companyName: company.name,
+            companyAvatar: company.profileImage,
+          };
+        }
+      );
 
       setDisplayChats(searchResults);
     } catch (error) {

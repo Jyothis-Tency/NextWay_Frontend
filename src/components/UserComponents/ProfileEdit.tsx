@@ -10,12 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
-import { updateUserProfile } from "@/API/userAPI";
 import Header from "../Common/UserCommon/Header";
 import Footer from "../Common/UserCommon/Footer";
 import ITSkills from "@/enums/skills";
+import userAPIs from "@/API/userAPIs";
+import { ApiError } from "@/Utils/interface";
 
 interface Experience {
   jobTitle: string;
@@ -79,7 +79,6 @@ const initialValues: UserProfile = {
 
 const JobUserProfileEdit: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<any>();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserProfile>(initialValues);
   const user_id = useSelector(
@@ -92,7 +91,7 @@ const JobUserProfileEdit: React.FC = () => {
 
       try {
         setLoading(true);
-        const response = await axiosMain.get(`/user/user-profile/${user_id}`);
+        const response = await userAPIs.fetchUserData(user_id);
         const fetchedUserData = response.data.userProfile;
         console.log("Fetched user data:", fetchedUserData);
         setUserData({
@@ -103,11 +102,11 @@ const JobUserProfileEdit: React.FC = () => {
           preferredRoles: fetchedUserData.preferredRoles || [],
           skills: fetchedUserData.skills || [],
         });
-      } catch (error: any) {
+      } catch (error) {
+        const err = error as ApiError;
         console.error("Error fetching user data:", error);
         toast.error(
-          error.response?.data?.message ||
-            "Failed to fetch profile data. Please try again."
+          err.message || "Failed to fetch profile data. Please try again."
         );
       } finally {
         setLoading(false);
@@ -120,21 +119,18 @@ const JobUserProfileEdit: React.FC = () => {
   const handleSubmit = async (values: UserProfile) => {
     try {
       console.log("Submitting profile update with values:", values);
-      const response = await updateUserProfile(user_id, values);
+      const response = await userAPIs.updateUserProfile(user_id || "", values);
       console.log("Update response:", response);
-      if (response && response.success) {
-        toast.success("Profile updated successfully");
-        setTimeout(() => {
-          navigate("../profile");
-        }, 1500);
-      } else {
-        toast.error("Error occurred while updating profile");
-      }
-    } catch (error: any) {
+
+      toast.success("Profile updated successfully");
+      setTimeout(() => {
+        navigate("../profile");
+      }, 1500);
+    } catch (error) {
+      const err = error as ApiError;
       console.error("Error updating profile:", error);
       toast.error(
-        error.response?.data?.message ||
-          "An unexpected error occurred. Please try again."
+        err.message || "An unexpected error occurred. Please try again."
       );
     }
   };

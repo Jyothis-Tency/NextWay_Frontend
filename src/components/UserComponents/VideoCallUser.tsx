@@ -105,7 +105,6 @@ const VideoCallUser: React.FC = () => {
           turnOnMicrophoneWhenJoining: true,
           turnOnCameraWhenJoining: true,
           showPreJoinView: false,
-          
 
           onLeaveRoom() {
             handleLeaveRoom(zp, true);

@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Menu } from "lucide-react";
-import { axiosMain} from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useSocket } from "@/Context/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import UserStatic from "/User-Static-Logo.svg";
+import companyAPIs from "@/API/companyAPIs";
 
 interface IMessage {
   _id: string;
@@ -51,18 +51,16 @@ export function CompanyChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const company = useSelector((state: RootState) => state.company.companyInfo);
-  
+
   const socket = useSocket();
 
   const fetchChatHistory = useCallback(async () => {
     if (!company) return;
 
     try {
-      const response = await axiosMain.get<IChat[]>(`/chat/company-history`, {
-        params: { company_id: company.company_id },
-      });
+      const response = await companyAPIs.fetchChatHistory(company.company_id);
 
-      const sortedChats = response.data.sort((a, b) => {
+      const sortedChats = response.data.sort((a: IChat, b: IChat) => {
         const timeA = new Date(a.lastMessageTime || 0).getTime();
         const timeB = new Date(b.lastMessageTime || 0).getTime();
         return timeB - timeA;
@@ -144,9 +142,7 @@ export function CompanyChatInterface() {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get(
-        "/company/getAllUserProfileImages"
-      );
+      const response = await companyAPIs.getAllUserProfileImages();
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -176,11 +172,9 @@ export function CompanyChatInterface() {
     }
 
     try {
-      const response = await axiosMain.get<UserSearchResult[]>(
-        `/company/search/users?query=${searchQuery}`
-      );
+      const response = await companyAPIs.companySearch(searchQuery);
 
-      const searchResults = response.data.map((user) => {
+      const searchResults = response.data.map((user: UserSearchResult) => {
         const existingChat = chats.find(
           (chat) => chat.user_id === user.user_id
         );

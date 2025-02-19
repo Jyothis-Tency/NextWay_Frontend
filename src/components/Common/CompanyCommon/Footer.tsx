@@ -8,7 +8,6 @@ export const Footer: React.FC = () => {
           &copy; 2024 NextWay Company. All rights reserved.
         </p>
         <div className="flex items-center space-x-2">
-          {/* Add any additional footer content here */}
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import userAPIs from "@/API/userAPIs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -10,12 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ApiError } from "@/Utils/interface";
 import { Icons } from "@/components/ui/icons";
 import { axiosMain } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
 import { CheckCircle, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 interface ICompany {
   company_id: string;
@@ -53,24 +55,27 @@ const CompanyDetailed: React.FC = () => {
   const isSubscribed = userData?.isSubscribed;
   const subFeatures = userData?.subscriptionFeatures;
   const { company_id } = useParams<{ company_id: string }>();
+  const companyId =  company_id||"";
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const response = await axiosMain.get<CompanyProfileResponse>(
-          `/user/get-company/${company_id}`
-        );
-        setCompany(response.data.companyProfile);
-        setImage(response.data.image);
+        const result = await userAPIs.getCompanyProfile(companyId);
+        setCompany(result.companyProfile);
+        setImage(result.image);
         setLoading(false);
       } catch (err) {
+        const error = err as ApiError;
+        console.log("errrefffddddd",error);
+        
+        toast.error(error.message);
         setError("Failed to fetch company data");
         setLoading(false);
       }
     };
 
     fetchCompanyData();
-  }, [company_id]);
+  }, [companyId]);
 
   if (loading) {
     return (

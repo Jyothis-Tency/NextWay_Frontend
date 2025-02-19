@@ -17,12 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
 import { Loader2 } from "lucide-react";
-import { createSubscriptionPlan, editSubscriptionPlan } from "@/API/adminAPI";
 import { toast } from "sonner";
 import {
   Table,
@@ -34,6 +32,8 @@ import {
 } from "@/components/ui/table";
 import { FeatureRegistry } from "@/enums/features";
 import ReusableTable from "../Common/Reusable/Table";
+import adminAPIs from "@/API/adminAPIs";
+import { ApiError } from "@/Utils/interface";
 
 interface SubscriptionPlan {
   _id: string;
@@ -90,7 +90,7 @@ const Subscriptions: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axiosMain.get("/admin/get-subscription-plan");
+      const response = await adminAPIs.fetchSubscriptionPlans();
       setPlans(response.data.planData);
     } catch (error) {
       console.error("Error fetching subscription plans:", error);
@@ -102,7 +102,7 @@ const Subscriptions: React.FC = () => {
 
   const fetchAllSubscriptions = async () => {
     try {
-      const response = await axiosMain.get("/subscribe/all-Subscriptions");
+      const response = await adminAPIs.fetchAllSubscriptions();
       setAllSubscriptions(response.data);
     } catch (error) {
       console.error("Error fetching all subscriptions:", error);
@@ -114,56 +114,50 @@ const Subscriptions: React.FC = () => {
     newPlan: Omit<SubscriptionPlan, "_id" | "isBlocked" | "createdAt">
   ) => {
     try {
-      const result = await createSubscriptionPlan(newPlan);
+      const result = await adminAPIs.createSubscriptionPlan(newPlan);
       console.log(result);
 
-      if (result?.success) {
-        fetchPlans();
-        setIsCreateModalOpen(false);
-        toast.success(result.message);
-      }
-    } catch (error: any) {
-      toast.error(error.message);
+      fetchPlans();
+      setIsCreateModalOpen(false);
+      toast.success(result.data.message);
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
       console.error("Error creating subscription plan 1:", error);
     }
   };
 
   const handleEditPlan = async (updatedPlan: SubscriptionPlan) => {
     try {
-      const result = await editSubscriptionPlan(updatedPlan);
-      if (result?.success) {
-        fetchPlans();
-        setIsEditModalOpen(false);
-        toast.success(result.message);
-      }
-    } catch (error: any) {
-      toast.error(error.message);
+      const result = await adminAPIs.editSubscriptionPlan(updatedPlan);
+
+      fetchPlans();
+      setIsEditModalOpen(false);
+      toast.success(result.data.message);
+    } catch (error) {
+      const err = error as ApiError;
+      toast.error(err.message);
       console.error("Error updating subscription plan:", error);
     }
   };
 
   const handleToggleBlock = async (planId: string, isBlocked: boolean) => {
     try {
-      await axiosMain.patch(
-        `/admin/subscription-plans/${planId}/toggle-block`,
-        {
-          isBlocked,
-        }
-      );
+      await adminAPIs.subscriptionBlockUnBlock(planId, isBlocked);
       fetchPlans();
     } catch (error) {
       console.error("Error toggling plan block status:", error);
     }
   };
 
-    const columns = [
-      { key: "user_id", label: "User ID" },
-      { key: "planName", label: "Name" },
-      { key: "startDate", label: "Start Date" },
-      { key: "period", label: "Period" },
-      { key: "price", label: "Price" },
-      { key: "status", label: "Status" },
-    ];
+  const columns = [
+    { key: "user_id", label: "User ID" },
+    { key: "planName", label: "Name" },
+    { key: "startDate", label: "Start Date" },
+    { key: "period", label: "Period" },
+    { key: "price", label: "Price" },
+    { key: "status", label: "Status" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">

@@ -12,13 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { axiosMain } from "@/Utils/axiosUtil"; // Adjust the import path as needed
-import { toggleUserBlock } from "@/API/adminAPI"; // Import toggle function
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import UserStatic from "../../../public/User-Static-Logo.svg";
 import ReusableTable from "../Common/Reusable/Table";
+import adminAPIs from "@/API/adminAPIs";
 
 interface IUser {
   user_id: string;
@@ -43,7 +42,7 @@ const UserList = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await axiosMain.get("/admin/getAllUserProfileImages");
+      const response = await adminAPIs.getAllUserProfileImages();
       console.log(response.data);
       setAllProfileImages(response.data);
     } catch (error) {
@@ -75,7 +74,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axiosMain.get("/admin/all-users");
+        const response = await adminAPIs.fetchAllUsers();
         console.log("API response:", response.data.userData);
         setUsers(
           Array.isArray(response.data.userData) ? response.data.userData : []
@@ -91,14 +90,11 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
-  const handleBlockUnblock = async (
-    userId: string,
-    currentBlockStatus: boolean
-  ) => {
+  const handleBlockUnblock = async (userId: string) => {
     try {
-      const updatedUser = await toggleUserBlock(userId, currentBlockStatus);
+      const updatedUser = await adminAPIs.toggleUserBlock(userId);
       setUsers(
-        users.map((user) =>
+        users.map((user: IUser) =>
           user.user_id === userId
             ? { ...user, isBlocked: updatedUser.isBlocked }
             : user
@@ -132,7 +128,7 @@ const UserList = () => {
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            handleBlockUnblock(row.user_id, row.isBlocked);
+            handleBlockUnblock(row.user_id);
           }}
           variant={row.isBlocked ? "default" : "destructive"}
         >

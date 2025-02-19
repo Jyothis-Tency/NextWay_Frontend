@@ -7,18 +7,17 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "@/Context/SocketContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { start } from "repl";
-import { timeStamp } from "console";
+import { getUrlParams } from "@/Utils/getUrlParams";
 
 const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
 const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
 
-export function getUrlParams(
-  url: string = window.location.href
-): URLSearchParams {
-  const urlStr = url.split("?")[1];
-  return new URLSearchParams(urlStr);
-}
+// export function getUrlParams(
+//   url: string = window.location.href
+// ): URLSearchParams {
+//   const urlStr = url.split("?")[1];
+//   return new URLSearchParams(urlStr);
+// }
 
 const VideoCallCompany: React.FC = () => {
   console.log("VideoCallCompany");
@@ -111,7 +110,8 @@ const VideoCallCompany: React.FC = () => {
           serverSecret,
           roomID,
           company_id, // User ID
-          company_name // User Name
+          company_name, // User Name
+          3600
         );
 
         // Create instance object from Kit Token
@@ -131,7 +131,7 @@ const VideoCallCompany: React.FC = () => {
           onUserJoin(users) {
             startPresenceEmission();
           },
-          
+
           onLeaveRoom() {
             const startTime = localStorage.getItem("startTime") || "";
 
@@ -153,6 +153,8 @@ const VideoCallCompany: React.FC = () => {
             console.log("Users left the room:", users);
             forceRefreshLayout();
           },
+
+          sharedLinks: [],
         });
 
         socket?.on("user:left", ({ roomID: leftRoomID, userId }) => {

@@ -5,6 +5,7 @@ import { loginAdminAct } from "@/redux/Actions/adminActions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { ApiError } from "@/Utils/interface";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -39,9 +40,11 @@ export default function AdminLogin() {
             navigate("../dashboard");
           }, 1500);
         }
-      } catch (error: any) {
-        // Handle errors returned by rejectWithValue
-        toast.error(error || "An unexpected error occurred. Please try again.");
+      } catch (error) {
+        const err = error as ApiError;
+        toast.error(
+          err.message || "An unexpected error occurred. Please try again."
+        );
         console.error(error);
       }
     },

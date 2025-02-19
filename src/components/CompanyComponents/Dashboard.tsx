@@ -11,8 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { useNavigate } from "react-router-dom";
+import companyAPIs from "@/API/companyAPIs";
 
 interface IJobApplication {
   job_id: string;
@@ -48,11 +48,11 @@ const CompanyDashboard: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axiosMain.get(
-          `/company/get-company-jobs/${companyData?.company_id}`
+        const response = await companyAPIs.getCompanyJobs(
+          companyData?.company_id || ""
         );
-        const applications = await axiosMain.get(
-          `/company/job-applications/${companyData?.company_id}`
+        const applications = await companyAPIs.getJobApplications(
+          companyData?.company_id || ""
         );
         setApplications(applications.data.jobApplications);
         setJobs(response.data.jobPosts);

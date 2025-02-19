@@ -64,7 +64,6 @@ export function CompanyChatInterface() {
 
   useEffect(() => {
     if (socket) {
-      // Remove any existing listeners first
       socket.off("receiveMessage");
 
       socket.on("receiveMessage", (message: IMessage) => {

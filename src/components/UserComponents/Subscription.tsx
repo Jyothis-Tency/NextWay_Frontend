@@ -22,12 +22,13 @@ import {
 } from "@/components/ui/dialog";
 import type { RootState } from "@/redux/store";
 import { setSubscriptions, clearSubscriptions } from "@/redux/Slices/userSlice";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import { loadRazorpay } from "@/Utils/loadRazorpay";
 import { useSocket } from "@/Context/SocketContext";
 import { FeatureRegistry } from "@/enums/features";
 import ReusableTable from "../Common/Reusable/Table";
+import userAPIs from "@/API/userAPIs";
+import { ApiError } from "@/Utils/interface";
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 interface SubscriptionPlan {
@@ -86,7 +87,7 @@ const Subscriptions: React.FC = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const dispatch = useDispatch();
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const userId = userInfo?.user_id;
+  const userId = userInfo?.user_id || "";
   const userName = `${userInfo?.firstName} ${userInfo?.lastName}`;
   const userEmail = userInfo?.email;
   const userPhone = userInfo?.phone;
@@ -139,9 +140,7 @@ const Subscriptions: React.FC = () => {
     function fetchSubscriptionData() {
       const fetchPlans = async () => {
         try {
-          const plansResponse = await axiosMain.get(
-            "/subscribe/get-subscription-plan"
-          );
+          const plansResponse = await userAPIs.getSubscriptionPlan();
           console.log(
             "fetchPlans in fetchSubscriptionData",
             plansResponse.data.planData
@@ -160,9 +159,7 @@ const Subscriptions: React.FC = () => {
 
       const fetchHistory = async () => {
         try {
-          const historyResponse = await axiosMain.get(
-            `/subscribe/subscription-history/${userId}`
-          );
+          const historyResponse = await userAPIs.subscriptionHistory(userId);
           console.log(
             "fetchHistory in fetchSubscriptionData",
             historyResponse.data.history
@@ -180,9 +177,7 @@ const Subscriptions: React.FC = () => {
         try {
           console.log("fetCurrent");
 
-          const currentResponse = await axiosMain.get(
-            `/subscribe/current-subscription/${userId}`
-          );
+          const currentResponse = await userAPIs.currentSubscription(userId);
 
           console.log(
             "fetchCurrent in fetchSubscriptionData",
@@ -232,11 +227,7 @@ const Subscriptions: React.FC = () => {
       const selectedPlan = plans.find((plan) => plan._id === planId);
       if (!selectedPlan) throw new Error("Selected plan not found");
 
-      const response = await axiosMain.post(`/subscribe/initialize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        data: { userId, planId },
-      });
+      const response = await userAPIs.subscribeInitialize(userId, planId);
 
       const data = response.data;
 
@@ -254,15 +245,11 @@ const Subscriptions: React.FC = () => {
         order_id: data.orderId,
         handler: async (response: any) => {
           try {
-            const verifyResponse = await axiosMain.post(`/subscribe/verify`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+            const verifyResponse = await userAPIs.subscribeVerify(
+              response.razorpay_payment_id,
+              response.razorpay_order_id,
+              response.razorpay_signature
+            );
 
             if (verifyResponse.data.success) {
               toast.success("Subscription successful");
@@ -271,8 +258,9 @@ const Subscriptions: React.FC = () => {
                 "Subscription verification failed. Please try again."
               );
             }
-          } catch (err: any) {
-            console.error("Error verifying payment:", err);
+          } catch (err) {
+            const error = err as ApiError;
+            console.error("Error verifying payment:", error.message);
             toast.error("Payment verification failed. Please try again.");
           }
         },
@@ -291,8 +279,9 @@ const Subscriptions: React.FC = () => {
 
       const paymentObject = new (window as any).Razorpay(options);
       paymentObject.open();
-    } catch (err: any) {
-      console.error("Error subscribing to plan:", err);
+    } catch (err) {
+      const error = err as ApiError;
+      console.error("Error subscribing to plan:", error.message);
       toast.error("Failed to subscribe to the plan. Please try again.");
     }
   };
@@ -302,9 +291,7 @@ const Subscriptions: React.FC = () => {
       if (!currentSubscription?.subscriptionId) {
         return;
       }
-      await axiosMain.delete(
-        `/subscribe/cancel/${currentSubscription.subscriptionId}`
-      );
+      await userAPIs.cancelSubscription(currentSubscription.subscriptionId);
       setIsCancelModalOpen(false);
       toast.success("Subscription cancellation request sent");
     } catch (error) {
@@ -540,11 +527,11 @@ const Subscriptions: React.FC = () => {
           //     </div>
           //   </CardContent>
           //     </Card>
-        <ReusableTable
-          columns={columns}
-          data={history}
-          defaultRowsPerPage={5}
-        />
+          <ReusableTable
+            columns={columns}
+            data={history}
+            defaultRowsPerPage={5}
+          />
         ) : (
           <Card className="bg-[#1E1E1E] text-white">
             <CardContent className="p-6">

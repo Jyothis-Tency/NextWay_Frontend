@@ -6,6 +6,7 @@ import {
   setVideoCallInvitation,
   clearVideoCallInvitation,
 } from "@/redux/Slices/videoCallSlice";
+const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL;
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -28,7 +29,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (clientId) {
-      const newSocket = io("http://localhost:3000", {
+      const newSocket = io(SOCKET_SERVER_URL as string, {
         query: {
           clientType,
           clientId,

@@ -35,6 +35,7 @@ import type { RootState } from "@/redux/store";
 import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import ReusableTable from "../Common/Reusable/Table";
+import userAPIs from "@/API/userAPIs";
 
 interface JobApplication {
   _id: string;
@@ -73,9 +74,7 @@ const MyJobs: React.FC = () => {
     const fetchJobApplications = async () => {
       if (!userId) return;
       try {
-        const response = await axiosMain.get(
-          `/user/job-applications/${userId}`
-        );
+        const response = await userAPIs.fetchJobApplications(userId)
         console.log(response.data.applications);
         setJobApplications(response.data.applications || []);
       } catch (err) {

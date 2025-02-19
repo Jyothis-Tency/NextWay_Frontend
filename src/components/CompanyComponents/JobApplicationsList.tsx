@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { axiosMain } from "@/Utils/axiosUtil";
 import ReusableTable from "../Common/Reusable/Table";
+import companyAPIs from "@/API/companyAPIs";
 
 interface IJobApplication {
   _id: string;
@@ -44,9 +45,7 @@ export function JobApplicationsList() {
     const fetchApplications = async () => {
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/job-applications/${company_id}`
-        );
+        const response = await companyAPIs.getJobApplications(company_id || "");
         setApplications(response.data.jobApplications);
       } catch (error) {
         console.error("Error fetching applications:", error);
@@ -79,32 +78,32 @@ export function JobApplicationsList() {
     }
   };
 
-   const columns = [
-      {
-        key: "name",
-        label: "Applicant Name",
-        render: (row: IJobApplication) => (
-          <>{`${row.firstName} ${row.lastName}`}</>
-        ),
-      },
-      { key: "email", label: "Email" },
-      { key: "phone", label: "Phone" },
-      { key: "location", label: "Location" },
-      {
-        key: "status",
-        label: "Status",
-        render: (row: IJobApplication) => (
-          <Badge className={getStatusColor(row.status)}>{row.status}</Badge>
-        ),
-      },
-      {
-        key: "createdAt",
-        label: "Applied Date",
-        render: (row: IJobApplication) => (
-          <>{new Date(row.createdAt).toLocaleDateString()}</>
-        ),
-      },
-    ];
+  const columns = [
+    {
+      key: "name",
+      label: "Applicant Name",
+      render: (row: IJobApplication) => (
+        <>{`${row.firstName} ${row.lastName}`}</>
+      ),
+    },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone" },
+    { key: "location", label: "Location" },
+    {
+      key: "status",
+      label: "Status",
+      render: (row: IJobApplication) => (
+        <Badge className={getStatusColor(row.status)}>{row.status}</Badge>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Applied Date",
+      render: (row: IJobApplication) => (
+        <>{new Date(row.createdAt).toLocaleDateString()}</>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">

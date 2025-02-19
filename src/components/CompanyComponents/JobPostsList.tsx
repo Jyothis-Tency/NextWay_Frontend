@@ -14,8 +14,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosMain } from "@/Utils/axiosUtil";
 import ReusableTable from "../Common/Reusable/Table";
+import companyAPIs from "@/API/companyAPIs";
 
 interface IJobPost {
   _id: string;
@@ -42,9 +42,7 @@ export function JobPostsList() {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await axiosMain.get(
-          `/company/get-company-jobs/${company_id}`
-        );
+        const response = await companyAPIs.getCompanyJobs(company_id || "");
         setJobs(response.data.jobPosts);
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -105,7 +103,7 @@ export function JobPostsList() {
       label: "Posted Date",
       render: (row: IJobPost) => (
         <>{new Date(row.createdAt).toLocaleDateString()}</>
-      )
+      ),
     },
     {
       key: "action",
