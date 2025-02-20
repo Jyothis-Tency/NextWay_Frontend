@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import store from "../redux/store";
 import { clearTokens } from "@/redux/Slices/tokenSlice";
+import HttpStatusCode from "@/enums/httpStatusCodes";
 
 const baseURL = "http://localhost:3000/data";
 
@@ -83,10 +84,12 @@ axiosMain.interceptors.response.use(
       const { status, data } = error.response;
       const role = data.role;
       if (
-        status === 403 &&
-        data.message === "Your account is blocked by Admin"
+        (status === HttpStatusCode.FORBIDDEN &&
+          data.message === "Your account is blocked by Admin") ||
+        (status === HttpStatusCode.FORBIDDEN &&
+          data.message === "Your role is not matching")
       ) {
-        toast.error("Your account is blocked by the admin");
+        toast.error(data.message);
         localStorage.clear();
         clearTokens();
         setTimeout(() => {
@@ -94,7 +97,7 @@ axiosMain.interceptors.response.use(
         }, 1500);
       }
       if (
-        status === 403 &&
+        status === HttpStatusCode.FORBIDDEN &&
         data.message === "Your account has rejected by Admin"
       ) {
         toast.error("Your account has rejected by Admin");
@@ -104,7 +107,7 @@ axiosMain.interceptors.response.use(
           redirectToLogin(role);
         }, 1500);
       }
-      if (status === 401 && !originalRequest._retry) {
+      if (status === HttpStatusCode.UNAUTHORIZED && !originalRequest._retry) {
         originalRequest._retry = true;
 
         try {

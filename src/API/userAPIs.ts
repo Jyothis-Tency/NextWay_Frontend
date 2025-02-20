@@ -1,6 +1,7 @@
 import { axiosMain } from "@/Utils/axiosUtil";
 import { AxiosError } from "axios";
 import { ApiError } from "@/Utils/interface";
+import HttpStatusCode from "@/enums/httpStatusCodes";
 
 export interface IJobPost {
   _id: string;
@@ -115,7 +116,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -133,7 +134,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -151,7 +152,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -168,7 +169,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -185,7 +186,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -202,7 +203,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -219,7 +220,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -238,7 +239,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -257,7 +258,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -279,7 +280,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -308,7 +309,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -327,7 +328,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -346,7 +347,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -371,7 +372,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -390,7 +391,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -437,7 +438,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -454,7 +455,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -505,7 +506,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -525,7 +526,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },
@@ -555,7 +556,7 @@ const userAPIs = {
       }
       throw {
         message: "Something went wrong. Please try again later.",
-        statusCode: 500,
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       } as ApiError;
     }
   },

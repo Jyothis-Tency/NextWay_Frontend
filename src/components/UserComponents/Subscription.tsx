@@ -29,6 +29,7 @@ import { FeatureRegistry } from "@/enums/features";
 import ReusableTable from "../Common/Reusable/Table";
 import userAPIs from "@/API/userAPIs";
 import { ApiError } from "@/Utils/interface";
+import HttpStatusCode from "@/enums/httpStatusCodes";
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
 interface SubscriptionPlan {
@@ -231,7 +232,7 @@ const Subscriptions: React.FC = () => {
 
       const data = response.data;
 
-      if (response.status !== 200) {
+      if (response.status !== HttpStatusCode.OK) {
         throw new Error(data.message || "Failed to initialize payment");
       }
 

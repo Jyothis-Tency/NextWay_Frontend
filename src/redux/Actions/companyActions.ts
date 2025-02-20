@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosMain } from "@/Utils/axiosUtil";
 import store from "../store";
 import { addTokens, clearTokens } from "../Slices/tokenSlice";
+import HttpStatusCode from "@/enums/httpStatusCodes";
 
 export const registerCompanyAct = (userData: {
   name: string;
@@ -30,16 +31,16 @@ export const registerCompanyAct = (userData: {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(response);
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         localStorage.setItem("userEmail", userData.email);
         return { success: true, message: "OTP send to mail successfully" };
       }
     } catch (error: any) {
       console.log(`Error in registerFrom at userActions`);
       if (error.response) {
-        if (error.response.status === 409) {
+        if (error.response.status === HttpStatusCode.CONFLICT) {
           return { success: false, message: "Email already in use" };
-        } else if (error.response.status === 503) {
+        } else if (error.response.status === HttpStatusCode.SERVICE_UNAVAILABLE) {
           return {
             success: false,
             message: "Service unavailable, please try again later",
@@ -69,9 +70,9 @@ export const OTPVerifyAct = (otp: string) => {
     } catch (error: any) {
       console.log(`Error in verifyOTP at userActions`);
       if (error.response) {
-        if (error.response.status === 401) {
+        if (error.response.status === HttpStatusCode.UNAUTHORIZED) {
           return { success: false, message: "Incorrect OTP" };
-        } else if (error.response.status === 410) {
+        } else if (error.response.status === HttpStatusCode.EXPIRED) {
           return {
             success: false,
             message: "OTP expired or doesn't exist",
@@ -105,7 +106,7 @@ export const loginCompanyAct = createAsyncThunk(
         refreshToken,
         role
       );
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         store.dispatch(clearTokens());
         store.dispatch(addTokens({ accessToken, refreshToken, role }));
         return {
@@ -117,11 +118,11 @@ export const loginCompanyAct = createAsyncThunk(
     } catch (error: any) {
       console.error(`Error in loginUser at userActions`);
       if (error.response) {
-        if (error.response.status === 404) {
+        if (error.response.status === HttpStatusCode.NOT_FOUND) {
           return rejectWithValue({ message: "Email not found" });
-        } else if (error.response.status === 401) {
+        } else if (error.response.status === HttpStatusCode.UNAUTHORIZED) {
           return rejectWithValue({ message: "Incorrect Password" });
-        } else if (error.response.status === 403) {
+        } else if (error.response.status === HttpStatusCode.FORBIDDEN) {
           return rejectWithValue({ message: "User is blocked" });
         }
       }
@@ -138,7 +139,7 @@ export const forgotPasswordEmailAct = (email: string) => {
       const response = await axiosMain.post(`/company/forgot-password-email`, {
         email,
       });
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         localStorage.setItem("userEmail", email);
         return {
           success: true,
@@ -148,7 +149,7 @@ export const forgotPasswordEmailAct = (email: string) => {
     } catch (error: any) {
       console.log(`Error in emailValidation at userActions`);
       if (error.response) {
-        if (error.response.status === 404) {
+        if (error.response.status === HttpStatusCode.NOT_FOUND) {
           return { success: false, message: "Email not found" };
         }
       }
@@ -168,7 +169,7 @@ export const forgotPasswordOTPAct = (otp: string) => {
         email,
         otp,
       });
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         localStorage.clear();
         return {
           success: true,
@@ -178,9 +179,9 @@ export const forgotPasswordOTPAct = (otp: string) => {
     } catch (error: any) {
       console.log(`Error in emailValidation at userActions`);
       if (error.response) {
-        if (error.response.status === 401) {
+        if (error.response.status === HttpStatusCode.UNAUTHORIZED) {
           return { success: false, message: "Incorrect OTP" };
-        } else if (error.response.status === 410) {
+        } else if (error.response.status === HttpStatusCode.EXPIRED) {
           return { success: false, message: "OTP expired or doesn't exist" };
         }
       }
@@ -199,7 +200,7 @@ export const forgotPasswordResetAct = (email: string, password: string) => {
         email,
         password,
       });
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         return {
           success: true,
           message: "Password reset successfully",
@@ -208,7 +209,7 @@ export const forgotPasswordResetAct = (email: string, password: string) => {
     } catch (error: any) {
       console.log(`Error in emailValidation at userActions`);
       if (error.response) {
-        if (error.response.status === 404) {
+        if (error.response.status === HttpStatusCode.NOT_FOUND) {
           return { success: false, message: "Email not found" };
         }
       }
@@ -237,7 +238,7 @@ export const updateCompanyProfile = (
 
       console.log(`response - ${response}`);
 
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         console.log(`Profile updated successfully: ${response.data}`);
         return { success: true, message: "Profile updated successfully!" };
       }

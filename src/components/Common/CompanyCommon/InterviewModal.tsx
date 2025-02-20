@@ -61,14 +61,14 @@ export function InterviewModal({
       type !== "cancel"
         ? Yup.string()
             .required("Time is required")
-            .test(
-              "business-hours",
-              "Time must be between 9 AM and 6 PM",
-              (value) => {
-                if (!value) return false;
-                return isBusinessHours(value);
-              }
-            )
+            // .test(
+            //   "business-hours",
+            //   "Time must be between 9 AM and 6 PM",
+            //   (value) => {
+            //     if (!value) return false;
+            //     return isBusinessHours(value);
+            //   }
+            // )
         : Yup.string(),
     message: Yup.string()
       .required("Message is required")

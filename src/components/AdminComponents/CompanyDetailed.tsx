@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import adminAPIs from "@/API/adminAPIs";
+import HttpStatusCode from "@/enums/httpStatusCodes";
 
 interface ICompany {
   company_id: string;
@@ -87,7 +88,7 @@ const CompanyDetailed = () => {
       try {
         // Replace this with your actual API call
         const response = await adminAPIs.getCompanyDetails(company_id || "");
-        if (response.status !== 200) {
+        if (response.status !== HttpStatusCode.OK) {
           throw new Error("Failed to fetch company details");
         }
         const data = response.data.companyProfile;
@@ -167,7 +168,7 @@ const CompanyDetailed = () => {
         newStatus
       );
 
-      if (response.status === 200) {
+      if (response.status === HttpStatusCode.OK) {
         setVerificationStatus(newStatus);
         toast.success("Verification status updated successfully");
       }

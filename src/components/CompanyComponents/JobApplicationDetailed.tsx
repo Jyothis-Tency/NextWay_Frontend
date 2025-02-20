@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
+
 import { v4 as uuidv4 } from "uuid";
 import {
   Dialog,
@@ -24,6 +25,8 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
 import companyAPIs from "@/API/companyAPIs";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 interface IUser {
   user_id: string;
@@ -89,7 +92,7 @@ interface IJobApplication {
   createdAt: string;
 }
 
-export function JobApplicationDetailed() {
+export const JobApplicationDetailed: React.FC = () => {
   const [application, setApplication] = useState<IJobApplication | null>(null);
   const [confirm, setConfirm] = useState(false);
   const [userDetails, setUserDetails] = useState<IUser | null>(null);
@@ -106,9 +109,51 @@ export function JobApplicationDetailed() {
   const [statusMessage, setStatusMessage] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
 
+  const statusUpdateSchema = Yup.object().shape({
+    status: Yup.string()
+      .oneOf(["Pending", "Shortlisted", "Rejected", "Hired"])
+      .required("Status is required"),
+    statusMessage: Yup.string()
+      .required("Status message is required")
+      .min(10, "Message must be at least 10 characters")
+      .max(500, "Message must not exceed 500 characters"),
+    offerLetter: Yup.mixed().when("status", {
+      is: "Hired",
+      then: (schema) =>
+        schema.required("Offer letter is required when status is Hired"),
+      otherwise: (schema) => schema.nullable(),
+    }),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      status: newStatus,
+      statusMessage: statusMessage,
+      offerLetter: null,
+    },
+    validationSchema: statusUpdateSchema,
+    onSubmit: async (values) => {
+      try {
+        await handleStatusChange(
+          values.status as IJobApplication["status"],
+          values.statusMessage,
+          values.offerLetter
+        );
+        setIsStatusModalOpen(false);
+        formik.resetForm();
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    },
+  });
+
+  useEffect(() => {
+    formik.setFieldValue("status", newStatus);
+  }, [newStatus]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setPdfFile(e.target.files[0]);
+      formik.setFieldValue("offerLetter", e.target.files[0]);
     }
   };
 
@@ -135,7 +180,7 @@ export function JobApplicationDetailed() {
     };
 
     if (applicationId) fetchApplicationDetails();
-  }, [applicationId]);
+  }, [applicationId, confirm]);
 
   const handleStatusChange = async (
     status: IJobApplication["status"],
@@ -248,7 +293,6 @@ export function JobApplicationDetailed() {
           Back to Applications
         </Button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -386,7 +430,6 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       </div>
-
       <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
         <CardHeader>
           <CardTitle>Applicant Details</CardTitle>
@@ -449,7 +492,6 @@ export function JobApplicationDetailed() {
           )}
         </CardContent>
       </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -506,7 +548,6 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       </div>
-
       <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
         <CardHeader>
           <CardTitle>Education</CardTitle>
@@ -526,7 +567,6 @@ export function JobApplicationDetailed() {
           ))}
         </CardContent>
       </Card>
-
       {userDetails.certifications.length > 0 && (
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -541,7 +581,6 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       )}
-
       {userDetails.languages.length > 0 && (
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -558,7 +597,6 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       )}
-
       {userDetails.portfolioLink && (
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -576,7 +614,6 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       )}
-
       {application.resume && (
         <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <CardHeader>
@@ -593,14 +630,94 @@ export function JobApplicationDetailed() {
           </CardContent>
         </Card>
       )}
-
       <InterviewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleInterviewUpdate}
         type={modalType}
       />
+
       <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
+        <DialogContent className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
+          <DialogHeader>
+            <DialogTitle>Update Status</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={formik.handleSubmit}>
+            <p>
+              Selected status of this application: <b>{newStatus}</b>
+            </p>
+            <div className="space-y-4 mb-4">
+              <div>
+                <Textarea
+                  id="statusMessage"
+                  name="statusMessage"
+                  value={formik.values.statusMessage}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Enter status message"
+                  className={`bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] ${
+                    formik.touched.statusMessage && formik.errors.statusMessage
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                />
+                {formik.touched.statusMessage &&
+                  formik.errors.statusMessage && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formik.errors.statusMessage}
+                    </p>
+                  )}
+              </div>
+
+              {newStatus === "Hired" && (
+                <div className="space-y-2">
+                  <Label htmlFor="offerLetter">Upload Offer Letter (PDF)</Label>
+                  <Input
+                    id="offerLetter"
+                    name="offerLetter"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileChange}
+                    onBlur={formik.handleBlur}
+                    className={`bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563] ${
+                      formik.touched.offerLetter && formik.errors.offerLetter
+                        ? "border-red-500"
+                        : ""
+                    }`}
+                  />
+                  {formik.touched.offerLetter && formik.errors.offerLetter && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {formik.errors.offerLetter}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={() => {
+                  setIsStatusModalOpen(false);
+                  formik.resetForm();
+                }}
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF]"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-[#10B981] hover:bg-[#059669] text-[#FFFFFF]"
+                disabled={formik.isSubmitting || !formik.isValid}
+              >
+                {formik.isSubmitting ? "Updating..." : "Update"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
         <DialogContent className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
           <DialogHeader>
             <DialogTitle>Update Status</DialogTitle>
@@ -644,7 +761,7 @@ export function JobApplicationDetailed() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
-}
+};

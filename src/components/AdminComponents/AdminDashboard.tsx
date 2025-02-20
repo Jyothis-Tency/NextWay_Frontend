@@ -15,12 +15,16 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import Subscriptions from "./Subscriptions";
 
 interface DashboardData {
   totalUsers: number;
   totalCompanies: number;
   activeJobPosts: number;
   jobPostsData: [];
+  subscriptionData: [];
+  allUsers: [];
+  allCompanies: [];
 }
 
 interface IJobPost {
@@ -41,6 +45,9 @@ interface IJobPost {
   status?: "open" | "closed" | "paused";
   createdAt: Date;
 }
+interface ISubscription {
+  createdAt: Date;
+}
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -48,6 +55,9 @@ const AdminDashboard = () => {
     totalCompanies: 0,
     activeJobPosts: 0,
     jobPostsData: [],
+    subscriptionData: [],
+    allUsers: [],
+    allCompanies: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,12 +65,17 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [usersResponse, companiesResponse, jobPostsResponse] =
-          await Promise.all([
-            adminAPIs.fetchAllUsers(),
-            adminAPIs.fetchAllCompanies(),
-            adminAPIs.fetchAllJobPosts(),
-          ]);
+        const [
+          usersResponse,
+          companiesResponse,
+          jobPostsResponse,
+          subscriptionResponse,
+        ] = await Promise.all([
+          adminAPIs.fetchAllUsers(),
+          adminAPIs.fetchAllCompanies(),
+          adminAPIs.fetchAllJobPosts(),
+          adminAPIs.fetchAllSubscriptions(),
+        ]);
         console.log("jyobpost", jobPostsResponse.data.jobPosts);
 
         const totalUsers = Array.isArray(usersResponse.data.userData)
@@ -75,12 +90,18 @@ const AdminDashboard = () => {
         console.log("...", activeJobPosts);
 
         const jobPosts = jobPostsResponse.data.jobPosts || [];
+        const subscriptions = subscriptionResponse.data;
+        const allUsers = usersResponse.data.userData;
+        const allCompanies = companiesResponse.data.companyData;
 
         setDashboardData({
           totalUsers,
           totalCompanies,
           activeJobPosts,
           jobPostsData: jobPosts,
+          subscriptionData: subscriptions,
+          allUsers,
+          allCompanies,
         });
         setIsLoading(false);
       } catch (err) {
@@ -122,6 +143,52 @@ const AdminDashboard = () => {
     }));
   };
 
+  const getMonthlySubscription = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 12 }, (_, month) => ({
+      name: new Date(currentYear, month).toLocaleString("default", {
+        month: "short",
+      }),
+      subscriptions: dashboardData.subscriptionData.filter(
+        (sub: ISubscription) => {
+          const subDate = new Date(sub.createdAt);
+          return (
+            subDate.getMonth() === month &&
+            subDate.getFullYear() === currentYear
+          );
+        }
+      ).length,
+    }));
+  };
+  const getMonthlyUsers = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 12 }, (_, month) => ({
+      name: new Date(currentYear, month).toLocaleString("default", {
+        month: "short",
+      }),
+      users: dashboardData.allUsers.filter((sub: ISubscription) => {
+        const subDate = new Date(sub.createdAt);
+        return (
+          subDate.getMonth() === month && subDate.getFullYear() === currentYear
+        );
+      }).length,
+    }));
+  };
+  const getMonthlyCompanies = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 12 }, (_, month) => ({
+      name: new Date(currentYear, month).toLocaleString("default", {
+        month: "short",
+      }),
+      companies: dashboardData.allCompanies.filter((sub: ISubscription) => {
+        const subDate = new Date(sub.createdAt);
+        return (
+          subDate.getMonth() === month && subDate.getFullYear() === currentYear
+        );
+      }).length,
+    }));
+  };
+
   // Calculate yearly posts
   const getYearlyPosts = () => {
     const currentYear = new Date().getFullYear();
@@ -144,7 +211,21 @@ const AdminDashboard = () => {
         <div className="flex-1 flex flex-col">
           <main className="flex-1 overflow-y-auto pt-16 pl-64">
             <div className="p-6">
-              <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+              <section
+                className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-cover bg-center mb-7"
+                style={{
+                  backgroundImage:
+                    "url('https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg')",
+                }}
+              >
+                <div className="absolute inset-0 bg-[#121212] opacity-90"></div>
+                <div className="relative z-10 text-center space-y-4 md:space-y-6 px-4 max-w-4xl mx-auto">
+                  <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-[#FFFFFF]">
+                    Welcome "<span className="text-[#4F46E5]">Next Way</span>"{" "}
+                    Admin
+                  </h1>
+                </div>
+              </section>
               {isLoading ? (
                 <div className="flex justify-center items-center h-64">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -154,6 +235,7 @@ const AdminDashboard = () => {
               ) : (
                 <>
                   {" "}
+                  <h1 className="text-2xl font-bold mb-6">Statistic Numbers</h1>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -195,16 +277,17 @@ const AdminDashboard = () => {
                       </CardContent>
                     </Card>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <h1 className="text-2xl font-bold mb-6">Statistic Graphs</h1>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Today's Job Posts</CardTitle>
+                        <CardTitle>Monthly Job Posts</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={getTodayPosts()}>
-                              <CartesianGrid strokeDasharray="3 3" />
+                            <BarChart data={getMonthlyPosts()}>
+                              {/* <CartesianGrid strokeDasharray="3 3" /> */}
                               <XAxis dataKey="name" />
                               <YAxis />
                               <Tooltip />
@@ -217,17 +300,17 @@ const AdminDashboard = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Monthly Job Posts</CardTitle>
+                        <CardTitle>Monthly Subscriptions</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={getMonthlyPosts()}>
-                              <CartesianGrid strokeDasharray="3 3" />
+                            <BarChart data={getMonthlySubscription()}>
+                              {/* <CartesianGrid strokeDasharray="3 3" /> */}
                               <XAxis dataKey="name" />
                               <YAxis />
                               <Tooltip />
-                              <Bar dataKey="posts" fill="#82ca9d" />
+                              <Bar dataKey="subscriptions" fill="#82ca9d" />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
@@ -236,17 +319,35 @@ const AdminDashboard = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Yearly Job Posts</CardTitle>
+                        <CardTitle>Monthly Users</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={getYearlyPosts()}>
-                              <CartesianGrid strokeDasharray="3 3" />
+                            <BarChart data={getMonthlyUsers()}>
+                              {/* <CartesianGrid strokeDasharray="3 3" /> */}
                               <XAxis dataKey="name" />
                               <YAxis />
                               <Tooltip />
-                              <Bar dataKey="posts" fill="#ffc658" />
+                              <Bar dataKey="users" fill="#ffc658" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Monthly Companies</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={getMonthlyCompanies()}>
+                              {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="companies" fill="#ffc658" />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
