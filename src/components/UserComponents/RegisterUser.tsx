@@ -12,6 +12,8 @@ import {
 import { toast } from "sonner";
 import { ApiError } from "@/Utils/interface";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import MainBg from "../../../public/Main-Bg.jpg";
+
 const registerSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, "Name must be at least 2 characters")
@@ -101,7 +103,7 @@ const RegisterUser: React.FC = () => {
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg"
+          src={MainBg}
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />

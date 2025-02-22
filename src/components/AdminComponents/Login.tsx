@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { ApiError } from "@/Utils/interface";
+import MainBg from "../../../public/Main-Bg.jpg";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -55,7 +56,7 @@ export default function AdminLogin() {
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1557683316-973673baf926?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
+          src={MainBg}
           alt="Admin Background"
           className="w-full h-full object-cover opacity-30"
         />

@@ -11,6 +11,7 @@ import {
   forgotPasswordResetAct,
 } from "@/redux/Actions/companyActions";
 import companyAPIs from "@/API/companyAPIs";
+import MainBg from "../../../public/Main-Bg.jpg";
 
 const TIMER_DURATION = 60; // 60 seconds
 
@@ -137,7 +138,7 @@ const ForgotPasswordForm: React.FC = () => {
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg"
+          src={MainBg}
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />

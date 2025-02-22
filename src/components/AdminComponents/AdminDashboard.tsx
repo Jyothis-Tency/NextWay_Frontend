@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Subscriptions from "./Subscriptions";
+import MainBg from "/Main-Bg.jpg";
 
 interface DashboardData {
   totalUsers: number;
@@ -207,7 +208,7 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
       <div className="flex flex-1">
-        <Sidebar />
+        <Sidebar currentPage={"Dashboard"} />
         <div className="flex-1 flex flex-col">
           <main className="flex-1 overflow-y-auto pt-16 pl-64">
             <div className="p-6">
@@ -215,7 +216,7 @@ const AdminDashboard = () => {
                 className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-cover bg-center mb-7"
                 style={{
                   backgroundImage:
-                    "url('https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg')",
+                    `url(${MainBg})`,
                 }}
               >
                 <div className="absolute inset-0 bg-[#121212] opacity-90"></div>

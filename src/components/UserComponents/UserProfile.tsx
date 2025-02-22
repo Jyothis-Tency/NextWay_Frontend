@@ -72,8 +72,6 @@ interface IUser {
   jobAlerts?: string[];
 }
 
-
-
 const JobUserProfile: React.FC = () => {
   const [user, setUser] = useState<IUser | null>(null);
   const [image, setImage] = useState(null);

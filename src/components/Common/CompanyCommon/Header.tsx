@@ -23,7 +23,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -52,7 +52,7 @@ export const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [newChatMessage, setNewChatMessage] = useState(0);
   const { toast } = useToast();
-
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const socket = useSocket();
@@ -73,6 +73,23 @@ export const Header: React.FC = () => {
   useEffect(() => {
     localStorage.setItem("companyNotifications", JSON.stringify(notifications));
   }, [notifications]);
+
+  useEffect(() => {
+    const storedMessageCount = localStorage.getItem("newChatMessageCount");
+    if (storedMessageCount && location.pathname !== "/company/chat") {
+      setNewChatMessage(parseInt(storedMessageCount));
+    }
+  }, [location.pathname]);
+
+  // Update localStorage when newChatMessage changes
+  useEffect(() => {
+    if (location.pathname === "/company/chat") {
+      setNewChatMessage(0);
+      localStorage.removeItem("newChatMessageCount");
+    } else {
+      localStorage.setItem("newChatMessageCount", newChatMessage.toString());
+    }
+  }, [newChatMessage, location.pathname]);
 
   useEffect(() => {
     if (socket) {
@@ -108,9 +125,30 @@ export const Header: React.FC = () => {
 
       socket.on("receiveMessage", (message) => {
         console.log(`socket.on("receiveMessage" on header`);
-        setNewChatMessage((prev) => prev + 1);
+        // setNewChatMessage((prev) => prev + 1);
+      });
+
+      socket.on("newMessageArrived", (sender) => {
+        console.log(`socket.on("newMessageArrived" on header`);
+        console.log(sender);
+        console.log(companyData?.company_id);
+
+        if (
+          sender.sender !== companyData?.company_id &&
+          sender.company_id === companyData?.company_id &&
+          location.pathname !== "/company/chat"
+        ) {
+          setNewChatMessage((prev) => prev + 1);
+        }
       });
     }
+    return () => {
+      if (socket) {
+        socket.off("notification:newApplication");
+        socket.off("receiveMessage");
+        socket.off("newMessageArrived");
+      }
+    };
   }, [socket]);
 
   const handleLogout = () => {

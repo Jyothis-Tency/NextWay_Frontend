@@ -14,6 +14,7 @@ import { loginCompanyAct } from "@/redux/Actions/companyActions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import MainBg from "../../../public/Main-Bg.jpg";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -89,7 +90,7 @@ export default function LoginUser() {
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg"
+          src={MainBg}
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />

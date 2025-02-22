@@ -16,6 +16,7 @@ import {
 import { Icons } from "../ui/icons";
 import { CardDescription } from "../ui/card";
 import userAPIs from "@/API/userAPIs";
+import MainBg from "../../../public/Main-Bg.jpg";
 
 interface Company {
   company_id: string;
@@ -81,7 +82,7 @@ const Home: React.FC = () => {
       setLoading(true);
       setError("");
 
-      const result = await userAPIs.getAllCompanies()
+      const result = await userAPIs.getAllCompanies();
       console.log(result);
       setAllCompanies(result.companyData);
       setTopCompanies(result.companyData || []);
@@ -95,7 +96,7 @@ const Home: React.FC = () => {
 
   const getAllProfileImages = async () => {
     try {
-      const response = await userAPIs.getAllCompanyProfileImages()
+      const response = await userAPIs.getAllCompanyProfileImages();
       setAllProfileImages(response.data);
     } catch (error) {
       console.error("Error fetching profile images:", error);
@@ -103,7 +104,7 @@ const Home: React.FC = () => {
   };
 
   const getAllJobPosts = async () => {
-    const allJobPosts = await userAPIs.getAllJobPosts()
+    const allJobPosts = await userAPIs.getAllJobPosts();
     const jobPosts: JobPost[] = allJobPosts.data?.jobPosts || [];
     const companies: Company[] = allJobPosts.data?.companies || [];
 
@@ -166,8 +167,7 @@ const Home: React.FC = () => {
       <section
         className="relative w-full h-[665px] flex items-center justify-center bg-cover bg-center"
         style={{
-          backgroundImage:
-            "url('https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg')",
+          backgroundImage: `url(${MainBg})`,
         }}
       >
         <div className="absolute inset-0 bg-[#121212] opacity-90"></div>
@@ -202,7 +202,6 @@ const Home: React.FC = () => {
                 >
                   Login As User
                 </Button>
-                
               </div>
             </>
           )}

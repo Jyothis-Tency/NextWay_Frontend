@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Bell, CheckCircle2, Crown, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [newChatMessage, setNewChatMessage] = useState(0);
   const videoCallState = useSelector((state: RootState) => state.videoCall);
-
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const socket = useSocket();
@@ -71,6 +71,23 @@ const Header: React.FC = () => {
   useEffect(() => {
     localStorage.setItem("userNotifications", JSON.stringify(notifications));
   }, [notifications]);
+
+  useEffect(() => {
+    const storedMessageCount = localStorage.getItem("newChatMessageCount");
+    if (storedMessageCount && location.pathname !== "/user/chat") {
+      setNewChatMessage(parseInt(storedMessageCount));
+    }
+  }, [location.pathname]);
+
+  // Update localStorage when newChatMessage changes
+  useEffect(() => {
+    if (location.pathname === "/user/chat") {
+      setNewChatMessage(0);
+      localStorage.removeItem("newChatMessageCount");
+    } else {
+      localStorage.setItem("newChatMessageCount", newChatMessage.toString());
+    }
+  }, [newChatMessage, location.pathname]);
 
   useEffect(() => {
     if (socket) {
@@ -140,7 +157,20 @@ const Header: React.FC = () => {
       });
       socket.on("receiveMessage", (message) => {
         console.log(`socket.on("receiveMessage" on header`);
-        setNewChatMessage((prev) => prev + 1);
+        // setNewChatMessage((prev) => prev + 1);
+      });
+
+      socket.on("newMessageArrived", (sender) => {
+        console.log(`socket.on("newMessageArrived" on header`);
+        console.log(sender);
+
+        if (
+          sender.sender !== userData?.user_id &&
+          sender.user_id === userData?.user_id &&
+          location.pathname !== "/user/chat"
+        ) {
+          setNewChatMessage((prev) => prev + 1);
+        }
       });
     }
 
@@ -148,6 +178,8 @@ const Header: React.FC = () => {
       if (socket) {
         socket.off("notification:newJob");
         socket.off("notification:applicationStatusUpdate");
+        socket.off("receiveMessage");
+        socket.off("newMessageArrived");
       }
     };
   }, [socket]);
@@ -375,7 +407,6 @@ const Header: React.FC = () => {
           >
             Login as User
           </a>
-          
         </div>
       )}
 

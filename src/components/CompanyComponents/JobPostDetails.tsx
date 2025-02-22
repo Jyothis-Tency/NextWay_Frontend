@@ -107,7 +107,7 @@ export function JobPostDetails() {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
       try {
         const response = await companyAPIs.deleteJobPost(jobId);
-        toast.success(response?.data.message);
+        toast.success("Job Post Deleted Successfully");
         setTimeout(() => {
           navigate("../job-post-list");
         }, 1500);

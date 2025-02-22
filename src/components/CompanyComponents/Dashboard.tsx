@@ -7,12 +7,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import MainBg from "../../../public/Main-Bg.jpg";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import companyAPIs from "@/API/companyAPIs";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface IJobApplication {
   job_id: string;
@@ -74,13 +82,44 @@ const CompanyDashboard: React.FC = () => {
     if (companyData?.company_id) fetchJobs();
   }, [companyData?.company_id]);
 
+  const getMonthlyJobApplications = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 12 }, (_, month) => ({
+      name: new Date(currentYear, month).toLocaleString("default", {
+        month: "short",
+      }),
+      applications: applications.filter((application: IJobApplication) => {
+        const postDate = new Date(application.createdAt || 0);
+        return (
+          postDate.getMonth() === month &&
+          postDate.getFullYear() === currentYear
+        );
+      }).length,
+    }));
+  };
+  const getMonthlyJobPosts = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 12 }, (_, month) => ({
+      name: new Date(currentYear, month).toLocaleString("default", {
+        month: "short",
+      }),
+      posts: jobs.filter((application: IJobApplication) => {
+        const postDate = new Date(application.createdAt || 0);
+        return (
+          postDate.getMonth() === month &&
+          postDate.getFullYear() === currentYear
+        );
+      }).length,
+    }));
+  };
+
   return (
     <div className="space-y-6 p-6 ml-0 md:ml-64 bg-[#121212]">
       <section
         className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-cover bg-center"
         style={{
           backgroundImage:
-            "url('https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg')",
+            `url(${MainBg})`,
         }}
       >
         <div className="absolute inset-0 bg-[#121212] opacity-90"></div>
@@ -101,7 +140,7 @@ const CompanyDashboard: React.FC = () => {
       </section>
 
       <h1 className="text-3xl font-bold text-[#FFFFFF] mt-8">
-        Recruiter Dashboard
+        Statistic Number
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -137,6 +176,47 @@ const CompanyDashboard: React.FC = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+      <h1 className="text-3xl font-bold text-[#FFFFFF] mt-8">
+        Statistic Charts
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Monthly Job Posts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={getMonthlyJobPosts()}>
+                  {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="posts" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Monthly Job Applications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={getMonthlyJobApplications()}>
+                  {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="applications" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
       {/* 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

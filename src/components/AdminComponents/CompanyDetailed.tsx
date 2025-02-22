@@ -184,7 +184,7 @@ const CompanyDetailed = () => {
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
       <div className="flex flex-1">
-        <Sidebar />
+        <Sidebar currentPage={"Companies"} />
         <div className="flex-1 flex flex-col">
           <main className="flex-1 overflow-y-auto">
             <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64">

@@ -1,7 +1,9 @@
 import React from "react";
 import { LayoutDashboard, Users, Building,DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: React.FC<{ currentPage: string }> = ({ currentPage }) => {
+  const navigate = useNavigate();
   const sidebarContents = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
     { icon: Users, label: "Users", path: "/admin/user-list" },
@@ -15,8 +17,13 @@ export const Sidebar: React.FC = () => {
         {sidebarContents.map((item, index) => (
           <a
             key={index}
-            href={item.path}
-            className={`flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-gray-800`}
+            // href={item.path}
+            onClick={() => navigate(item.path)}
+            className={`flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-gray-800 cursor-pointer ${
+              currentPage.toLowerCase() === item.label.toLowerCase()
+                ? "bg-[#ffffff] text-[#000000]"
+                : ""
+            }`}
           >
             <item.icon className="mr-3 h-6 w-6" />
             {item.label}

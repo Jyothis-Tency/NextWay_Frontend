@@ -105,7 +105,7 @@ export function CreateJobPost() {
       console.log(response);
 
       console.log("Job post created successfully:", response.data.message);
-      toast.success(response.data.message);
+      toast.success("Job post created successfully");
       setTimeout(() => {
         navigate("../job-post-list");
       }, 1500);

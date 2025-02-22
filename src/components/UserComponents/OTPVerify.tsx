@@ -8,6 +8,7 @@ import { OTPVerifyAct } from "@/redux/Actions/userActions";
 import { AppDispatch } from "@/redux/store";
 import userAPIs from "@/API/userAPIs";
 import { ApiError } from "@/Utils/interface";
+import MainBg from "../../../public/Main-Bg.jpg";
 
 const TIMER_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
@@ -135,7 +136,7 @@ function OtpVerify() {
     <div className="w-screen h-screen flex items-center justify-center bg-[#121212] relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img
-          src="https://as2.ftcdn.net/v2/jpg/08/10/92/69/1000_F_810926942_LcXpqYlTiWNcNntJpVTh8nr510jnZniK.jpg"
+          src={MainBg}
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
