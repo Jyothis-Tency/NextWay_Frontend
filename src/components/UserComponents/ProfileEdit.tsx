@@ -124,7 +124,7 @@ const JobUserProfileEdit: React.FC = () => {
 
       toast.success("Profile updated successfully");
       setTimeout(() => {
-        navigate("../profile");
+        navigate("/profile");
       }, 1500);
     } catch (error) {
       const err = error as ApiError;
@@ -643,7 +643,7 @@ const JobUserProfileEdit: React.FC = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("../profile")}
+                  onClick={() => navigate("/profile")}
                   className="bg-transparent text-white border-[#4F46E5] hover:bg-[#2D2D2D]"
                 >
                   Cancel

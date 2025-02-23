@@ -117,7 +117,7 @@ const MyJobs: React.FC = () => {
 
   const handleJoinInterview = async (roomID: string) => {
     try {
-      navigate(`../video-call?roomId=${roomID}`);
+      navigate(`/video-call?roomId=${roomID}`);
     } catch (err) {
       console.error("Error joining interview:", err);
     }
@@ -170,7 +170,7 @@ const MyJobs: React.FC = () => {
         <>
           <Button
             onClick={() =>
-              navigate(`/user/job-posts?selectedJobId=${row.job_id}`)
+              navigate(`/job-posts?selectedJobId=${row.job_id}`)
             }
           >
             View Job
@@ -470,7 +470,7 @@ const MyJobs: React.FC = () => {
           </p>
           <Button
             className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
-            onClick={() => navigate(`/user/job-posts`)}
+            onClick={() => navigate(`/job-posts`)}
           >
             Start Job Search
           </Button>

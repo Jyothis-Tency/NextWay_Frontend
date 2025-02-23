@@ -56,7 +56,7 @@ const VideoCallUser: React.FC = () => {
       if (!isIntentonal) {
         dispatch(clearVideoCallInvitation());
       }
-      navigate("../my-jobs");
+      navigate("/my-jobs");
     } catch (error) {
       console.error("Error during room leave:", error);
       // Force cleanup even if there's an error
@@ -64,7 +64,7 @@ const VideoCallUser: React.FC = () => {
         zp.destroy();
       }
       dispatch(clearVideoCallInvitation());
-      navigate("../my-jobs");
+      navigate("/my-jobs");
     }
   };
 

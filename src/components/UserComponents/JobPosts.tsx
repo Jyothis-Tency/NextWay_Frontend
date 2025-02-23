@@ -343,7 +343,7 @@ export default function JobPosts() {
                         <p
                           className="text-sm text-[#A0A0A0]"
                           onClick={() =>
-                            navigate(`../company-profile/${job.company_id}`)
+                            navigate(`/company-profile/${job.company_id}`)
                           }
                         >
                           {job.company.companyName}
@@ -397,7 +397,7 @@ export default function JobPosts() {
                 onClick={() => {
                   console.log("onclick", selectedJob);
 
-                  navigate(`../company-profile/${selectedJob.company_id}`);
+                  navigate(`/company-profile/${selectedJob.company_id}`);
                 }}
               >
                 {filteredJobs.length > 0 && selectedJob

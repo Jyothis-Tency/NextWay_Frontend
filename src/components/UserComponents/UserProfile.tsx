@@ -108,7 +108,7 @@ const JobUserProfile: React.FC = () => {
   }, [userId]);
 
   const handleEditProfile = () => {
-    navigate("../profile-edit");
+    navigate("/profile-edit");
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {

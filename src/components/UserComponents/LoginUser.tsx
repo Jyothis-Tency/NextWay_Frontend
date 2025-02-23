@@ -59,7 +59,7 @@ export default function LoginUser() {
   });
 
   const goToForgotPassword = () => {
-    navigate("../forgot-password");
+    navigate("/forgot-password");
   };
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
@@ -195,7 +195,7 @@ export default function LoginUser() {
            <p className="text-sm text-[#E0E0E0]">
              Don't have an account?{" "}
              <a
-               onClick={() => navigate("../register")}
+               onClick={() => navigate("/register")}
                className="text-[#60A5FA] hover:underline cursor-pointer"
              >
                Sign up here

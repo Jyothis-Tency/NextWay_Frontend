@@ -13,7 +13,7 @@ const UserProtector: React.FC<UserProtectorProps> = ({ children }) => {
 
   useEffect(() => {
     if (!user) {
-      navigate("../login", {
+      navigate("/login", {
         state: { message: "Authorization failed" },
         replace: true,
       });

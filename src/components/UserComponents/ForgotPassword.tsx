@@ -101,7 +101,7 @@ const ForgotPasswordForm: React.FC = () => {
           if (result?.success) {
             toast.success(result.message);
             setTimeout(() => {
-              navigate("../login");
+              navigate("/login");
             }, 1500);
           } else {
             toast.error(result?.message);
@@ -331,7 +331,7 @@ const ForgotPasswordForm: React.FC = () => {
             <p className="text-sm text-white">
               Remember your password?{" "}
               <a
-                onClick={() => navigate("../login")}
+                onClick={() => navigate("/login")}
                 className="text-[#60A5FA] hover:underline cursor-pointer"
               >
                 Login here

@@ -34,7 +34,7 @@ const NotSubscribedModal = ({ isOpen, onClose }: SubscriptionModalProps) => {
             Close
           </Button>
           <Button
-            onClick={() => navigate("/user/subscriptions")}
+            onClick={() => navigate("/subscriptions")}
             className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
           >
             Subscribe Now

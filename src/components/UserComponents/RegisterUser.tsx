@@ -65,7 +65,7 @@ const RegisterUser: React.FC = () => {
         if (result?.success) {
           console.log("Successsssss");
           toast.success(result?.message);
-          navigate("../otp");
+          navigate("/otp");
         } else {
           console.log("Errorrrrrrrrr");
 
@@ -222,7 +222,7 @@ const RegisterUser: React.FC = () => {
             <div className="flex items-center justify-between pt-2">
               <p className="text-xs text-[#A0A0A0]">
                 Already have an account?{" "}
-                <a onClick={() => navigate("../login")} className="text-[#60A5FA] hover:underline cursor-pointer">
+                <a onClick={() => navigate("/login")} className="text-[#60A5FA] hover:underline cursor-pointer">
                   Sign in here
                 </a>
               </p>

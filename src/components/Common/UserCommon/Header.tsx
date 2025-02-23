@@ -74,14 +74,14 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const storedMessageCount = localStorage.getItem("newChatMessageCount");
-    if (storedMessageCount && location.pathname !== "/user/chat") {
+    if (storedMessageCount && location.pathname !== "/chat") {
       setNewChatMessage(parseInt(storedMessageCount));
     }
   }, [location.pathname]);
 
   // Update localStorage when newChatMessage changes
   useEffect(() => {
-    if (location.pathname === "/user/chat") {
+    if (location.pathname === "/chat") {
       setNewChatMessage(0);
       localStorage.removeItem("newChatMessageCount");
     } else {
@@ -167,7 +167,7 @@ const Header: React.FC = () => {
         if (
           sender.sender !== userData?.user_id &&
           sender.user_id === userData?.user_id &&
-          location.pathname !== "/user/chat"
+          location.pathname !== "/chat"
         ) {
           setNewChatMessage((prev) => prev + 1);
         }
@@ -190,13 +190,13 @@ const Header: React.FC = () => {
       case "newJob":
         // Navigate to the specific job details page
         if (notification.data.jobId) {
-          navigate("../job-posts");
+          navigate("/job-posts");
         }
         break;
       case "applicationStatus":
         // Navigate to the specific application in My Applications
         if (notification.data.applicationId) {
-          navigate(`../my-jobs`);
+          navigate(`/my-jobs`);
         }
         break;
     }
@@ -229,7 +229,7 @@ const Header: React.FC = () => {
     setIsLogoutModalOpen(false);
     toast.success("Logging out");
     setTimeout(() => {
-      navigate("../login");
+      navigate("/login");
     }, 1500);
   };
 
@@ -256,7 +256,7 @@ const Header: React.FC = () => {
           Home
         </a>
         <a
-          onClick={() => navigate("../job-posts")}
+          onClick={() => navigate("/job-posts")}
           className="text-[#E0E0E0] hover:text-white cursor-pointer"
         >
           Jobs
@@ -269,7 +269,7 @@ const Header: React.FC = () => {
             variant="ghost"
             size="icon"
             className="text-[#A0A0A0] hover:text-white hover:bg-[#2D2D2D] relative"
-            onClick={() => navigate("../chat")}
+            onClick={() => navigate("/chat")}
           >
             <Mail className="w-5 h-5" />
             {newChatMessage > 0 && (
@@ -373,19 +373,19 @@ const Header: React.FC = () => {
               </DropdownMenuItem> */}
               <DropdownMenuItem
                 className="cursor-pointer"
-                onSelect={() => navigate("/user/profile")}
+                onSelect={() => navigate("/profile")}
               >
                 Profile
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onSelect={() => navigate("/user/my-jobs")}
+                onSelect={() => navigate("/my-jobs")}
               >
                 My Applications
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onSelect={() => navigate("/user/subscriptions")}
+                onSelect={() => navigate("/subscriptions")}
               >
                 Subscription
               </DropdownMenuItem>
@@ -403,7 +403,7 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-6">
           <a
             className="text-[#E0E0E0] hover:text-white cursor-pointer transition-colors duration-200 border-b border-transparent hover:border-white"
-            onClick={() => navigate("../login")}
+            onClick={() => navigate("/login")}
           >
             Login as User
           </a>

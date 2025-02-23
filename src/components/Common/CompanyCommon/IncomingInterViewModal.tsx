@@ -60,7 +60,7 @@ const InterviewModal: React.FC = () => {
   };
 
   const handleJoinInterview = () => {
-    navigate(`/user/video-call?roomId=${videoCallState.roomId}`);
+    navigate(`/video-call?roomId=${videoCallState.roomId}`);
     setIsOpen(false);
   };
 

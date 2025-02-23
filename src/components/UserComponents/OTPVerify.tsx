@@ -83,7 +83,7 @@ function OtpVerify() {
           toast.success(result?.message);
           localStorage.removeItem("register-email");
           setTimeout(() => {
-            navigate("../login");
+            navigate("/login");
           }, 1500);
         } else {
           console.log("Error occurred");
@@ -203,7 +203,7 @@ function OtpVerify() {
           </form>
           <div className="mt-6 text-center">
             <a
-              onClick={() => navigate("../register")}
+              onClick={() => navigate("/register")}
               className="text-[#60A5FA] hover:underline text-sm cursor-pointer"
             >
               Back to Sign Up

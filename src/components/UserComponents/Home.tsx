@@ -181,7 +181,7 @@ const Home: React.FC = () => {
                 Ready to find your next way?
               </p>
               <Button
-                onClick={() => navigate("../job-posts")}
+                onClick={() => navigate("/job-posts")}
                 className="bg-[#4F46E5] hover:bg-[#6366F1] text-white px-8 py-3 rounded-full text-lg"
               >
                 Explore Jobs
@@ -198,7 +198,7 @@ const Home: React.FC = () => {
               <div className="space-x-4">
                 <Button
                   className="bg-[#4F46E5] hover:bg-[#6366F1] text-white px-8 py-3 rounded-full text-lg"
-                  onClick={() => navigate("../login")}
+                  onClick={() => navigate("/login")}
                 >
                   Login As User
                 </Button>
@@ -243,7 +243,7 @@ const Home: React.FC = () => {
                     key={index}
                     className="bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px] cursor-pointer"
                     onClick={() =>
-                      navigate(`../company-profile/${company.company_id}`)
+                      navigate(`/company-profile/${company.company_id}`)
                     }
                   >
                     <div className="flex items-start gap-3">
@@ -363,7 +363,7 @@ const Home: React.FC = () => {
                     key={index}
                     className="group bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 cursor-pointer"
                     onClick={() =>
-                      navigate(`../job-posts?selectedJobId=${job._id}`)
+                      navigate(`/job-posts?selectedJobId=${job._id}`)
                     }
                   >
                     <div className="flex items-start justify-between mb-2">

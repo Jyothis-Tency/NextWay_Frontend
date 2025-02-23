@@ -171,7 +171,7 @@ const redirectToLogin = (role: string) => {
   } else {
     console.log("problem............");
 
-    window.location.href = "/user/login";
+    window.location.href = "/login";
     clearTokens();
   }
 };
