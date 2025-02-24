@@ -6,7 +6,7 @@ import { Footer } from "../../components/Common/CompanyCommon/Footer";
 import CompanyDashboard from "../../components/CompanyComponents/Dashboard";
 
 const CompanyDashboardPage: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState("Dashboard");
+  const [currentPage] = useState("Dashboard");
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#FFFFFF] flex flex-col pt-16">

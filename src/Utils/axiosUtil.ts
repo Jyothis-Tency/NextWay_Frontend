@@ -4,7 +4,9 @@ import store from "../redux/store";
 import { clearTokens } from "@/redux/Slices/tokenSlice";
 import HttpStatusCode from "@/enums/httpStatusCodes";
 
-const baseURL = "http://localhost:3000/data";
+const BACKEND_URL = import.meta.env.VITE_SERVER_URL;
+
+const baseURL = `${BACKEND_URL}/data`;
 
 const state = store.getState();
 

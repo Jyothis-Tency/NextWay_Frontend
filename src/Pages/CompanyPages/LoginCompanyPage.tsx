@@ -1,4 +1,3 @@
-import React from "react";
 import LoginCompany from "@/components/CompanyComponents/LoginCompany";
 
 const LoginCompanyPage = () => {

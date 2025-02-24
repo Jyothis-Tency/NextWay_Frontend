@@ -1,4 +1,3 @@
-import React from "react";
 import JobPosts from "../../components/UserComponents/JobPosts";
 import Header from "../../components/Common/UserCommon/Header";
 import Footer from "../../components/Common/UserCommon/Footer";

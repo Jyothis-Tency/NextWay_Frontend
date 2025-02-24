@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Common/CompanyCommon/Header";
 import { Footer } from "@/components/Common/CompanyCommon/Footer";
 import { Sidebar } from "@/components/Common/CompanyCommon/Sidebar";
 import { JobApplicationsList } from "@/components/CompanyComponents/JobApplicationsList";
 
 const JobApplicationsListPage = () => {
-  const [currentPage, setCurrentPage] = useState("Applications");
+  const [currentPage] = useState("Applications");
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />

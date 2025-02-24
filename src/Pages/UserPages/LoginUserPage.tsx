@@ -1,4 +1,3 @@
-import React from "react";
 import LoginUser from "@/components/UserComponents/LoginUser";
 
 const LoginUserPage = () => {

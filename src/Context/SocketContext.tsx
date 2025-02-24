@@ -6,7 +6,7 @@ import {
   setVideoCallInvitation,
   clearVideoCallInvitation,
 } from "@/redux/Slices/videoCallSlice";
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL;
+const SOCKET_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 const SocketContext = createContext<Socket | null>(null);
 

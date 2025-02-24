@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Common/CompanyCommon/Header";
 import { Footer } from "@/components/Common/CompanyCommon/Footer";
 import { Sidebar } from "@/components/Common/CompanyCommon/Sidebar";
 import CompanyProfileEdit from "@/components/CompanyComponents/CompanyProfileEdit";
 const CompanyProfileEditPage = () => {
-  const [currentPage, setCurrentPage] = useState("Company");
+  const [currentPage] = useState("Company");
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
