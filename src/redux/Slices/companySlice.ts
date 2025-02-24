@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice} from "@reduxjs/toolkit";
 import { loginCompanyAct } from "../Actions/companyActions";
 
 interface Company {
@@ -32,7 +32,7 @@ const companySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginCompanyAct.rejected, (state, action) => {})
+      .addCase(loginCompanyAct.rejected, () => {})
       .addCase(loginCompanyAct.fulfilled, (state, action) => {
         if (action.payload) {
           state.companyInfo = action.payload.userData; // Assuming userData contains the user details

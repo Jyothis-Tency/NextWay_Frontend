@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import {
   googleLoginUserAct,
@@ -95,7 +95,7 @@ const RegisterUser: React.FC = () => {
       }
     } catch (error: any) {
       const err = error as ApiError;
-      toast.error(error.message || "Google authentication failed");
+      toast.error(err.message || "Google authentication failed");
     }
   };
   return (
@@ -121,10 +121,11 @@ const RegisterUser: React.FC = () => {
 
         {/* Form box */}
         <div className="bg-[#1E1E1E] bg-opacity-50 p-6 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
-          <h1 className="mb-4 text-center text-xl font-semibold text-[#4F46E5]">Sign Up</h1>
+          <h1 className="mb-4 text-center text-xl font-semibold text-[#4F46E5]">
+            Sign Up
+          </h1>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div>
-             
               <input
                 type="text"
                 name="firstName"
@@ -136,11 +137,12 @@ const RegisterUser: React.FC = () => {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.firstName && formik.errors.firstName ? (
-                <div className="text-[#EF4444] text-xs mt-0.5">{formik.errors.firstName}</div>
+                <div className="text-[#EF4444] text-xs mt-0.5">
+                  {formik.errors.firstName}
+                </div>
               ) : null}
             </div>
             <div>
-             
               <input
                 type="text"
                 name="lastName"
@@ -152,11 +154,12 @@ const RegisterUser: React.FC = () => {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.lastName && formik.errors.lastName ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.lastName}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.lastName}
+                </div>
               ) : null}
             </div>
             <div>
-              
               <input
                 type="email"
                 name="email"
@@ -168,11 +171,12 @@ const RegisterUser: React.FC = () => {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.email}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.email}
+                </div>
               ) : null}
             </div>
             <div>
-             
               <input
                 type="tel"
                 name="phone"
@@ -184,11 +188,12 @@ const RegisterUser: React.FC = () => {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.phone && formik.errors.phone ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.phone}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.phone}
+                </div>
               ) : null}
             </div>
             <div>
-              
               <input
                 type="password"
                 name="password"
@@ -200,11 +205,12 @@ const RegisterUser: React.FC = () => {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.password}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.password}
+                </div>
               ) : null}
             </div>
             <div>
-              
               <input
                 type="password"
                 name="confirmPassword"
@@ -215,18 +221,27 @@ const RegisterUser: React.FC = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.confirmPassword}</div>
+              {formik.touched.confirmPassword &&
+              formik.errors.confirmPassword ? (
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.confirmPassword}
+                </div>
               ) : null}
             </div>
             <div className="flex items-center justify-between pt-2">
               <p className="text-xs text-[#A0A0A0]">
                 Already have an account?{" "}
-                <a onClick={() => navigate("/login")} className="text-[#60A5FA] hover:underline cursor-pointer">
+                <a
+                  onClick={() => navigate("/login")}
+                  className="text-[#60A5FA] hover:underline cursor-pointer"
+                >
                   Sign in here
                 </a>
               </p>
-              <button type="submit" className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] px-4 py-1.5 rounded-md">
+              <button
+                type="submit"
+                className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] px-4 py-1.5 rounded-md"
+              >
                 Sign Up
               </button>
             </div>
@@ -236,7 +251,9 @@ const RegisterUser: React.FC = () => {
               <div className="w-full border-t border-[#4B5563]"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-[#1E1E1E] px-4 text-sm text-[#A0A0A0] font-medium">OR</span>
+              <span className="bg-[#1E1E1E] px-4 text-sm text-[#A0A0A0] font-medium">
+                OR
+              </span>
             </div>
           </div>
           <div className="mt-6">
@@ -245,7 +262,7 @@ const RegisterUser: React.FC = () => {
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => {
-                    toast.error("Google sign up failed")
+                    toast.error("Google sign up failed");
                   }}
                 />
               </GoogleOAuthProvider>
@@ -254,7 +271,7 @@ const RegisterUser: React.FC = () => {
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default RegisterUser;

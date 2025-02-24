@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Bell, Mail, User, ChevronDown } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import { clearAdmin } from "@/redux/Slices/adminSlice";
 
 export const Header: React.FC = () => {
-  const [notificationCount, setNotificationCount] = useState(3);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const dispatch = useDispatch();

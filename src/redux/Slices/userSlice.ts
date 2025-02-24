@@ -53,7 +53,7 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUserAct.rejected, (state, action) => {})
+      .addCase(loginUserAct.rejected, () => {})
       .addCase(loginUserAct.fulfilled, (state, action) => {
         if (action.payload) {
           state.userInfo = action.payload.userData; // Assuming userData contains the user details

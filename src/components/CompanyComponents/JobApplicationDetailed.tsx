@@ -107,7 +107,6 @@ export const JobApplicationDetailed: React.FC = () => {
   const [newStatus, setNewStatus] =
     useState<IJobApplication["status"]>("Pending");
   const [statusMessage, setStatusMessage] = useState("");
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   const statusUpdateSchema = Yup.object().shape({
     status: Yup.string()

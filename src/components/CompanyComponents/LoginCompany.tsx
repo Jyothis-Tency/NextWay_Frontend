@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
 import {
   Dialog,
@@ -56,7 +56,9 @@ export default function LoginUser() {
             return;
           }
           if (result.userData.isVerified === "reject") {
-            setVerifiedMessage("Sorry!!! Your account has been rejected by Admin");
+            setVerifiedMessage(
+              "Sorry!!! Your account has been rejected by Admin"
+            );
             setNotVerifiedModalOpen(true);
             return;
           }
@@ -109,10 +111,15 @@ export default function LoginUser() {
 
         {/* Login box */}
         <div className="bg-[#1E1E1E] bg-opacity-50 p-8 rounded-lg border-2 border-[#4F46E5] shadow-lg shadow-[#4F46E5]/50">
-          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">Login</h1>
+          <h1 className="mb-6 text-center text-2xl font-semibold text-[#4F46E5]">
+            Login
+          </h1>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#E0E0E0] mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
+              >
                 Email
               </label>
               <input
@@ -126,11 +133,16 @@ export default function LoginUser() {
                 onBlur={formik.handleBlur}
               />
               {formik.touched.email && formik.errors.email ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.email}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.email}
+                </div>
               ) : null}
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#E0E0E0] mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-[#E0E0E0] mb-1"
+              >
                 Password
               </label>
               <div className="relative">
@@ -153,12 +165,17 @@ export default function LoginUser() {
                 </button>
               </div>
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-[#EF4444] text-xs mt-1">{formik.errors.password}</div>
+                <div className="text-[#EF4444] text-xs mt-1">
+                  {formik.errors.password}
+                </div>
               ) : null}
             </div>
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <a onClick={goToForgotPassword} className="text-[#60A5FA] hover:underline cursor-pointer">
+                <a
+                  onClick={goToForgotPassword}
+                  className="text-[#60A5FA] hover:underline cursor-pointer"
+                >
                   Forgot your password?
                 </a>
               </div>
@@ -175,18 +192,26 @@ export default function LoginUser() {
           <div className="mt-6 text-center">
             <p className="text-sm text-[#E0E0E0]">
               Don't have an account?{" "}
-              <a onClick={() => navigate("../register")} className="text-[#60A5FA] hover:underline cursor-pointer">
+              <a
+                onClick={() => navigate("../register")}
+                className="text-[#60A5FA] hover:underline cursor-pointer"
+              >
                 Sign up here
               </a>
             </p>
           </div>
         </div>
       </div>
-      <Dialog open={notVerifiedModalOpen} onOpenChange={() => setNotVerifiedModalOpen(false)}>
+      <Dialog
+        open={notVerifiedModalOpen}
+        onOpenChange={() => setNotVerifiedModalOpen(false)}
+      >
         <DialogContent className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4F46E5]">
           <DialogHeader>
             <DialogTitle>Account Verification</DialogTitle>
-            <DialogDescription className="text-[#A0A0A0]">{verifiedMessage}</DialogDescription>
+            <DialogDescription className="text-[#A0A0A0]">
+              {verifiedMessage}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
@@ -199,5 +224,5 @@ export default function LoginUser() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

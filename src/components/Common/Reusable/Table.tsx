@@ -20,7 +20,7 @@ const ReusableTable = <T,>({
   defaultRowsPerPage = 0,
 }: TableProps<T>) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
+  const [rowsPerPage] = useState(defaultRowsPerPage);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);

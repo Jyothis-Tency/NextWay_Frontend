@@ -16,11 +16,6 @@ import { Footer } from "../Common/AdminCommon/Footer";
 import {
   Loader2,
   ArrowLeft,
-  Home,
-  Users,
-  Briefcase,
-  Settings,
-  LogOut,
   MapPin,
   Mail,
   Phone,
@@ -74,7 +69,6 @@ const CompanyDetailed = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [verificationStatus, setVerificationStatus] = useState("");
-  const [isUpdating, setIsUpdating] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { company_id } = useParams<{ company_id: string }>();
@@ -161,7 +155,6 @@ const CompanyDetailed = () => {
   };
 
   const handleStatusChange = async (newStatus: string) => {
-    setIsUpdating(true);
     try {
       const response = await adminAPIs.statusChange(
         company_id || "",
@@ -176,7 +169,7 @@ const CompanyDetailed = () => {
       console.error("Error updating verification status:", error);
       toast.error("Failed to update verification status");
     } finally {
-      setIsUpdating(false);
+      console.log("finally");
     }
   };
 

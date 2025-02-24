@@ -3,18 +3,9 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
-import { axiosMain } from "@/Utils/axiosUtil";
 import ReusableTable from "../Common/Reusable/Table";
 import companyAPIs from "@/API/companyAPIs";
 
@@ -57,9 +48,7 @@ export function JobApplicationsList() {
     if (company_id) fetchApplications();
   }, [company_id]);
 
-  const handleApplicationClick = (applicationId: string) => {
-    navigate(`../application-details/${applicationId}`);
-  };
+
 
   const getStatusColor = (status: string) => {
     switch (status) {

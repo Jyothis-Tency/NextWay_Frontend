@@ -3,14 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
@@ -56,10 +49,6 @@ export function JobPostsList() {
 
   const handleCreateNewJob = () => {
     navigate("../create-job-post");
-  };
-
-  const handleJobClick = (jobId: string) => {
-    navigate(`../job-post-details/${jobId}`);
   };
 
   const getStatusColor = (status: string) => {

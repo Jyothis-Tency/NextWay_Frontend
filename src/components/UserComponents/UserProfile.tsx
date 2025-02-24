@@ -75,7 +75,6 @@ interface IUser {
 const JobUserProfile: React.FC = () => {
   const [user, setUser] = useState<IUser | null>(null);
   const [image, setImage] = useState(null);
-  const [uploaded, setUploaded] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -129,7 +128,6 @@ const JobUserProfile: React.FC = () => {
         const response = await userAPIs.uploadProfilePicture(user_id, formData);
 
         if (response.data.status) {
-          setUploaded("Done");
           toast.success("Profile picture updated");
         } else {
           console.error("Failed to upload profile picture");

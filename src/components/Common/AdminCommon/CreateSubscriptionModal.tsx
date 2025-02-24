@@ -59,7 +59,6 @@ export const CreateSubscriptionModal: React.FC<{
   //   const [name, setName] = useState("");
   //   const [price, setPrice] = useState("");
   //   const [period, setPeriod] = useState("");
-  const [features, setFeatures] = useState<string[]>([]);
   const [isFeatureDropdownOpen, setIsFeatureDropdownOpen] = useState(false);
   //   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 

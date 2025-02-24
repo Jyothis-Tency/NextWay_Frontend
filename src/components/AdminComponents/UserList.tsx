@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -38,7 +30,6 @@ const UserList = () => {
       profileImage: string;
     }[]
   >([]);
-  const navigate = useNavigate();
 
   const getAllProfileImages = async () => {
     try {
@@ -105,10 +96,6 @@ const UserList = () => {
       // Optionally, show an error message to the user
       toast.error("Failed to block-unblock user");
     }
-  };
-
-  const navigateToDetails = (userId: string) => {
-    navigate(`/admin/user/${userId}`);
   };
 
   const columns = [

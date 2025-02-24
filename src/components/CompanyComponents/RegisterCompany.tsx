@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registerCompanyAct } from "../../redux/Actions/companyActions";
 import { toast } from "sonner";
 import MainBg from "../../../public/Main-Bg.jpg";

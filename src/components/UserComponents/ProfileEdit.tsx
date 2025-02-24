@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
@@ -158,8 +158,7 @@ const JobUserProfileEdit: React.FC = () => {
         >
           {({
             values,
-            errors,
-            touched,
+
             handleChange,
             handleBlur,
             setFieldValue,
@@ -476,9 +475,9 @@ const JobUserProfileEdit: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FieldArray name="experience">
-                    {({ push, remove }) => (
+                    {({ push }) => (
                       <div>
-                        {values.experience.map((exp, index) => (
+                        {values.experience.map((_, index) => (
                           <div key={index} className="space-y-2 mb-4">
                             <Field
                               as={Input}
@@ -550,9 +549,9 @@ const JobUserProfileEdit: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FieldArray name="education">
-                    {({ push, remove }) => (
+                    {({ push }) => (
                       <div>
-                        {values.education.map((edu, index) => (
+                        {values.education.map((_, index) => (
                           <div key={index} className="space-y-2 mb-4">
                             <Field
                               as={Input}

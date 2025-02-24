@@ -29,7 +29,6 @@ import { useSocket } from "@/Context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 
 import { clearTokens } from "@/redux/Slices/tokenSlice";
-import { Description } from "@radix-ui/react-dialog";
 
 interface Notification {
   id: number;
@@ -121,11 +120,6 @@ export const Header: React.FC = () => {
             description: `${data.applicantName} applied for ${data.jobTitle}`,
           });
         }
-      });
-
-      socket.on("receiveMessage", (message) => {
-        console.log(`socket.on("receiveMessage" on header`);
-        // setNewChatMessage((prev) => prev + 1);
       });
 
       socket.on("newMessageArrived", (sender) => {

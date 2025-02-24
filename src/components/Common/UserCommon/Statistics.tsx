@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Briefcase, Star, Calendar, Award } from "lucide-react";
+import { Briefcase, Star } from "lucide-react";
 import { axiosMain } from "@/Utils/axiosUtil";
 
 const Statistics: React.FC = () => {
   const [allCompanies, setAllCompanies] = useState([]);
   const [allJobPosts, setAllJobPosts] = useState([]);
-  const [allInterviews, setAllInterviews] = useState([]);
   const stats = [
     { icon: Briefcase, label: "Active Jobs", value: allJobPosts.length },
     { icon: Star, label: "Companies", value: allCompanies.length },
@@ -23,8 +22,7 @@ const Statistics: React.FC = () => {
 
       setAllJobPosts(allJobPosts.data.jobPosts);
     }
-    
-    
+
     getAllJobPosts();
     getAllCompanies();
   }, []);

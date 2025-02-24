@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
-import type { AppDispatch, RootState } from "@/redux/store";
+import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -72,7 +72,6 @@ const validationSchema = Yup.object().shape({
 
 export function CreateJobPost() {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
   const companyData = useSelector(
     (state: RootState) => state.company.companyInfo
   );
@@ -130,7 +129,7 @@ export function CreateJobPost() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, setFieldValue }) => (
+        {({ values, setFieldValue }) => (
           <Form className="space-y-6">
             <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
@@ -458,29 +457,29 @@ export function CreateJobPost() {
               </CardHeader>
               <CardContent>
                 <Field name="status">
-                    {({
+                  {({
                     field,
-                    }: {
+                  }: {
                     field: {
                       name: string;
                       value: string;
                       onChange: (value: string) => void;
                     };
-                    }) => (
+                  }) => (
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                      <SelectValue placeholder="Select job status" />
+                        <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
-                      <SelectItem value="open">Open</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
-                      <SelectItem value="paused">Paused</SelectItem>
+                        <SelectItem value="open">Open</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="paused">Paused</SelectItem>
                       </SelectContent>
                     </Select>
-                    )}
+                  )}
                 </Field>
                 <ErrorMessage
                   name="status"

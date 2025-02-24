@@ -1,4 +1,3 @@
-import type React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -30,12 +29,6 @@ export function InterviewModal({
   onSubmit,
   type,
 }: InterviewModalProps) {
-  // Helper function to check if time is within business hours
-  const isBusinessHours = (time: string) => {
-    const [hours] = time.split(":").map(Number);
-    return hours >= 9 && hours < 18;
-  };
-
   // Initial form values
   const initialValues: FormValues = {
     date: "",
@@ -59,17 +52,16 @@ export function InterviewModal({
         : Yup.string(),
     time:
       type !== "cancel"
-        ? Yup.string()
-            .required("Time is required")
-            // .test(
-            //   "business-hours",
-            //   "Time must be between 9 AM and 6 PM",
-            //   (value) => {
-            //     if (!value) return false;
-            //     return isBusinessHours(value);
-            //   }
-            // )
-        : Yup.string(),
+        ? Yup.string().required("Time is required")
+        : // .test(
+          //   "business-hours",
+          //   "Time must be between 9 AM and 6 PM",
+          //   (value) => {
+          //     if (!value) return false;
+          //     return isBusinessHours(value);
+          //   }
+          // )
+          Yup.string(),
     message: Yup.string()
       .required("Message is required")
       .min(10, "Message must be at least 10 characters")

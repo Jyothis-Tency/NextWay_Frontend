@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Common/AdminCommon/Header";
 import { Sidebar } from "@/components/Common/AdminCommon/Sidebar";
 import { Footer } from "@/components/Common/AdminCommon/Footer";
@@ -10,12 +10,9 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
-import Subscriptions from "./Subscriptions";
 import MainBg from "/Main-Bg.jpg";
 
 interface DashboardData {
@@ -115,18 +112,6 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const getTodayPosts = () => {
-    const today = new Date().toDateString();
-    return [
-      {
-        name: "Today",
-        posts: dashboardData.jobPostsData.filter(
-          (post: IJobPost) => new Date(post.createdAt).toDateString() === today
-        ).length,
-      },
-    ];
-  };
-
   // Calculate monthly posts
   const getMonthlyPosts = () => {
     const currentYear = new Date().getFullYear();
@@ -190,19 +175,7 @@ const AdminDashboard = () => {
     }));
   };
 
-  // Calculate yearly posts
-  const getYearlyPosts = () => {
-    const currentYear = new Date().getFullYear();
-    return Array.from({ length: 5 }, (_, index) => {
-      const year = currentYear - 4 + index;
-      return {
-        name: year.toString(),
-        posts: dashboardData.jobPostsData.filter(
-          (post: IJobPost) => new Date(post.createdAt).getFullYear() === year
-        ).length,
-      };
-    });
-  };
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
@@ -215,8 +188,7 @@ const AdminDashboard = () => {
               <section
                 className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-cover bg-center mb-7"
                 style={{
-                  backgroundImage:
-                    `url(${MainBg})`,
+                  backgroundImage: `url(${MainBg})`,
                 }}
               >
                 <div className="absolute inset-0 bg-[#121212] opacity-90"></div>

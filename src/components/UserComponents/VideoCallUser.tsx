@@ -6,7 +6,6 @@ import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "@/Context/SocketContext";
 import { toast } from "sonner";
-import { set } from "react-hook-form";
 
 const ZEGO_APP_ID = parseInt(import.meta.env.VITE_ZEGO_APP_ID, 10);
 const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
@@ -21,7 +20,7 @@ export function getUrlParams(
 const VideoCallUser: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [userEndedCall, setUserEndedCall] = useState(false);
+  const [, setUserEndedCall] = useState(false);
   const socket = useSocket();
   const { roomId } = useSelector((state: RootState) => state.videoCall);
   console.log("roooooooomId", roomId);

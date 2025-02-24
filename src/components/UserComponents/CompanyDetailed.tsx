@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { ApiError } from "@/Utils/interface";
 import { Icons } from "@/components/ui/icons";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import NotSubscribedModal from "../Common/UserCommon/NotSubscribedModal";
@@ -39,11 +38,6 @@ interface ICompany {
   isVerified: string;
 }
 
-interface CompanyProfileResponse {
-  companyProfile: ICompany;
-  image: string;
-}
-
 const CompanyDetailed: React.FC = () => {
   const [company, setCompany] = useState<ICompany | null>(null);
   const [image, setImage] = useState<string | null>(null);
@@ -55,7 +49,7 @@ const CompanyDetailed: React.FC = () => {
   const isSubscribed = userData?.isSubscribed;
   const subFeatures = userData?.subscriptionFeatures;
   const { company_id } = useParams<{ company_id: string }>();
-  const companyId =  company_id||"";
+  const companyId = company_id || "";
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -66,8 +60,8 @@ const CompanyDetailed: React.FC = () => {
         setLoading(false);
       } catch (err) {
         const error = err as ApiError;
-        console.log("errrefffddddd",error);
-        
+        console.log("errrefffddddd", error);
+
         toast.error(error.message);
         setError("Failed to fetch company data");
         setLoading(false);

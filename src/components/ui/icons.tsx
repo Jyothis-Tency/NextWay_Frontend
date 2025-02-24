@@ -7,7 +7,6 @@ import {
   Edit,
   Trash2,
   Search,
-  TypeIcon as type,
   LucideIcon,
   Pencil,
   Plus,
@@ -33,5 +32,5 @@ export const Icons = {
   ArrowLeft,
   FileText,
   FileX,
-  Building
+  Building,
 };

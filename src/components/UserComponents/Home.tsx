@@ -7,12 +7,7 @@ import type { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Briefcase, CheckCircle, Clock, MapPin, Star } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import { Icons } from "../ui/icons";
 import { CardDescription } from "../ui/card";
 import userAPIs from "@/API/userAPIs";

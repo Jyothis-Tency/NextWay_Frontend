@@ -48,7 +48,6 @@ export function UserChatInterface() {
   const [sendOk, setSendOk] = useState(true);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<CompanySearchResult[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [displayChats, setDisplayChats] = useState<IChat[]>([]);
@@ -258,7 +257,6 @@ export function UserChatInterface() {
 
   const handleSelectChat = (chat: IChat) => {
     setCurrentChat(chat);
-    setSearchResults([]);
     setSearchQuery("");
 
     // Join the chat room
@@ -300,7 +298,6 @@ export function UserChatInterface() {
 
     setChats((prevChats) => [...prevChats, newChat]);
     setCurrentChat(newChat);
-    setSearchResults([]);
     setSearchQuery("");
 
     if (!isSubscribed || !subFeatures?.includes("first_chat")) {

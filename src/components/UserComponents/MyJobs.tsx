@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Loader2,
   Briefcase,
@@ -22,17 +22,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RootState } from "@/redux/store";
-import { axiosMain } from "@/Utils/axiosUtil";
 import { toast } from "sonner";
 import ReusableTable from "../Common/Reusable/Table";
 import userAPIs from "@/API/userAPIs";
@@ -64,7 +56,6 @@ const MyJobs: React.FC = () => {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("pending");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const videoCallState = useSelector((state: RootState) => state.videoCall);
 
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -74,7 +65,7 @@ const MyJobs: React.FC = () => {
     const fetchJobApplications = async () => {
       if (!userId) return;
       try {
-        const response = await userAPIs.fetchJobApplications(userId)
+        const response = await userAPIs.fetchJobApplications(userId);
         console.log(response.data.applications);
         setJobApplications(response.data.applications || []);
       } catch (err) {
@@ -169,9 +160,7 @@ const MyJobs: React.FC = () => {
       render: (row: JobApplication) => (
         <>
           <Button
-            onClick={() =>
-              navigate(`/job-posts?selectedJobId=${row.job_id}`)
-            }
+            onClick={() => navigate(`/job-posts?selectedJobId=${row.job_id}`)}
           >
             View Job
           </Button>
@@ -240,7 +229,6 @@ const MyJobs: React.FC = () => {
         </>
       ),
     },
-
   ];
 
   const renderJobApplicationsTable = (applications: JobApplication[]) => (
@@ -620,7 +608,6 @@ const MyJobs: React.FC = () => {
           )}
         </TabsContent>
         <TabsContent value="interviews">
-
           {renderInterviewsTable(jobApplications)}
         </TabsContent>
       </Tabs>

@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 
-import { Bell, CheckCircle2, Crown, Mail, User } from "lucide-react";
+import { Bell, Crown, Mail, User } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -48,7 +48,6 @@ const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [newChatMessage, setNewChatMessage] = useState(0);
-  const videoCallState = useSelector((state: RootState) => state.videoCall);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -154,10 +153,6 @@ const Header: React.FC = () => {
         //   title: newNotification.title,
         //   description: newNotification.message,
         // });
-      });
-      socket.on("receiveMessage", (message) => {
-        console.log(`socket.on("receiveMessage" on header`);
-        // setNewChatMessage((prev) => prev + 1);
       });
 
       socket.on("newMessageArrived", (sender) => {

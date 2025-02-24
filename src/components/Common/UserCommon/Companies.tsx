@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { axiosMain } from "@/Utils/axiosUtil";
 import CompanyStatic from "../../../../public/Comany-Static-Logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";

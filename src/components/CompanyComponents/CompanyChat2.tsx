@@ -42,7 +42,6 @@ export function CompanyChatInterface() {
   const [currentChat, setCurrentChat] = useState<IChat | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [displayChats, setDisplayChats] = useState<IChat[]>([]);
   const [allProfileImages, setAllProfileImages] = useState<
@@ -222,7 +221,6 @@ export function CompanyChatInterface() {
 
   const handleSelectChat = (chat: IChat) => {
     setCurrentChat(chat);
-    setSearchResults([]);
     setSearchQuery("");
 
     // Join the chat room
@@ -254,7 +252,6 @@ export function CompanyChatInterface() {
 
     setChats((prevChats) => [...prevChats, newChat]);
     setCurrentChat(newChat);
-    setSearchResults([]);
     setSearchQuery("");
   };
 

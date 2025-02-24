@@ -21,7 +21,7 @@ const ZEGO_SERVER_SECRET = import.meta.env.VITE_ZEGO_SERVER_SECRET;
 
 const VideoCallCompany: React.FC = () => {
   console.log("VideoCallCompany");
-  const [refreshFlag, setRefreshFlag] = useState(false);
+  const [, setRefreshFlag] = useState(false);
   const [userInOtherInterview, setUserInOtherInterview] = useState(false);
   // const [startTime, setStartTime] = useState(``);
 
@@ -128,7 +128,7 @@ const VideoCallCompany: React.FC = () => {
           turnOnCameraWhenJoining: true,
           showPreJoinView: false,
 
-          onUserJoin(users) {
+          onUserJoin() {
             startPresenceEmission();
           },
 

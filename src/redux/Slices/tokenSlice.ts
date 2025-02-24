@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserAct } from "../Actions/userActions";
 
 interface Token {
   accessToken: string | null;

@@ -88,7 +88,7 @@ export function JobPostDetails() {
   const handleSubmit = async (values: IJobPost) => {
     try {
       const jobData = { ...values, _id: jobId };
-      const response = await companyAPIs.createOrUpdateJobPost(jobData);
+      await companyAPIs.createOrUpdateJobPost(jobData);
 
       toast.success("Job post updated successfully");
       setTimeout(() => {
@@ -106,7 +106,7 @@ export function JobPostDetails() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
       try {
-        const response = await companyAPIs.deleteJobPost(jobId);
+        await companyAPIs.deleteJobPost(jobId);
         toast.success("Job Post Deleted Successfully");
         setTimeout(() => {
           navigate("../job-post-list");
@@ -157,7 +157,7 @@ export function JobPostDetails() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, setFieldValue }) => (
+        {({ values, setFieldValue }) => (
           <Form className="space-y-6">
             <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
               <CardHeader>
@@ -232,20 +232,20 @@ export function JobPostDetails() {
                   <Field name="employmentType">
                     {({ field }: { field: { value: string } }) => (
                       <Select
-                      onValueChange={(value) =>
-                        setFieldValue("employmentType", value)
-                      }
-                      defaultValue={field.value}
+                        onValueChange={(value) =>
+                          setFieldValue("employmentType", value)
+                        }
+                        defaultValue={field.value}
                       >
-                      <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                        <SelectValue placeholder="Select employment type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Full-time">Full-time</SelectItem>
-                        <SelectItem value="Part-time">Part-time</SelectItem>
-                        <SelectItem value="Contract">Contract</SelectItem>
-                        <SelectItem value="Internship">Internship</SelectItem>
-                      </SelectContent>
+                        <SelectTrigger className="mt-1 bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
+                          <SelectValue placeholder="Select employment type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Full-time">Full-time</SelectItem>
+                          <SelectItem value="Part-time">Part-time</SelectItem>
+                          <SelectItem value="Contract">Contract</SelectItem>
+                          <SelectItem value="Internship">Internship</SelectItem>
+                        </SelectContent>
                       </Select>
                     )}
                   </Field>
@@ -479,21 +479,21 @@ export function JobPostDetails() {
               </CardHeader>
               <CardContent>
                 <Field name="status">
-                    {({ field }: { field: { value: string } }) => (
+                  {({ field }: { field: { value: string } }) => (
                     <Select
                       onValueChange={(value) => setFieldValue("status", value)}
                       defaultValue={field.value}
                     >
                       <SelectTrigger className="bg-[#2D2D2D] text-[#FFFFFF] border-[#4B5563]">
-                      <SelectValue placeholder="Select job status" />
+                        <SelectValue placeholder="Select job status" />
                       </SelectTrigger>
                       <SelectContent>
-                      <SelectItem value="open">Open</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
-                      <SelectItem value="paused">Paused</SelectItem>
+                        <SelectItem value="open">Open</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="paused">Paused</SelectItem>
                       </SelectContent>
                     </Select>
-                    )}
+                  )}
                 </Field>
                 <ErrorMessage
                   name="status"

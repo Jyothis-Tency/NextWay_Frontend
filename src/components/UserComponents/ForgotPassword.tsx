@@ -133,7 +133,7 @@ const ForgotPasswordForm: React.FC = () => {
 
   const handleResendOtp = async () => {
     try {
-      const result = await userAPIs.resentOtp(formik.values.email);
+      await userAPIs.resentOtp(formik.values.email);
       toast.success("OTP resent successfully");
       startTimer();
     } catch (error) {
