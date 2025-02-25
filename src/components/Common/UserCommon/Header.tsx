@@ -232,7 +232,7 @@ const Header: React.FC = () => {
     <header className="bg-[#1E1E1E] text-white px-6 py-4 flex items-center justify-between border-b border-[#2D2D2D] h-16 ">
       <div
         className="flex items-center space-x-2 cursor-pointer"
-        onClick={() => navigate("../home")}
+        onClick={() => navigate("/")}
       >
         <span className="text-2xl font-bold text-white">Next</span>
         <span className="text-2xl font-bold text-[#4F46E5]">Way</span>
@@ -245,7 +245,7 @@ const Header: React.FC = () => {
 
       <nav className="hidden md:flex space-x-6">
         <a
-          onClick={() => navigate("../home")}
+          onClick={() => navigate("/")}
           className="text-[#E0E0E0] hover:text-white cursor-pointer"
         >
           Home

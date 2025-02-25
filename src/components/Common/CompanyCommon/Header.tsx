@@ -297,11 +297,11 @@ export const Header: React.FC = () => {
               Recruiter
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               onSelect={() => window.open("/user/home", "_blank")}
             >
               Go to User Section
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
