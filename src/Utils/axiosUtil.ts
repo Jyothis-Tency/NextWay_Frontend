@@ -33,6 +33,9 @@ export const axiosMain = axios.create({
   withCredentials: true,
 });
 
+axiosMain.defaults.withCredentials = true;
+
+
 axiosMain.interceptors.request.use((config) => {
   console.log("Request interceptor");
 
