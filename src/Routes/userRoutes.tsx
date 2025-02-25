@@ -18,6 +18,7 @@ import { AnimatePresence } from "framer-motion";
 import InterviewModal from "../components/Common/CompanyCommon/IncomingInterViewModal";
 import CompanyDetailedPage from "@/Pages/UserPages/CompanyDetailedPage";
 
+
 const UserRoutes = () => {
   return (
     <>
