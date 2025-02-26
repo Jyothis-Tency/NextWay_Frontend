@@ -15,7 +15,7 @@ const UserPublicOnlyProtector: React.FC<UserProtectorProps> = ({
 
   useEffect(() => {
     if (user) {
-      navigate("../home", {
+      navigate("/", {
         state: { message: "Authorization failed" },
         replace: true,
       });

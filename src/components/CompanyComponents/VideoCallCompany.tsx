@@ -225,10 +225,7 @@ const VideoCallCompany: React.FC = () => {
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-[#0a0a0a] text-white px-6 py-4 flex items-center border-b border-gray-800 h-16">
-        <div
-          className="flex items-center space-x-2 cursor-pointer"
-          onClick={() => navigate("../home")}
-        >
+        <div className="flex items-center space-x-2 cursor-pointer">
           <span className="text-2xl font-bold text-white">Next</span>
           <span className="text-2xl font-bold text-red-600">Way</span>
           <span className="text-sm font-semibold text-gray-400 ml-2">

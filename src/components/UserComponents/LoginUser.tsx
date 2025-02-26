@@ -46,7 +46,7 @@ export default function LoginUser() {
           }
           toast.success(result.message);
           setTimeout(() => {
-            navigate("../home", { replace: true });
+            navigate("/", { replace: true });
           }, 1500);
         }
       } catch (error: any) {
@@ -74,7 +74,7 @@ export default function LoginUser() {
         }
         toast.success("Google Authentication Successful");
         setTimeout(() => {
-          navigate("../home", { replace: true });
+          navigate("/", { replace: true });
         }, 1500);
       }
     } catch (error: any) {
@@ -175,7 +175,7 @@ export default function LoginUser() {
              </div>
              <div className="text-sm">
                <a
-                 onClick={() => navigate("../home")}
+                 onClick={() => navigate("/")}
                  className="text-[#60A5FA] hover:underline cursor-pointer"
                >
                  Back To Home Page

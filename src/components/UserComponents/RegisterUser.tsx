@@ -90,7 +90,7 @@ const RegisterUser: React.FC = () => {
         }
         toast.success("Google Authentication Successful");
         setTimeout(() => {
-          navigate("../home", { replace: true });
+          navigate("/", { replace: true });
         }, 1500);
       }
     } catch (error: any) {
