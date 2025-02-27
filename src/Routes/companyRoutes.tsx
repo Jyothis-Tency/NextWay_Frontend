@@ -16,6 +16,7 @@ import JobApplicationByPostsPage from "@/Pages/CompanyPages/JobApplicationByPost
 import JobApplicationDetailedPage from "@/Pages/CompanyPages/JobApplicationDetailedPage";
 import CompanyChatPage from "@/Pages/CompanyPages/CompanyChatPage";
 import VideoCallCompanyPage from "@/Pages/CompanyPages/VideoCallCompanyPage";
+import Error404 from "@/components/Common/Error/company404error";
 
 const CompanyRoutes = () => {
   return (
@@ -142,6 +143,7 @@ const CompanyRoutes = () => {
             </CompanyProtector>
           }
         />
+        <Route path="*" element={<Error404 />} />
         {/* 
         
         

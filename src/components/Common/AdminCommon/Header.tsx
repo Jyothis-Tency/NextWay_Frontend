@@ -20,6 +20,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { clearAdmin } from "@/redux/Slices/adminSlice";
+import { toast } from "sonner";
 
 export const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -34,7 +35,10 @@ export const Header: React.FC = () => {
   const confirmLogout = () => {
     dispatch(clearAdmin());
     setIsLogoutModalOpen(false);
-    navigate("../login");
+    toast.success("Logged out successfully");
+    setTimeout(() => {
+      window.location.href = "../login";
+    }, 1500);
   };
 
   const adminName = "Admin User";

@@ -7,6 +7,7 @@ import AdminProtector from "@/Utils/adminProtector";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import CompanyDetailedPage from "@/Pages/AdminPages/CompanyDetailedPage";
+import Error404 from "@/components/Common/Error/admin404error";
 
 const AdminRoutes: React.FC = () => {
   return (
@@ -54,6 +55,8 @@ const AdminRoutes: React.FC = () => {
             </AdminProtector>
           }
         />
+
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </>
   );

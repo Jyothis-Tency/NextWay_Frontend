@@ -17,7 +17,7 @@ import VideoCallUserPage from "@/Pages/UserPages/VideoCallUserPage";
 import { AnimatePresence } from "framer-motion";
 import InterviewModal from "../components/Common/CompanyCommon/IncomingInterViewModal";
 import CompanyDetailedPage from "@/Pages/UserPages/CompanyDetailedPage";
-
+import Error404 from "@/components/Common/Error/user404error";
 
 const UserRoutes = () => {
   return (
@@ -119,6 +119,7 @@ const UserRoutes = () => {
             </UserProtector>
           }
         />
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </>
   );

@@ -224,7 +224,7 @@ const Header: React.FC = () => {
     setIsLogoutModalOpen(false);
     toast.success("Logging out");
     setTimeout(() => {
-      navigate("/login");
+      window.location.href = "/login";
     }, 1500);
   };
 

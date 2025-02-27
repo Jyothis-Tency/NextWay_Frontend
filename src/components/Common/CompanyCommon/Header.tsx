@@ -26,7 +26,8 @@ import type { RootState } from "@/redux/store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
-import { useToast } from "@/components/ui/use-toast";
+// import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 import { clearTokens } from "@/redux/Slices/tokenSlice";
 
@@ -50,7 +51,7 @@ export const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [newChatMessage, setNewChatMessage] = useState(0);
-  const { toast } = useToast();
+
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -115,10 +116,10 @@ export const Header: React.FC = () => {
             newNotification,
             ...prevNotifications,
           ]);
-          toast({
-            title: "New Job Application",
-            description: `${data.applicantName} applied for ${data.jobTitle}`,
-          });
+          // toast({
+          //   title: "New Job Application",
+          //   description: `${data.applicantName} applied for ${data.jobTitle}`,
+          // });
         }
       });
 
@@ -153,9 +154,9 @@ export const Header: React.FC = () => {
     dispatch(clearCompany());
     dispatch(clearTokens());
     setIsLogoutModalOpen(false);
-    toast({ title: "Logging out" });
+    toast.success("Logged out successfully");
     setTimeout(() => {
-      navigate("../login");
+      window.location.href = "../login";
     }, 1500);
   };
 

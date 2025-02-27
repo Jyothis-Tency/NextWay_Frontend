@@ -42,16 +42,6 @@ export const SubscriptionCard: React.FC<{
           <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700">
             Edit
           </Button>
-          {/* <Button
-            onClick={onToggleBlock}
-            className={`${
-              plan.isBlocked
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
-          >
-            {plan.isBlocked ? "Unblock" : "Block"}
-          </Button> */}
         </div>
       </CardContent>
     </Card>
