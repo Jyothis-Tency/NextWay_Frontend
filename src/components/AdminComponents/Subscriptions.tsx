@@ -35,6 +35,10 @@ interface UserSubscription {
   paymentId: string;
   status: string;
   subscriptionId: string;
+  userDetails: {
+    firstName: string;
+    lastName: string;
+  };
   isCurrent: boolean;
   createdAt: string;
 }
@@ -49,7 +53,6 @@ const Subscriptions: React.FC = () => {
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isDisabled = plans.length === 3 ? true : false;
 
   useEffect(() => {
     fetchPlans();
@@ -73,6 +76,8 @@ const Subscriptions: React.FC = () => {
   const fetchAllSubscriptions = async () => {
     try {
       const response = await adminAPIs.fetchAllSubscriptions();
+      console.log(response.data);
+
       setAllSubscriptions(response.data);
     } catch (error) {
       console.error("Error fetching all subscriptions:", error);
@@ -121,14 +126,23 @@ const Subscriptions: React.FC = () => {
   };
 
   const columns = [
-    { key: "user_id", label: "User ID" },
-    { key: "planName", label: "Name" },
-    { key: "startDate", label: "Start Date" },
+    { key: "userName", label: "User Name" },
+    { key: "planName", label: "Plan Name" },
     { key: "period", label: "Period" },
     { key: "price", label: "Price" },
     { key: "status", label: "Status" },
+    { key: "startDate", label: "Started Date" },
+    { key: "endDate", label: "Last Date" },
   ];
-
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+    const calculatePlanRevenue = (planId: string) => {
+      return allSubscriptions
+        .filter((sub) => sub.plan_id === planId)
+        .reduce((total, sub) => total + sub.price, 0);
+    };
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
@@ -141,12 +155,7 @@ const Subscriptions: React.FC = () => {
                 <h1 className="text-2xl font-bold">Subscription Plans</h1>
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className={`${
-                    isDisabled
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                  disabled={isDisabled}
+                  className={"bg-blue-600 hover:bg-blue-700"}
                 >
                   Create Subscription Plan
                 </Button>
@@ -182,19 +191,82 @@ const Subscriptions: React.FC = () => {
 
               <div className="mt-12">
                 <h2 className="text-2xl font-bold mb-4">
-                  All User Subscriptions
+                  Subscription in detail
                 </h2>
-                <div className="bg-gray-800 rounded-lg overflow-hidden">
-                  <div
-                    className="overflow-x-auto"
-                    style={{ maxHeight: "400px" }}
-                  >
-                    <ReusableTable
-                      columns={columns}
-                      data={allSubscriptions}
-                      defaultRowsPerPage={4}
-                    />
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 ">
+                  <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-96">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="flex flex-col">
+                        <span className="text-gray-400 text-lg">
+                          Total Subscriptions
+                        </span>
+                        <span className="text-3xl font-bold">
+                          {allSubscriptions.length}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                  <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-96">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="flex flex-col">
+                        <span className="text-gray-400 text-lg">
+                          Total Revenue
+                        </span>
+                        <span className="text-3xl font-bold">
+                          ₹
+                          {allSubscriptions
+                            .reduce((total, sub) => total + sub.price, 0)
+                            .toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {plans.map((plan) => {
+                    // Filter subscriptions for this plan
+                    const planSubscriptions = allSubscriptions.filter(
+                      (sub) => sub.plan_id === plan._id
+                    );
+
+                    return (
+                      <div key={plan._id} className="mb-8">
+                        <h3 className="text-xl font-semibold mb-4 flex items-center">
+                          <span className="mr-2">{plan.name} Plan</span>
+                          <span className="bg-gray-700 text-sm px-2 py-1 rounded-md">
+                            {planSubscriptions.length} subscribers
+                          </span>
+                          <span className="bg-gray-700 text-sm px-2 py-1 rounded-md ml-3">
+                            Total Revenue : {calculatePlanRevenue(plan._id)}
+                          </span>
+                        </h3>
+
+                        {planSubscriptions.length > 0 ? (
+                          <div className="bg-gray-800 rounded-lg overflow-hidden">
+                            <div
+                              className="overflow-x-auto"
+                              style={{ maxHeight: "400px" }}
+                            >
+                              <ReusableTable
+                                columns={columns}
+                                data={planSubscriptions.map((sub) => ({
+                                  ...sub,
+                                  startDate: formatDate(sub.startDate),
+                                  endDate: formatDate(sub.endDate),
+                                  userName: `${sub.userDetails.firstName} ${sub.userDetails.lastName}`,
+                                }))}
+                                defaultRowsPerPage={4}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-800 rounded-lg p-6 text-center text-gray-400">
+                            No subscriptions for this plan yet.
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

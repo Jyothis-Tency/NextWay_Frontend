@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import CompanyStatic from "../../../public/Comany-Static-Logo.svg";
 import userAPIs from "@/API/userAPIs";
+import { ApiError } from "@/Utils/interface";
 
 // Validation schema using Yup
 const applicationSchema = Yup.object().shape({
@@ -66,6 +67,7 @@ export default function JobPosts() {
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
   const [isOverviewModalOpen, setIsOverviewModalOpen] = useState(false);
   const [notSubscribedModalOpen, setNotSubscribedModalOpen] = useState(false);
+  const [error, setError] = useState("");
   const [applicationData, setApplicationData] = useState({
     firstName: "",
     lastName: "",
@@ -261,7 +263,9 @@ export default function JobPosts() {
         toast.success("Job Applied Successfully");
         setAppliedJobs((prev) => [...prev, selectedJob._id]);
       } catch (error) {
-        toast.error("Error occurred while applying");
+        const err = error as ApiError;
+        setError(err.message);
+        toast.error(err.message || "Error occurred while applying");
         console.error("Error submitting application:", error);
       }
     } else {
@@ -701,6 +705,17 @@ export default function JobPosts() {
                   : "No resume uploaded"}
               </p>
             </div>
+            {error && (
+              <div>
+                <h3 className="font-semibold text-[#ff0c0c]">{error}</h3>
+                <p
+                  onClick={() => navigate("/profile")}
+                  className="text-blue-500 hover:underline cursor-pointer"
+                >
+                  Click here to Edit Profile
+                </p>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button

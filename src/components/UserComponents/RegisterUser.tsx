@@ -93,7 +93,7 @@ const RegisterUser: React.FC = () => {
           navigate("/", { replace: true });
         }, 1500);
       }
-    } catch (error: any) {
+    } catch (error) {
       const err = error as ApiError;
       toast.error(err.message || "Google authentication failed");
     }

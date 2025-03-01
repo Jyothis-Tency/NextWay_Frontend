@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import ReusableTable from "../Common/Reusable/Table";
 import companyAPIs from "@/API/companyAPIs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface IJobApplication {
   _id: string;
@@ -24,6 +24,7 @@ interface IJobApplication {
 export function JobApplicationByPosts() {
   const [applications, setApplications] = useState<IJobApplication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
   const location = useLocation();
   const jobTitle = location.state?.jobTitle;
   const { jobId } = useParams<{ jobId: string }>();
@@ -44,7 +45,7 @@ export function JobApplicationByPosts() {
     };
 
     if (jobId) fetchApplications();
-  }, [jobId]);
+  }, [jobId, job_id]); // Added job_id to dependencies
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -100,6 +101,11 @@ export function JobApplicationByPosts() {
     },
   ];
 
+  const filteredApplications = (status: string) => {
+    if (status === "all") return applications;
+    return applications.filter((app) => app.status === status);
+  };
+
   return (
     <div className="space-y-6 p-4 md:p-6 ml-0 md:ml-64 bg-[#121212]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
@@ -126,68 +132,91 @@ export function JobApplicationByPosts() {
               No applications found for this job.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              {/* <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-[#A0A0A0]">Name</TableHead>
-                    <TableHead className="text-[#A0A0A0]">Email</TableHead>
-                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
-                      Location
-                    </TableHead>
-                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
-                      Phone
-                    </TableHead>
-                    <TableHead className="text-[#A0A0A0]">Status</TableHead>
-                    <TableHead className="text-[#A0A0A0] hidden md:table-cell">
-                      Applied Date
-                    </TableHead>
-                    <TableHead className="text-[#A0A0A0]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {applications.map((application) => (
-                    <TableRow
-                      key={application._id}
-                      className="hover:bg-[#2D2D2D] transition-colors"
-                    >
-                      <TableCell className="font-medium">{`${application.firstName} ${application.lastName}`}</TableCell>
-                      <TableCell>{application.email}</TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {application.location}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {application.phone}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(application.status)}>
-                          {application.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {new Date(application.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() =>
-                            navigate(
-                              `../job-application-detailed/${application._id}`
-                            )
-                          }
-                          className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] text-xs md:text-sm"
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table> */}
-              <ReusableTable
-                columns={columns}
-                data={applications}
-                defaultRowsPerPage={5}
-              />
+            <div className="space-y-6">
+              <Tabs
+                defaultValue="all"
+                className="w-full"
+                onValueChange={setActiveTab}
+              >
+                <TabsList className="grid w-full grid-cols-5 gap-4 mb-6">
+                  <TabsTrigger
+                    value="all"
+                    className={`bg-[#1E1E1E] text-white ${
+                      activeTab === "all" ? "border-b-2 border-[#4F46E5]" : ""
+                    }`}
+                  >
+                    All ({applications.length})
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Pending"
+                    className={`bg-[#1E1E1E] text-white ${
+                      activeTab === "Pending"
+                        ? "border-b-2 border-[#4F46E5]"
+                        : ""
+                    }`}
+                  >
+                    Pending (
+                    {
+                      applications.filter((app) => app.status === "Pending")
+                        .length
+                    }
+                    )
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Shortlisted"
+                    className={`bg-[#1E1E1E] text-white ${
+                      activeTab === "Shortlisted"
+                        ? "border-b-2 border-[#4F46E5]"
+                        : ""
+                    }`}
+                  >
+                    Shortlisted (
+                    {
+                      applications.filter((app) => app.status === "Shortlisted")
+                        .length
+                    }
+                    )
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Rejected"
+                    className={`bg-[#1E1E1E] text-white ${
+                      activeTab === "Rejected"
+                        ? "border-b-2 border-[#4F46E5]"
+                        : ""
+                    }`}
+                  >
+                    Rejected (
+                    {
+                      applications.filter((app) => app.status === "Rejected")
+                        .length
+                    }
+                    )
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Hired"
+                    className={`bg-[#1E1E1E] text-white ${
+                      activeTab === "Hired" ? "border-b-2 border-[#4F46E5]" : ""
+                    }`}
+                  >
+                    Hired (
+                    {
+                      applications.filter((app) => app.status === "Hired")
+                        .length
+                    }
+                    )
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value={activeTab}>
+                  <div className="overflow-x-auto">
+                    <ReusableTable
+                      columns={columns}
+                      data={filteredApplications(activeTab)}
+                      defaultRowsPerPage={5}
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           )}
         </CardContent>

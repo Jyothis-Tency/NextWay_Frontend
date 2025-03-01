@@ -320,7 +320,7 @@ const AdminDashboard = () => {
                               <XAxis dataKey="name" />
                               <YAxis />
                               <Tooltip />
-                              <Bar dataKey="companies" fill="#ffc658" />
+                              <Bar dataKey="companies" fill="#ff1493" />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
