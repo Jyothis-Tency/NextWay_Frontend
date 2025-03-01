@@ -17,11 +17,20 @@ import JobApplicationDetailedPage from "@/Pages/CompanyPages/JobApplicationDetai
 import CompanyChatPage from "@/Pages/CompanyPages/CompanyChatPage";
 import VideoCallCompanyPage from "@/Pages/CompanyPages/VideoCallCompanyPage";
 import Error404 from "@/components/Common/Error/company404error";
+import CompanyLandingPage from "@/Pages/CompanyPages/CompanyLandingPage";
 
 const CompanyRoutes = () => {
   return (
     <>
       <Routes>
+        <Route
+          path=""
+          element={
+            <CompanyPublicOnlyProtector>
+              <CompanyLandingPage />
+            </CompanyPublicOnlyProtector>
+          }
+        />
         <Route
           path="dashboard"
           element={
