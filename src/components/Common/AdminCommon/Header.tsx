@@ -18,7 +18,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { clearAdmin } from "@/redux/Slices/adminSlice";
 import { toast } from "sonner";
 
@@ -26,7 +25,6 @@ export const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
