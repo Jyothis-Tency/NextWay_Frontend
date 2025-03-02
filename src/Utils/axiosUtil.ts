@@ -67,7 +67,6 @@ axiosMain.interceptors.response.use(
       "/user/forgot-password-email",
       "/user/forgot-password-OTP",
       "/user/forgot-password-reset",
-      "/user/get-company/:company_id",
       "/company/login",
       "/company/register",
       "/company/verify-otp",

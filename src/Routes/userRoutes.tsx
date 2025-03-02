@@ -114,9 +114,9 @@ const UserRoutes = () => {
         <Route
           path="company-profile/:company_id"
           element={
-            <UserPublicOnlyProtector>
+            <UserProtector>
               <CompanyDetailedPage />
-            </UserPublicOnlyProtector>
+            </UserProtector>
           }
         />
         <Route path="*" element={<Error404 />} />
