@@ -20,7 +20,7 @@ interface DashboardData {
   totalCompanies: number;
   activeJobPosts: number;
   jobPostsData: [];
-  subscriptionData: [];
+  subscriptionData: ISubscription[];
   allUsers: [];
   allCompanies: [];
 }
@@ -45,6 +45,8 @@ interface IJobPost {
 }
 interface ISubscription {
   createdAt: Date;
+  startDate: Date;
+  price: number;
 }
 
 const AdminDashboard = () => {
@@ -175,8 +177,6 @@ const AdminDashboard = () => {
     }));
   };
 
-
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <Header />
@@ -209,7 +209,7 @@ const AdminDashboard = () => {
                 <>
                   {" "}
                   <h1 className="text-2xl font-bold mb-6">Statistic Numbers</h1>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
@@ -246,6 +246,36 @@ const AdminDashboard = () => {
                       <CardContent>
                         <div className="text-2xl font-bold">
                           {dashboardData.activeJobPosts}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Monthly Total Revenue From Subscriptions
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          ₹
+                          {dashboardData.subscriptionData
+                            .filter((sub: ISubscription) => {
+                              const now = new Date();
+                              const currentMonth = now.getMonth();
+                              const currentYear = now.getFullYear();
+                              const startDate = new Date(sub.startDate);
+                              const startMonth = startDate.getMonth();
+                              const startYear = startDate.getFullYear();
+                              return (
+                                startMonth === currentMonth &&
+                                startYear === currentYear
+                              );
+                            })
+                            .reduce(
+                              (total, sub: ISubscription) => total + sub?.price,
+                              0
+                            )
+                            .toLocaleString()}
                         </div>
                       </CardContent>
                     </Card>

@@ -25,6 +25,7 @@ interface IJobPost {
 
 export function JobPostsList() {
   const [jobs, setJobs] = useState<IJobPost[]>([]);
+  const [companyData, setCompanyData] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const company_id = useSelector(
@@ -36,7 +37,9 @@ export function JobPostsList() {
       try {
         setLoading(true);
         const response = await companyAPIs.getCompanyJobs(company_id || "");
+        const response2 = await companyAPIs.fetchCompanyData(company_id || "");
         setJobs(response.data.jobPosts);
+        setCompanyData(response2.data);
       } catch (error) {
         console.error("Error fetching jobs:", error);
       } finally {
@@ -126,13 +129,22 @@ export function JobPostsList() {
         <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
           Job Listings
         </h1>
-        <Button
-          onClick={handleCreateNewJob}
-          className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] w-full md:w-auto"
-        >
-          <Icons.Plus className="w-4 h-4 mr-2" />
-          Create New Job Post
-        </Button>
+        {companyData?.isVerified ? (
+          <Button
+            onClick={handleCreateNewJob}
+            className="bg-[#4F46E5] hover:bg-[#4338CA] text-[#FFFFFF] w-full md:w-auto"
+          >
+            <Icons.Plus className="w-4 h-4 mr-2" />
+            Create New Job Post
+          </Button>
+        ) : (
+          <Button
+            disabled
+            className="bg-[#d3d3d3] hover:bg-[#848484] text-[#000000] w-full md:w-auto"
+          >
+            Can't Create New Job Post until admin verifies you
+          </Button>
+        )}
       </div>
       <Card className="bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
         <CardHeader>
