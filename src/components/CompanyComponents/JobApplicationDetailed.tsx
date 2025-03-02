@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import { InterviewModal } from "../Common/CompanyCommon/InterviewModal";
+import UserStatic from "/User-Static-Logo.svg";
 
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -436,9 +437,15 @@ export const JobApplicationDetailed: React.FC = () => {
         <CardContent>
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-8">
             <div className="flex flex-col items-center">
-              {userDetails.profileImage && (
+              {userDetails.profileImage ? (
                 <img
-                  src={userDetails.profileImage || "/placeholder.svg"}
+                  src={userDetails.profileImage || UserStatic}
+                  alt="Profile"
+                  className="w-40 h-40 rounded-full object-cover border-4 border-[#4F46E5] shadow-lg mb-4"
+                />
+              ) : (
+                <img
+                  src={UserStatic}
                   alt="Profile"
                   className="w-40 h-40 rounded-full object-cover border-4 border-[#4F46E5] shadow-lg mb-4"
                 />
