@@ -136,6 +136,12 @@ const Home: React.FC = () => {
     getAllProfileImages();
   }, []);
 
+  const navigateToCompanyProfile = (companyId: string) => {
+    if (userName) {
+      navigate(`/company-profile/${companyId}`);
+    }
+  };
+
   //Removed this useEffect as getAllProfileImages is now called in the above useEffect
   // useEffect(() => {
   //   getAllProfileImages();
@@ -237,9 +243,7 @@ const Home: React.FC = () => {
                   <div
                     key={index}
                     className="bg-[#1E1E1E] p-4 rounded-xl border border-[#4F46E5] hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all duration-300 flex flex-col justify-between h-[120px] cursor-pointer"
-                    onClick={() =>
-                      navigate(`/company-profile/${company.company_id}`)
-                    }
+                    onClick={() => navigateToCompanyProfile(company.company_id)}
                   >
                     <div className="flex items-start gap-3">
                       {renderCompanyAvatar(company.company_id, company.name)}
