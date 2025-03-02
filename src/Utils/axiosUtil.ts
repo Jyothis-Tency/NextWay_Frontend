@@ -8,7 +8,7 @@ const BACKEND_URL = import.meta.env.VITE_SERVER_URL;
 
 const baseURL = `${BACKEND_URL}/data`;
 
-import { RootState } from "@/redux/store"; // Adjust the import according to your project structure
+import { RootState } from "@/redux/store";
 
 const state: RootState = store.getState();
 
