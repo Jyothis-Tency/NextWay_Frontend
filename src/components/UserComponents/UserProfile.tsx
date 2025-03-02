@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
 
@@ -26,6 +26,8 @@ import {
 import type { RootState } from "@/redux/store";
 import { toast } from "sonner";
 import userAPIs from "@/API/userAPIs";
+import { clearUser } from "@/redux/Slices/userSlice";
+import { clearTokens } from "@/redux/Slices/tokenSlice";
 
 interface IUser {
   user_id: string;
@@ -79,7 +81,10 @@ const JobUserProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId =
@@ -143,6 +148,20 @@ const JobUserProfile: React.FC = () => {
   const handleCancelUpload = () => {
     setIsModalOpen(false);
     setSelectedFile(null);
+  };
+
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const confirmLogout = () => {
+    dispatch(clearUser());
+    dispatch(clearTokens());
+    setIsLogoutModalOpen(false);
+    toast.success("Logging out");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
   };
 
   if (loading) {
@@ -373,6 +392,12 @@ const JobUserProfile: React.FC = () => {
         >
           Edit Profile
         </Button>
+        <Button
+          className="bg-[#ff1313] hover:bg-[#6366F1] text-white"
+          onClick={handleLogout}
+        >
+          Log Out
+        </Button>
       </section>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-[#1E1E1E] text-white border-[#2D2D2D]">
@@ -396,6 +421,33 @@ const JobUserProfile: React.FC = () => {
               className="bg-[#4F46E5] hover:bg-[#6366F1] text-white"
             >
               Confirm Upload
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription className="text-[#A0A0A0]">
+              Are you sure you want to log out?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="text-[#E0E0E0] border-[#2D2D2D] hover:bg-[#2D2D2D]"
+              onClick={() => setIsLogoutModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              className="bg-[#EF4444] hover:bg-[#DC2626]"
+              onClick={confirmLogout}
+            >
+              Logout
             </Button>
           </DialogFooter>
         </DialogContent>

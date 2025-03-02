@@ -408,19 +408,21 @@ export default function JobPosts() {
                   ? selectedJob.company.companyName
                   : ""}
               </CardDescription>
-              <CardDescription className="flex items-center space-x-2 mt-2">
-                {selectedJob?.company.isVerified === "accept" ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Verified by Next Way</span>
-                  </>
-                ) : (
-                  <>
-                    <Clock className="w-4 h-4 text-yellow-500" />
-                    <span>Not Verified by Next Way</span>
-                  </>
-                )}
-              </CardDescription>
+              {filteredJobs.length > 0 && selectedJob && (
+                <CardDescription className="flex items-center space-x-2 mt-2">
+                  {selectedJob?.company.isVerified === "accept" ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span>Verified by Next Way</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="w-4 h-4 text-yellow-500" />
+                      <span>Not Verified by Next Way</span>
+                    </>
+                  )}
+                </CardDescription>
+              )}
             </CardHeader>
             <CardContent>
               {filteredJobs.length > 0 ? (

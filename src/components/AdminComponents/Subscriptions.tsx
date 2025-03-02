@@ -253,7 +253,7 @@ const Subscriptions: React.FC = () => {
                                   ...sub,
                                   startDate: formatDate(sub.startDate),
                                   endDate: formatDate(sub.endDate),
-                                  userName: `${sub.userDetails.firstName} ${sub.userDetails.lastName}`,
+                                  userName: `${sub.userDetails?.firstName} ${sub.userDetails?.lastName}`,
                                 }))}
                                 defaultRowsPerPage={4}
                               />

@@ -21,7 +21,6 @@ import { useDispatch } from "react-redux";
 import { clearAdmin } from "@/redux/Slices/adminSlice";
 import { toast } from "sonner";
 
-
 export const Header: React.FC = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
@@ -39,8 +38,6 @@ export const Header: React.FC = () => {
       window.location.href = "../login";
     }, 1500);
   };
-
-  const adminName = "Admin User";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] text-white px-6 py-4 flex items-center justify-between border-b border-gray-800 h-16">
@@ -80,13 +77,11 @@ export const Header: React.FC = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-gray-800 text-gray-300 border-gray-700">
-            <DropdownMenuLabel>{adminName}</DropdownMenuLabel>
+            <DropdownMenuLabel>Next Way Admin</DropdownMenuLabel>
             <DropdownMenuLabel className="text-xs text-gray-500">
               Administrator
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

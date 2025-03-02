@@ -1,5 +1,3 @@
-("");
-
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Bell, Mail, User } from "lucide-react";
@@ -12,24 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useLocation, useNavigate } from "react-router-dom";
-import { clearCompany } from "@/redux/Slices/companySlice";
 import { useSocket } from "@/Context/SocketContext";
 // import { useToast } from "@/components/ui/use-toast";
-import { toast } from "sonner";
-
-import { clearTokens } from "@/redux/Slices/tokenSlice";
 
 interface Notification {
   id: number;
@@ -49,11 +36,9 @@ interface Notification {
 
 export const Header: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [newChatMessage, setNewChatMessage] = useState(0);
 
   const location = useLocation();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const socket = useSocket();
 
@@ -145,20 +130,6 @@ export const Header: React.FC = () => {
       }
     };
   }, [socket]);
-
-  const handleLogout = () => {
-    setIsLogoutModalOpen(true);
-  };
-
-  const confirmLogout = () => {
-    dispatch(clearCompany());
-    dispatch(clearTokens());
-    setIsLogoutModalOpen(false);
-    toast.success("Logged out successfully");
-    setTimeout(() => {
-      window.location.href = "../login";
-    }, 1500);
-  };
 
   const handleNotificationClick = (notification: Notification) => {
     console.log("Notification Clicked:", notification);
@@ -297,40 +268,17 @@ export const Header: React.FC = () => {
             <DropdownMenuLabel className="text-xs text-gray-500">
               Recruiter
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator /> */}
             {/* <DropdownMenuItem
               onSelect={() => window.open("/user/home", "_blank")}
             >
               Go to User Section
             </DropdownMenuItem> */}
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
+            {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
+            {/* <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-[#FFFFFF]">
-          <DialogHeader>
-            <DialogTitle>Confirm Logout</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Are you sure you want to log out?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              className="text-black"
-              onClick={() => setIsLogoutModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmLogout}>
-              Logout
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </header>
   );
 };

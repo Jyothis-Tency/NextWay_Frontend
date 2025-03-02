@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +22,9 @@ import {
 import { toast } from "sonner";
 import { Pencil, MapPin, Mail, Phone, Link } from "lucide-react";
 import companyAPIs from "@/API/companyAPIs";
+import { clearCompany } from "@/redux/Slices/companySlice";
+import { clearTokens } from "@/redux/Slices/tokenSlice";
+import { useNavigate } from "react-router-dom";
 
 interface ICompany {
   company_id: string;
@@ -59,6 +62,10 @@ export function CompanyProfile() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const company_id =
     useSelector((state: RootState) => state.company.companyInfo?.company_id) ||
@@ -125,6 +132,20 @@ export function CompanyProfile() {
     setSelectedFile(null);
   };
 
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const confirmLogout = () => {
+    dispatch(clearCompany());
+    dispatch(clearTokens());
+    setIsLogoutModalOpen(false);
+    toast.success("Logged out successfully");
+    setTimeout(() => {
+      navigate("/company/login");
+    }, 1500);
+  };
+
   if (loading) {
     return <div className="text-[#FFFFFF] text-center mt-8">Loading...</div>;
   }
@@ -149,13 +170,20 @@ export function CompanyProfile() {
         <h1 className="text-2xl md:text-3xl font-bold text-[#FFFFFF]">
           Company Profile
         </h1>
-        <Button
-          onClick={() => (window.location.href = "/company/profile-edit")}
-          className="bg-[#4F46E5] hover:bg-[#4338CA] w-full md:w-auto"
-        >
-          <Pencil className="w-4 h-4 mr-2" />
-          Edit Company Profile
-        </Button>
+        <div>
+          <Button
+            onClick={() => (window.location.href = "/company/profile-edit")}
+            className="bg-[#4F46E5] hover:bg-[#4338CA] w-full md:w-auto mr-4"
+          >
+            Edit Profile
+          </Button>
+          <Button
+            onClick={() => handleLogout()}
+            className="bg-[#ff2222] hover:bg-[#4338CA] w-full md:w-auto"
+          >
+            Log Out
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-1 bg-[#1E1E1E] text-[#FFFFFF] border-[#4B5563]">
@@ -303,6 +331,29 @@ export function CompanyProfile() {
               className="bg-[#4F46E5] hover:bg-[#4338CA]"
             >
               Confirm Upload
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-[#1E1E1E] text-[#FFFFFF]">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Are you sure you want to log out?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="text-black"
+              onClick={() => setIsLogoutModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmLogout}>
+              Logout
             </Button>
           </DialogFooter>
         </DialogContent>
