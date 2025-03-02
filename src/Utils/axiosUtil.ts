@@ -8,7 +8,9 @@ const BACKEND_URL = import.meta.env.VITE_SERVER_URL;
 
 const baseURL = `${BACKEND_URL}/data`;
 
-const state = store.getState();
+import { RootState } from "@/redux/store"; // Adjust the import according to your project structure
+
+const state: RootState = store.getState();
 
 const getAccessToken = () => {
   return (
@@ -34,7 +36,6 @@ export const axiosMain = axios.create({
 });
 
 axiosMain.defaults.withCredentials = true;
-
 
 axiosMain.interceptors.request.use((config) => {
   console.log("Request interceptor");
@@ -66,6 +67,7 @@ axiosMain.interceptors.response.use(
       "/user/forgot-password-email",
       "/user/forgot-password-OTP",
       "/user/forgot-password-reset",
+      "/get-company/:company_id",
       "/company/login",
       "/company/register",
       "/company/verify-otp",
